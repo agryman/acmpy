@@ -33,7 +33,7 @@ I therefore recommended that we selected Python as the target language.
 
 I gathered all the Maple code and stored it in the GitHub repository
 named acm14.
-This repo contains both version 1.4 and 1.6 which is the published version.
+This repo contains both version 16 and 1.4 which is the published version.
 I collected relevant publications there too.
 
 David generously purchased a Maple licence for me.
@@ -164,3 +164,243 @@ valid (but useless) Python code
 - converted up to Convert_red
 
 ### 1:06 PM - break
+
+---
+
+## 2020-01-24
+
+### 12:00 PM
+
+- thinking ahead, if I expect this code to be used by other people then it needs to be
+clearly documented
+- the SymPy project has very clear documentation guidelines at
+<https://docs.sympy.org/1.5.1/documentation-style-guide.html>
+- the SymPy documentation allows LaTeX expressions to be embedded
+- spend some time reading the style guide and understand how to generate HTML from the Python source
+code
+- I forked and cloned sympy from github to try running the documentation generation tools
+- I created a new IntelliJ project from the sympy sources, creating a new virtual environment
+- I ran `pip install mpmath` in the sympy virtual environment
+- I ran `bin/test` which runs all the sympy tests, looks OK but is taking time to complete
+- while the tests were stilling in the sympy project I viewed `README.rst` but the preview window showed errors
+associated with `.. code-block:: python` directives, `Cannot analyze code. Pygments package not found.`
+- I presume that I need to `pip install Pygments` in the sympy virtual environment since it is the
+project interpreter
+- when the tests finish, run `bin/doctest` and install any missing dependencies
+- tests completed ok
+- ran `brew install imagemagick graphviz docbook librsvg` but this had the side-effect of
+rebuilding Python
+- in the sympy virtual environment, `pip install Pygments` fails, as does `pip list` with the error message
+`dyld: Library not loaded: /usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/Python
+   Referenced from: /Users/arthurryman/.virtualenvs/sympy/bin/python
+   Reason: image not found
+ Abort trap: 6`
+ - looks like brew may have deleted an older version of Python
+ - installing the packages triggered a run of `brew cleanup`
+ - yes, `3.7.5` is gone, `3.7.6_1` has replaced it
+ - can I update a virtual environment, or do I need to recreate it?
+ 
+ ### 12:24 PM - break
+ 
+ ---
+ 
+ ## 2020-01-25
+ 
+ ### 10:00 AM
+ 
+ #### Virtual Environment Problem
+ 
+ - Recall that while setting up my fork of the `sympy` repo I had to run `brew` to install several
+ dependencies, and this had the side-effect of building a new version of Python, namely `3.7.6_1`.
+ - `brew cleanup` automatically deleted the previous version `3.7.5`, 
+ which broke two virtual environments, `sean` and `sympy`
+ - today I tried to fix the problem and first checked three other virtual environments, 
+ `acmpy	myvenv	sandbox` which were OK
+ - I believe the difference between these environments is that I created the three OK ones 
+ via the command line, but the broken ones via the IntelliJ project creation wizard
+ - on closer inspection, the IntelliJ wizard refers to `Virtualenv` which is another tool for
+ creating virtual environments
+ - Apparently `virtualenv` was created first and then partially integrated into Python 3.3 as `venv`
+ - I created a new directory named `.venv` to make it clear that I used the `venv` module to create
+ the virtual environments
+ - I used the `venv` module which is a standard part of Python, like so:
+ 
+ > `python3 -m venv sympy`
+ 
+ - Perhaps `venv` is more compatble with `brew`?
+ - now the virtual environments are working correctly
+ 
+ ### SymPy - Getting Started
+ 
+ - Recall that I am setting up a SymPy development environment so I can understand how 
+ modules are documented, especially the ability to include math
+ - I'd like to include math in the `acmpy` documentation to link it with the papers that
+ describe the theory
+ - Also, good documentation is required for engaging the community
+ - I had to install `Pygments` to get the `README.rst` file to display Python code blocks
+ and I can preview the RST documents
+ - Continue with the Getting Started intructions at
+ <https://docs.sympy.org/1.5.1/documentation-style-guide.html#getting-started>
+ - run `pip install mpmath matplotlib sphinx sphinx-math-dollar`
+ - Installation complete
+ - was able to generate the HTML version of the `sympy` docs
+ 
+ ### SymPy - Narrative Documentation Guidelines
+ 
+ - next read 4. Parameters Section at
+ <https://docs.sympy.org/1.5.1/documentation-style-guide.html#parameters-section>
+ 
+ ### 12:00 PM - break
+ 
+ ### 5:30 PM
+ 
+ - finished reading the sympy doc guidelines
+ - initially, acmpy is standalone, not a contribution to sympy
+ - learn how to set up documentation generation in acmpy using Sphinx
+ - API documentation is generated from docstrings, see
+ <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html>
+ - browse the main site:
+ <https://www.sphinx-doc.org/en/master/index.html>
+ - activate `acmpy` and run `pip install -U Sphinx`
+ - I also ran `brew install sphinx-doc` but this was probably unnecessary - it doesn't put Sphinx
+ on the PATH
+ - I can run `sphinx-build --version` successfully in the acmpy virtual environment
+ - I reorganized the `acmpy` project by creating a top level Python package named `acmpy`
+ and moving al the Python source files into it
+ - recall that after activating the `acmpy` virtual environment, I can interactively
+ test modules, e.g. `acm1_4.py` by running `python -i -m acm1_4` 
+ - I am overloading the name `acmpy` - it is a GitHub repo, an IntelliJ project,
+ a Python venv, a Python package, and a Python module.
+ 
+ ### 6:15 PM - break
+ 
+ ## 2020-01-26
+ 
+ ### 10:57 AM
+ 
+ - I have read enough about Sphinx to get started
+ - active acmpy and run `sphinx-quickstart` to set up the Sphinx documentation structure in the project
+ - the command ran successfully but when I view `index.rst` I see error messages like
+ `System Message: ERROR/3 (<stdin>, line 9) Unknown directive type "toctree"` and a similar one for the
+ "ref" directive.
+ - these errors must be a problem with the IntelliJ ReST plugin - it is not using the project virtual
+ environment
+ - apparently the IntelliJ plugin uses docutils to generate the preview so the Sphinx directives
+ are not recognized
+ - I deleted the files and directories that were created so I can regenerate using a separate doc directory
+ - Now the Sphinx files are in the `source` directory, the make files are still in the root
+ - I ran `make html` in the terminal window and 
+ successfully generated the skeleton of the documentation
+ - there is integrated support for Sphinx described here:
+ <https://www.jetbrains.com/help/pycharm/generating-reference-documentation.html>
+- there is a support for creating a Run Configuration under Python Docs -> Sphinx Task which
+is described here: <https://www.jetbrains.com/help/pycharm/run-debug-configuration-sphinx-task.html>
+- add a docstring to a Python source file and include it in the API documentation
+- I am going to use the Sphinx project structure as a model, but it differs from the 
+structure generated by `sphinx-quickstart`
+- align the `acmpy` structure with that of Sphinx
+
+### 12:24 PM - break
+
+### 3:12 PM
+
+- I created a test module name `acmpy.gamma` and added docstrings to it, including math
+- I replicated more of the structure of SymPy, including a `modules` directory and created an index and
+page for gamma. This seems very manual in contrast to say javadoc but it does provide a lot
+of control over the page content. Docstrings from the module are pulled into the rst file
+using several directives such as `automodule` and `autofunction`. I assume that each doctring in
+a module can be assessed individually. I need to read the Sphinx documentation more closely.
+- I copied much of the Sphinx `conf.py` content, pip installed various extensions, and eventually
+succeeded in building the html for the `gamma` module including the typeset math.
+I was unable to get the `sympylive` extension working, but I don't need it yet.
+Now I have a template to work from.
+- add a `clean` target to the make file and rebuild from scratch. Success.
+Remember that the build requires that the acmpy virtual environment be activated
+
+### 5:18 PM - break
+
+## 2020-02-01
+
+### 5:04 PM
+
+- DONE: Move the makefile into the `doc` directory like in SymPy. That may simplify the paths
+and enable the build to find the `sympylive` extension.
+- yes, the build now finds the `sympylive` extension
+
+- I tried running the `acmpy.gamma` example in SymPy Live from the generated html pages, 
+but got this error `ImportError: No module named acmpy.gamma`
+
+- DEFERRED: Determine how SymPy Live searches for modules to import.
+    - I haven't solved this but I assume that I need to install the `acmpy` package in the Python
+    environment that SymPy Live uses.
+    - Defer this since what I really need to do at development time is run doctest on the example.
+    - I can run doctest in IntelliJ using the context menu or a Run Configuration
+
+- DONE: split out the tests from the `so5_cg` module into a separate file and learn how to run the
+tests. Copy the test approach from SymPy.
+    - SymPy appears to use embedded `assert` statements which means it doesn't use a test runner.
+    - IntelliJ has nice integrated support for the `unittest` library, so I'll uses that.
+    - I created a test class for `acmpy.gamma` and ran it.
+    
+### 7:09 PM - break
+
+### 8:15 PM
+
+- DONE: Review the `unittest` docs at:
+<https://docs.python.org/2/library/unittest.html>
+- DONE: Review the PyCharm documentation for unit testing at:
+<https://www.jetbrains.com/help/pycharm/testing-your-first-python-application.html>
+- DONE: Investigate using `doctest` with `unittest` at:
+<https://docs.python.org/2/library/doctest.html>
+    - I added examples to so5_cg.py and called doctest at the bottom of the file, when called as the main module
+    - I added the -v parameter to the Run Configuration to see the doctest progress
+- I created docstrings in so5_cg.py and created a Sphinx documentation page for it, including some good math markup
+- DONE: check if the SymPy contribution guidelines allow unittest, or do they require pytest? If pytest is required
+then cut over now before profilerating a lot of unittest test cases
+    - looks like SymPy uses it's own variant of pytest:
+    <https://github.com/sympy/sympy/wiki/Running-tests>
+    - allow it might make sense in the log run to contribute acmpy to sympy, they may feel it is too niche
+    - I'd prefer to use unittest since it is more mainstream
+    - if there ever is an appreciable user base for acmpy then we can convert the tests
+    - it's premature to assume SymPy would want acmpy
+    - Conclusion: stay with unittest, and add doctests to unittest
+        - NOTE: I reversed this decision and am using pytest
+
+### 11:23 PM - break
+
+## 2020-02-02
+
+### 4:07 PM
+- Happy Palindrome Day!
+- I am reconsidering the test technology. I read the docs for `pytest` at:
+<https://docs.pytest.org/en/latest/getting-started.html>
+- pytest seems to be more modern than unittest, and is certainly less verbose
+- DONE: understand the SymPy variant of pytest. See:
+<https://github.com/sympy/sympy/wiki/Running-tests>
+    - I believe `py.test` is a variant spelling of `pytest`, or perhaps a shell command
+    - I believe that SymPy uses the pytest syntax, namely just include `assert` statements in the code
+    - To run all tests or doctests, copy the files `bin/test` and `bin/doctest` from SymPy
+    - No, it seems that the commands from SymPy test the `sympy` code base
+    - Just use vanilla `pytest` and `doctest`
+- in the terminal, activated the acmpy venv and ran: `pip install -U pytest`
+- created `tests/test_sample.py`
+- in the terminal, ran `pytest`
+    - pytest found and ran all the tests, including the ones defined using `unittest`
+- I converted my tests to pytest. All ran as expected. pytest much simpler.
+- added an exception test - OK
+- Run doctests using pytest: `pytest --doctest-modules`
+    - this runs all the tests in both the test functions and the docstrings
+- Conclusion: pytest has a simpler syntax, integrates doctests easily, and is compatible with
+the SymPy guidelines
+docstrings from a module
+- TO DO: complete the documentation and test creation for so5_cg.py
+
+### 6:03 PM - break
+
+## 2020-02-05
+
+### 2:34 PM
+- DONE: Simplify the Sphinx documentation by using a directive that pulls in all the.
+    - I added the :members: option to so5_cg.py
+
+### 2:51 PM - break

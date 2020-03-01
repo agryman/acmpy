@@ -26,13 +26,14 @@ This project uses the numpy and sympy modules so install them into the
 activated virtual environment using this command:
 
 > pip install numpy
+
 > pip install sympy
 
 To list the installed modules:
 
 > pip list
 
-To launch the Python interpretter:
+To launch the Python interpreter:
 
 > python
 
