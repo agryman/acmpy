@@ -1,4 +1,4 @@
-# My Journal
+# Arthur's Journal
 
 ## 2019-12-08
 
@@ -50,7 +50,7 @@ I then created the acmpy repo to store the Python code.
 ### 5:08 PM
 
 The ACM makes use of pre-computer SO(5) > SO(3) Clebsch-Gordan coefficients
-that are store in disk files.
+that are stored in disk files.
 My first Python programming goal is to read these files.
 I created so5_cg.py for that purpose.
 
@@ -393,14 +393,23 @@ then cut over now before profilerating a lot of unittest test cases
 - Conclusion: pytest has a simpler syntax, integrates doctests easily, and is compatible with
 the SymPy guidelines
 docstrings from a module
-- TO DO: complete the documentation and test creation for so5_cg.py
 
 ### 6:03 PM - break
 
 ## 2020-02-05
 
 ### 2:34 PM
-- DONE: Simplify the Sphinx documentation by using a directive that pulls in all the.
+- DONE: Simplify the Sphinx documentation by using a directive that pulls in all the members.
     - I added the :members: option to so5_cg.py
 
 ### 2:51 PM - break
+
+## 2020-03-01
+
+### 2:51 PM
+- Updated README.md to refer to .venv, and described testing and documentation.
+- IN PROGRESS: complete the documentation and test creation for so5_cg.py as is.
+    - Reviewed the Maple code and determine the meaing of the parameters.
+- TO DO: refactor so5_cg.py as a class.
+
+### 5:45 PM - break

@@ -1,40 +1,96 @@
 r"""
 This module implements the lookup of precomputed $\textrm{SO}(5) \supset \textrm{SO}(3)$ Clebsch-Gordan coefficients.
-These coefficients are precomputed by another program and saved in a set of files.
-The files are arranged in a set of nested directories.
+These coefficients have been precomputed by another program and saved in a set of files.
+The files are arranged as a set of nested directories.
 The file and directory names encode some of the parameters of the coefficients.
-Each file contains a list of coefficient values, one per line, along with the remainder of their parameters.
+Each file contains a set of coefficient values, one per line, along with the remainder of their parameters.
+
+We'll refer to the precomputed data as the SO5CG database.
+
+The database is stored in some base directory which can be anywhere on the file system, e.g. ~/so5cg-data/.
+The base directory may contain other files and directories.
+Only those directories that have a name that matches a certain pattern, e.g. v2=4, are significant.
+We refer to those as level 1 directories.
+
+The level 1 directory name encodes an integer, namely the value of the v2 parameter.
+For example, the name v2=4 encodes the value 4.
+The only significant contents of a level 1 directory is a level 2 directory.
+
+The name of a level 2 directory matches a pattern that encodes 3 parameter values.
+For example, the name SO5CG_1_2_3 encodes the values 1, 2, and 3.
+
+
+build up the database from the bottom up
+leaf nodes are text files, e.g.
+dir1: v2=2
+  dir2: SO5CG_1_2_3
+      file: SO5CG_1_2-1-2_3
+          line: +1.000000e+00      1    1    2      2    1    2      3    1    0
+          line: +8.451543e-01      1    1    2      2    1    2      3    1    3
+          line: +7.237469e-01      1    1    2      2    1    2      3    1    4
+      file SO5CG_1_2-1-4_3
+          line: +5.345225e-01      1    1    2      2    1    4      3    1    3
+          line: -6.900656e-01      1    1    2      2    1    4      3    1    4
+          line: +1.000000e+00      1    1    2      2    1    4      3    1    6
+
+each dir1 name encodes 1 number, aka v2, an integer
+each dir2 name encodes 3 numbers, all integers
+each file name encodes 5 numbers, all integers
+each line contains 10 numbers, the first is a float, the rest are integers
+
+mathematically, we have a function that maps a tuple of 9 integers to a float.
+however, most of the 9-tuples map to zero, so this is a very sparse array.
+we can store it as a tower of nested dictionaries, indexed by 9-tuples
+
+The Maple code contains a procedure show_CG_file(v1, v2, a2, L2, v3) and load_CG_table(v1, v2, a2, L2, v3)
+which loads a file from disk.
+
+The files are loaded on demand since there are many files and not all of them are used
+in any given calculation.
+The contents of the files are stored in a table named CG_coeffs which is like a Python
+dictionary.
+CG_coeffs[v1, v2, a2, L2, v3] is a table of CG coefficient values contained in a single data file.
+CG_coeffs[v1, v2, a2, L2, v3][a1, L1, a3, L3] is the actual CG coefficient value.
+
+The parameters have the following types:
+v1, v2, v3: nonnegint
+a2: posint
+L2: nonnegint
+
+The data is stored in the file named SO5CG_v1_v2-a2-L2_v3.
+
+My interpretation is as follows:
+Clearly, the representations of SO5 > SO3 are labelled by (v, a, L) where (v, a) label an SO5 irrep.
+v is called the seniority.
+a is a multiplicity parameter used to distinguish irreps that have the same v.
+L is the SO3 irrep label.
+When the SO5 irrep labelled by (v, a) is restricted to the SO3 subgroup, it splits into SO3 irreps labelled by L.
+
+The Maple procedure SO5CG_filename(v1, v2, a2, L2, v3) generates the file path as follows:
+cat(SO5CG_directory, "v2=", v2, "/SO5CG_", v1, "_", v2, "_", v3, "/SO5CG_", v1, "_", v2, "-", a2, "-", L2, "_", v3);
 
 """
 
 from pathlib import Path
-
-
+from os.path import expanduser
 import os
 import re
 
-if __name__ == "__main__":
-    print('Module name:', __name__)
+default_SO5CG_directory = expanduser('~/so5cg-data/')
 
-    base_dir_name = "/Users/arthurryman/so5cg-data/"
-    print('Base directory name:', base_dir_name)
-
-# checks that a string names a directory
 def is_dir(name: str) -> bool:
+    """Return True if a string is the name of a directory, else return False."""
     return Path(name).is_dir()
 
-if __name__ == "__main__":
-    print('is_dir', base_dir_name, is_dir(base_dir_name))
-
 # regex pattern to match v2 directory names like "v2=1", "v2=2", etc.
-v2_dir_pattern = '^v2=(\\d+)$'
+v2_dir_pattern = r'^v2=(\d+)$'
 
-# compiled regex
+# compiled regex to match v2 directory names
 v2_dir_re = re.compile(v2_dir_pattern)
 
 def parse_v2(name: str) -> int:
     """
-    Returns the value of v2 encoded in the v2 directory name if matched, else None.
+    Return the value of v2 encoded in the v2 directory name if matched, else None.
 
     Parameters
     ==========
@@ -62,29 +118,11 @@ def parse_v2(name: str) -> int:
         return int(v2_str)
     return None
 
-if __name__ == "__main__":
-    print(parse_v2('v2=7'))
-    print(parse_v2('v2=42'))
-
-if __name__ == "__main__":
-    # as a warm-up, scan the base directory and list its contents
-
-    with os.scandir(base_dir_name) as entries:
-        for entry in entries:
-            print('entry:', entry)
-            print('name:', entry.name)
-            print('path:', entry.path)
-            print('node:', entry.inode())
-            print('is_dir:', entry.is_dir())
-            if(entry.is_dir()):
-                v2 = parse_v2(entry.name)
-                print('the value of v2 encoded in', entry.name, 'is', v2)
-
-# define a class to represent the database of precomputed SO5 > SO3 Clebsch Gordan coefficients
+# TO DO: define a class to represent the database of precomputed SO5 > SO3 Clebsch Gordan coefficients
 # class SO5_SO3_CG:
 
 if __name__ == "__main__":
-    v2_dirs = [(entry.name, parse_v2(entry.name)) for entry in os.scandir(base_dir_name) if entry.is_dir() and parse_v2(entry.name)]
+    v2_dirs = [(entry.name, parse_v2(entry.name)) for entry in os.scandir(default_SO5CG_directory) if entry.is_dir() and parse_v2(entry.name)]
     print(v2_dirs)
 
     test1_dir1_name = 'v2=2'
@@ -92,32 +130,10 @@ if __name__ == "__main__":
     test1_file_1_name = 'SO5CG_1_2-1-2_3'
     test1_file_2_name = 'SO5CG_1_2-1-4_3'
 
-# build up the database from the bottom up
-# leaf nodes are text files, e.g.
-# dir1: v2=2
-#   dir2: SO5CG_1_2_3
-#       file: SO5CG_1_2-1-2_3
-#           line: +1.000000e+00      1    1    2      2    1    2      3    1    0
-#           line: +8.451543e-01      1    1    2      2    1    2      3    1    3
-#           line: +7.237469e-01      1    1    2      2    1    2      3    1    4
-#       file SO5CG_1_2-1-4_3
-#           line: +5.345225e-01      1    1    2      2    1    4      3    1    3
-#           line: -6.900656e-01      1    1    2      2    1    4      3    1    4
-#           line: +1.000000e+00      1    1    2      2    1    4      3    1    6
-
-# each dir1 name encodes 1 number, aka v2, an integer
-# each dir2 name encodes 3 numbers, all integers
-# each file name encodes 5 numbers, all integers
-# each line contains 10 numbers, the first is a float, the rest are integers
-
-# mathematically, we have a function that maps a tuple of 9 integers to a float.
-# however, most of the 9-tuples map to zero, so this is a very sparse array.
-# we can store it as a tower of nested dictionaries, indexed by 9-tuples
-
 def parse_line(line: str):
     if not type(line) is str:
         raise TypeError("line is not a str")
-    fields = re.split('\s+', line.strip())
+    fields = re.split(r'\s+', line.strip())
     if(len(fields) != 10):
         raise("line does not have 10 fields")
 
@@ -134,7 +150,7 @@ if __name__ == "__main__":
     print(parse_line(test_line_2))
     print(parse_line(test_line_3))
 
-    base_dir = Path(base_dir_name)
+    base_dir = Path(default_SO5CG_directory)
     test1_dir1 = base_dir / test1_dir1_name
     test1_dir2 = test1_dir1 / test1_dir2_name
     test1_file_1 = test1_dir2 / test1_file_1_name

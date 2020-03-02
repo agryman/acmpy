@@ -1,6 +1,12 @@
 from acmpy.so5_cg import *
 import pytest
 
+class TestIsDir:
+
+    def test_default(self):
+        assert is_dir(default_SO5CG_directory)
+
+
 class TestParse_v2:
 
     def test_valid(self):
