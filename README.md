@@ -81,8 +81,8 @@ Open the `index.html` file in a Web browser.
 This project uses `pytest` for testing.
 
 Tests are placed in the `tests` directory within each module directory
-and are named using the prefix `test_`. For example, the tests for `so5_cg.py`
-and defined in the file `tests/test_so5_cg.py`.
+and are named using the prefix `test_`. For example, the tests for `so5cg.py`
+and defined in the file `tests/test_so5cg.py`.
 
 To run all the tests, run the following command in the project root directory:
 

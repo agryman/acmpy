@@ -2,12 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acmpy/so5_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/so5_cg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acmpy/tests/test_so5_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/tests/test_so5_cg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/so5_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/so5cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/tests/test_so5_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/tests/test_so5cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/src/modules/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/doc/src/modules/index.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/src/modules/so5_cg.rst" beforeDir="false" afterPath="$PROJECT_DIR$/doc/src/modules/so5cg.rst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +40,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/doc/_build/html/index.html" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/bin" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -123,13 +125,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/acmpy/so5_cg.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/acmpy/so5cg.py" />
       <option name="PARAMETERS" value="-v" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Unittests for acmpy.tests.test_so5cg" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+      <module name="acmpy" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/acmpy/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;acmpy.tests.test_so5cg&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="Unittests for test_gamma.TestNorm" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
@@ -162,21 +179,6 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_so5_cg.TestSO5_CG.test_parse_v2" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/acmpy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_so5_cg.TestSO5_CG.test_parse_v2&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="Unittests in tests" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,12 +201,12 @@
       <item itemvalue="Python tests.Unittests in tests" />
       <item itemvalue="Python tests.Unittests for test_gamma.TestNorm.test_345" />
       <item itemvalue="Python tests.Unittests for test_gamma.TestNorm" />
-      <item itemvalue="Python tests.Unittests for test_so5_cg.TestSO5_CG.test_parse_v2" />
+      <item itemvalue="Python tests.Unittests for acmpy.tests.test_so5cg" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.so5_cg" />
-        <item itemvalue="Python tests.Unittests for test_so5_cg.TestSO5_CG.test_parse_v2" />
+        <item itemvalue="Python tests.Unittests for acmpy.tests.test_so5cg" />
         <item itemvalue="Python tests.Unittests for test_gamma.TestNorm" />
         <item itemvalue="Python tests.Unittests for test_gamma.TestNorm.test_345" />
         <item itemvalue="Python tests.Unittests in tests" />
@@ -254,6 +256,10 @@
       <workItem from="1583092236789" duration="1627000" />
       <workItem from="1583093885849" duration="8511000" />
       <workItem from="1583154145734" duration="154000" />
+      <workItem from="1583166218056" duration="801000" />
+      <workItem from="1583173751185" duration="76000" />
+      <workItem from="1583246929474" duration="8970000" />
+      <workItem from="1583334733982" duration="8231000" />
     </task>
     <servers />
   </component>
@@ -321,11 +327,20 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state width="2518" height="377" key="GridCell.Tab.0.right/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583149586799" />
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog" timestamp="1583154147996">
-      <screen x="0" y="0" width="2560" height="1440" />
+    <state x="952" y="416" key="com.intellij.ide.util.TipDialog" timestamp="1583334739675">
+      <screen x="0" y="23" width="2560" height="1362" />
     </state>
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583154147996" />
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583093886305" />
+    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583166238551" />
+    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583246931296" />
+    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1583334739675" />
+    <state x="1219" y="471" width="1063" height="472" key="find.popup" timestamp="1583248948725">
+      <screen x="0" y="23" width="2560" height="1361" />
+    </state>
+    <state x="1219" y="471" width="1063" height="472" key="find.popup/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583248948725" />
+    <state x="1206" y="334" key="run.anything.popup" timestamp="1583247506012">
+      <screen x="0" y="23" width="2560" height="1361" />
+    </state>
+    <state x="1206" y="334" key="run.anything.popup/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583247506012" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/acmpy$Unittests_in_tests.coverage" NAME="Unittests in tests Coverage Results" MODIFIED="1580607440850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />

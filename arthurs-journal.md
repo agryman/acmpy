@@ -52,7 +52,7 @@ I then created the acmpy repo to store the Python code.
 The ACM makes use of pre-computer SO(5) > SO(3) Clebsch-Gordan coefficients
 that are stored in disk files.
 My first Python programming goal is to read these files.
-I created so5_cg.py for that purpose.
+I created so5cg.py for that purpose.
 
 ### 5:13 PM break
 
@@ -61,7 +61,7 @@ I created so5_cg.py for that purpose.
 ## 2019-12-14
 
 ### 10:57 AM
-- implement so5_cg.py
+- implement so5cg.py
 - use regex
 - see <https://docs.python.org/3/howto/regex.html#regex-howto>
 - read this article
@@ -100,7 +100,7 @@ I created so5_cg.py for that purpose.
 
 ### 4:12 PM
 
-- continue coding so5_cg.py
+- continue coding so5cg.py
 - I implemented loading of all the files into a dictionary
 - it takes around 1 minute to load all CG files
 - change this to lazy loading since some calculations won't need all the files
@@ -336,7 +336,7 @@ but got this error `ImportError: No module named acmpy.gamma`
     - Defer this since what I really need to do at development time is run doctest on the example.
     - I can run doctest in IntelliJ using the context menu or a Run Configuration
 
-- DONE: split out the tests from the `so5_cg` module into a separate file and learn how to run the
+- DONE: split out the tests from the `so5cg` module into a separate file and learn how to run the
 tests. Copy the test approach from SymPy.
     - SymPy appears to use embedded `assert` statements which means it doesn't use a test runner.
     - IntelliJ has nice integrated support for the `unittest` library, so I'll uses that.
@@ -352,9 +352,9 @@ tests. Copy the test approach from SymPy.
 <https://www.jetbrains.com/help/pycharm/testing-your-first-python-application.html>
 - DONE: Investigate using `doctest` with `unittest` at:
 <https://docs.python.org/2/library/doctest.html>
-    - I added examples to so5_cg.py and called doctest at the bottom of the file, when called as the main module
+    - I added examples to so5cg.py and called doctest at the bottom of the file, when called as the main module
     - I added the -v parameter to the Run Configuration to see the doctest progress
-- I created docstrings in so5_cg.py and created a Sphinx documentation page for it, including some good math markup
+- I created docstrings in so5cg.py and created a Sphinx documentation page for it, including some good math markup
 - DONE: check if the SymPy contribution guidelines allow unittest, or do they require pytest? If pytest is required
 then cut over now before profilerating a lot of unittest test cases
     - looks like SymPy uses it's own variant of pytest:
@@ -400,7 +400,7 @@ docstrings from a module
 
 ### 2:34 PM
 - DONE: Simplify the Sphinx documentation by using a directive that pulls in all the members.
-    - I added the :members: option to so5_cg.py
+    - I added the :members: option to so5cg.py
 
 ### 2:51 PM - break
 
@@ -408,8 +408,30 @@ docstrings from a module
 
 ### 2:51 PM
 - Updated README.md to refer to .venv, and described testing and documentation.
-- IN PROGRESS: complete the documentation and test creation for so5_cg.py as is.
+- IN PROGRESS: complete the documentation and test creation for so5cg.py as is.
     - Reviewed the Maple code and determine the meaing of the parameters.
-- TO DO: refactor so5_cg.py as a class.
+- TO DO: refactor so5cg.py as a class.
 
 ### 5:45 PM - break
+
+## 2020-03-02
+
+### 11:24 AM
+- continue defining tests and docs for so5cg.py
+
+### 11:36 AM - break
+
+## 2020-03-03
+
+### 9:49 AM
+- continue defining tests and docs for so5cg.py
+
+### 12:26 PM - break
+
+## 2020-03-04
+
+### 10:11 AM
+- continue refactoring docs and tests for so5cg.py
+- organize code bottom-up since Python does not allow forward references 
+
+### 11:00 AM - break

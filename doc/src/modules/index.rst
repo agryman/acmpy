@@ -12,4 +12,4 @@ access any acmpy module, or use the list below:
     :maxdepth: 2
 
     gamma.rst
-    so5_cg.rst
+    so5cg.rst
