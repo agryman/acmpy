@@ -497,7 +497,7 @@ Convert_red = 1 / FourPi
 #
 # # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
 # #   indices(CG_coeffs);
-# # Intially, of course, this table will be empty.
+# # Initially, of course, this table will be empty.
 #
 # ###########################################################################
 #

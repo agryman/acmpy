@@ -106,19 +106,25 @@ References
 
 """
 
+from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 from os.path import expanduser
-import os
 import re
 
-# Lines in SO5CG data files, e.g. +7.237469e-01      1    1    2      2    1    2      3    1    4
+SO5IrrepLabel = Tuple[int, int, int]
+#: an SO5 irrep is labelled by the integer triple (v, a, L)
 
-def parse_line(line: str):
+SO5CoeffLabel = Tuple[SO5IrrepLabel, SO5IrrepLabel, SO5IrrepLabel]
+#: an SO5CG coefficient is labelled by three irreps ((v1, a1, L1), (v2, a2, L2), (v3, a3, L3))
+
+# Lines in SO5CG data files, e.g. +7.237469e-01      1    1    2      2    1    2      3    1    4
+SO5FileLine = Tuple[float, SO5CoeffLabel]
+def parse_line(line: str) -> SO5FileLine:
     """
     Parse ``line`` and if valid return the SO5CG data, else raise an exception.
 
     :param line: A string containing a float SO5CG coefficient and the 9 integers that label it.
-    :return: A tuple (coeff, (v1, a1, L1, v2, a2, L2, v3, a3, L3))
+    :return: A tuple (coeff, (v1, a1, L1), (v2, a2, L2), (v3, a3, L3))
 
     """
     if not type(line) is str:
@@ -127,86 +133,116 @@ def parse_line(line: str):
     fields = re.split(r'\s+', line.strip())
 
     if(len(fields) != 10):
-        raise("line must have have 10 fields")
+        raise ValueError("line must have have 10 fields")
 
-    return float(fields[0]), tuple(int(x) for x in fields[1:])
+    coeff = float(fields[0])
+    labels = [int(x) for x in fields[1:]]
+
+    label1 = labels[0], labels[1], labels[2]
+    label2 = labels[3], labels[4], labels[5]
+    label3 = labels[6], labels[7], labels[8]
+
+    return coeff, (label1, label2, label3)
+
+
+def load_datafile(path: Path) -> List[SO5FileLine]:
+    """
+    Read the SO5CG data file at the given path, parse each line, and return as a list.
+
+    :param path: The path of the SO5CG data file.
+    :return: A list of the parsed data lines in the file.
+    """
+    f = path.open()
+    lines = [parse_line(line) for line in f]
+    f.close()
+    return lines
+
+
+def datafile_dict(path: Path) -> Dict[SO5CoeffLabel, float]:
+    """
+    Return the SO5CG data file contents as a dictionary of {label: coeff} entries.
+
+    :param path: the SO5CG data file path
+    :returns: a dictionary of {label: coeff} entries corresponding to the lines in the file where
+        label is a triple of triples of integers ((v1, a1, L1), (v2, a2, L2), (v3, a3, L3)) and
+        coeff is the float SO5CG coefficient for the label
+
+    """
+    lines = load_datafile(path)
+    return {line[1]: line[0] for line in lines}
+
 
 # SO5CG data files, e.g. named like 'SO5CG_1_2-1-4_3'
+# The data files are labelled by (v1,v2,a2,L2,v3)
+SO5FileLabel = Tuple[int, int, int, int, int]
 
-#: compiled regex for SO5CG data file names
 datafile_name_re = re.compile(r'^SO5CG_(\d+)_(\d+)-(\d+)-(\d+)_(\d+)$')
+#: compiled regex for SO5CG data file names
 
 
-def is_datafile_path(path: Path):
+def is_datafile_path(path: Path) -> bool:
     """
     Return ``True`` if ``path`` is a valid SO5CG data file path, else ``False``.
 
     """
     return path.is_file() and (datafile_name_re.match(path.name) != None)
 
-
-def parse_datafile_name(name: str) -> tuple:
+def parse_datafile_name(name: str) -> Optional[SO5FileLabel]:
+    """
+    Return the SO5FileLabel (v1,v2,a2,L2,v3) encoded in name if valid, otherwise None.
+    :param name: The string data file name, e.g. 'SO5CG_1_2-1-4_3'
+    :return: The label, e.g. (1,2,1,4,3) or None
+    """
     m = datafile_name_re.match(name)
     if(m):
-        return tuple(int(m.group(i)) for i in range(1,6))
+        labels = [int(m.group(i)) for i in range(1,6)]
+        return labels[0], labels[1], labels[2], labels[3], labels[4]
     return None
 
 
-def load_datafile(file: Path):
-    f = file.open()
-    lines = [parse_line(line) for line in f]
-    f.close()
-    return lines
-
-
-def dict_level_3(file: Path) -> dict:
-    """
-    Return the SO5CG data file contents as a dictionary of lines.
-
-
-
-    """
-    lines = load_datafile(file)
-    return {line[1]: line[0] for line in lines}
-
-
-def is_dir(name: str) -> bool:
+def is_dir_name(name: str) -> bool:
     """
     Return ``True`` if ``name`` is the name of a directory, else ``False``.
 
     """
     return Path(name).is_dir()
 
-# Level 2 directories
+# Level 2 directories, e.g. SO5CG_1_2_3
+# The labels are (v1, v2, v3)
 
-level_2_re = re.compile(r'^SO5CG_(\d+)_(\d+)_(\d+)$')
+SO5Dir2Label = Tuple[int, int, int]
+#: SO5 level 2 directory label (v1,v2,v3)
 
-def is_level_2(path):
+dir2_name_re = re.compile(r'^SO5CG_(\d+)_(\d+)_(\d+)$')
+#: compiled regex for level 2 directory names
+
+def is_dir2_path(path: Path) -> bool:
     """
     Return ``True`` if and only if path is a directory whose name is like 'SO5CG_1_2_3'.
 
     """
-    return path.is_dir() and (level_2_re.match(path.name) != None)
+    return path.is_dir() and (dir2_name_re.match(path.name) != None)
 
-def parse_level_2(name: str) -> tuple:
-    m = level_2_re.match(name)
+def parse_dir2_name(name: str) -> Optional[SO5Dir2Label]:
+    m = dir2_name_re.match(name)
     if(m):
-        return tuple(int(m.group(i)) for i in range(1,4))
+        labels = [int(m.group(i)) for i in range(1,4)]
+        return labels[0], labels[1], labels[2]
     return None
 
 
-def dict_level_2(dir: Path) -> dict:
+def dir2_dict(path: Path) -> dict:
     """
-    Return a dictionary of file paths for the level 3 files.
+    Return a dictionary of file paths for the SO5CG data files in a level 2 directory.
 
     """
-    return {parse_datafile_name(file.name): file for file in dir.iterdir() if is_datafile_path(file)}
+    return {parse_datafile_name(file.name): file for file in path.iterdir() if is_datafile_path(file)}
 
 
-# Level 1 directories
+# Level 1 directories like "v2=1", "v2=2", etc.
 
-# level 1 is a directory whose name is like v2=1
 dir1_name_re = re.compile(r'^v2=(\d+)$')
+#: compiled regex pattern to match level 1 directory names
 
 def is_dir1_path(path: Path) -> bool:
     """
@@ -216,11 +252,19 @@ def is_dir1_path(path: Path) -> bool:
     return path.is_dir() and (dir1_name_re.match(path.name) != None)
 
 
-def parse_dir1_name(name: str) -> int:
+def parse_dir1_name(name: str) -> Optional[int]:
     """
     Return the value of v2 encoded in the level 1 directory name if matched, else None.
-    :param name:
-    :return:
+    :param name: str, the level 1 directory name, e.g. "v2=3"
+    :return: the integer value of v2 if name is valid, else None
+
+    Examples
+    ========
+
+    >>> from acmpy.so5cg import parse_dir1_name
+    >>> parse_dir1_name("v2=3")
+    3
+    >>> parse_dir1_name("xxx")
 
     """
     m = dir1_name_re.match(name)
@@ -229,47 +273,12 @@ def parse_dir1_name(name: str) -> int:
     return None
 
 
-#: regex pattern to match v2 directory names like "v2=1", "v2=2", etc.
-v2_dir_pattern = r'^v2=(\d+)$'
+def dir1_dict(path: Path) -> dict:
+    return {parse_dir2_name(dir2.name): dir2_dict(dir2) for dir2 in path.iterdir() if is_dir2_path(dir2)}
 
-#: compiled regex to match v2 directory names
-v2_dir_re = re.compile(v2_dir_pattern)
+# SO5CG database base directory
 
-def parse_v2(name: str) -> int:
-    """
-    Return the value of v2 encoded in the v2 directory name if matched, else None.
+default_base_name = expanduser('~/so5cg-data/')
 
-    Parameters
-    ==========
-
-    name : str, the v2 directory name, e.g. "v2=3"
-
-    Returns
-    =======
-
-    int or NoneType, the integer value of v2, e.g. 3, if the directory name is valid, else None
-
-    Examples
-    ========
-
-    >>> from acmpy.so5cg import parse_v2
-    >>> parse_v2("v2=3")
-    3
-    >>> parse_v2("xxx")
-
-    """
-    m = v2_dir_re.match(name)
-    if(m):
-        v2_str = m.group(1)
-        return int(v2_str)
-    return None
-
-def dict_level_1(dir1: Path) -> dict:
-    return {parse_level_2(dir2.name): dict_level_2(dir2) for dir2 in dir1.iterdir() if is_level_2(dir2)}
-
-# Base directory
-
-default_SO5CG_directory = expanduser('~/so5cg-data/')
-
-def dict_level_0(dir0: Path) -> dict:
-    return {parse_dir1_name(dir1.name): dict_level_1(dir1) for dir1 in dir0.iterdir() if is_dir1_path(dir1)}
+def base_dict(base_path: Path) -> dict:
+    return {parse_dir1_name(dir1.name): dir1_dict(dir1) for dir1 in base_path.iterdir() if is_dir1_path(dir1)}

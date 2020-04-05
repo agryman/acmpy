@@ -195,20 +195,20 @@ rebuilding Python
    Referenced from: /Users/arthurryman/.virtualenvs/sympy/bin/python
    Reason: image not found
  Abort trap: 6`
- - looks like brew may have deleted an older version of Python
- - installing the packages triggered a run of `brew cleanup`
- - yes, `3.7.5` is gone, `3.7.6_1` has replaced it
- - can I update a virtual environment, or do I need to recreate it?
+    - looks like brew may have deleted an older version of Python
+    - installing the packages triggered a run of `brew cleanup`
+    - yes, `3.7.5` is gone, `3.7.6_1` has replaced it
+    - can I update a virtual environment, or do I need to recreate it?
  
- ### 12:24 PM - break
+### 12:24 PM - break
+
+---
+
+## 2020-01-25
  
- ---
+### 10:00 AM
  
- ## 2020-01-25
- 
- ### 10:00 AM
- 
- #### Virtual Environment Problem
+#### Virtual Environment Problem
  
  - Recall that while setting up my fork of the `sympy` repo I had to run `brew` to install several
  dependencies, and this had the side-effect of building a new version of Python, namely `3.7.6_1`.
@@ -230,7 +230,7 @@ rebuilding Python
  - Perhaps `venv` is more compatble with `brew`?
  - now the virtual environments are working correctly
  
- ### SymPy - Getting Started
+#### SymPy - Getting Started
  
  - Recall that I am setting up a SymPy development environment so I can understand how 
  modules are documented, especially the ability to include math
@@ -245,14 +245,14 @@ rebuilding Python
  - Installation complete
  - was able to generate the HTML version of the `sympy` docs
  
- ### SymPy - Narrative Documentation Guidelines
+#### SymPy - Narrative Documentation Guidelines
  
  - next read 4. Parameters Section at
  <https://docs.sympy.org/1.5.1/documentation-style-guide.html#parameters-section>
  
- ### 12:00 PM - break
+### 12:00 PM - break
  
- ### 5:30 PM
+### 5:30 PM
  
  - finished reading the sympy doc guidelines
  - initially, acmpy is standalone, not a contribution to sympy
@@ -272,26 +272,28 @@ rebuilding Python
  - I am overloading the name `acmpy` - it is a GitHub repo, an IntelliJ project,
  a Python venv, a Python package, and a Python module.
  
- ### 6:15 PM - break
+### 6:15 PM - break
+
+---
  
- ## 2020-01-26
+## 2020-01-26
  
- ### 10:57 AM
+### 10:57 AM
  
- - I have read enough about Sphinx to get started
- - active acmpy and run `sphinx-quickstart` to set up the Sphinx documentation structure in the project
- - the command ran successfully but when I view `index.rst` I see error messages like
+- I have read enough about Sphinx to get started
+- active acmpy and run `sphinx-quickstart` to set up the Sphinx documentation structure in the project
+- the command ran successfully but when I view `index.rst` I see error messages like
  `System Message: ERROR/3 (<stdin>, line 9) Unknown directive type "toctree"` and a similar one for the
  "ref" directive.
- - these errors must be a problem with the IntelliJ ReST plugin - it is not using the project virtual
+- these errors must be a problem with the IntelliJ ReST plugin - it is not using the project virtual
  environment
- - apparently the IntelliJ plugin uses docutils to generate the preview so the Sphinx directives
+- apparently the IntelliJ plugin uses docutils to generate the preview so the Sphinx directives
  are not recognized
- - I deleted the files and directories that were created so I can regenerate using a separate doc directory
- - Now the Sphinx files are in the `source` directory, the make files are still in the root
- - I ran `make html` in the terminal window and 
+- I deleted the files and directories that were created so I can regenerate using a separate doc directory
+- Now the Sphinx files are in the `source` directory, the make files are still in the root
+- I ran `make html` in the terminal window and 
  successfully generated the skeleton of the documentation
- - there is integrated support for Sphinx described here:
+- there is integrated support for Sphinx described here:
  <https://www.jetbrains.com/help/pycharm/generating-reference-documentation.html>
 - there is a support for creating a Run Configuration under Python Docs -> Sphinx Task which
 is described here: <https://www.jetbrains.com/help/pycharm/run-debug-configuration-sphinx-task.html>
@@ -318,6 +320,8 @@ Now I have a template to work from.
 Remember that the build requires that the acmpy virtual environment be activated
 
 ### 5:18 PM - break
+
+---
 
 ## 2020-02-01
 
@@ -368,6 +372,8 @@ then cut over now before profilerating a lot of unittest test cases
 
 ### 11:23 PM - break
 
+---
+
 ## 2020-02-02
 
 ### 4:07 PM
@@ -396,6 +402,8 @@ docstrings from a module
 
 ### 6:03 PM - break
 
+---
+
 ## 2020-02-05
 
 ### 2:34 PM
@@ -403,6 +411,8 @@ docstrings from a module
     - I added the :members: option to so5cg.py
 
 ### 2:51 PM - break
+
+---
 
 ## 2020-03-01
 
@@ -421,12 +431,16 @@ docstrings from a module
 
 ### 11:36 AM - break
 
+---
+
 ## 2020-03-03
 
 ### 9:49 AM
 - continue defining tests and docs for so5cg.py
 
 ### 12:26 PM - break
+
+---
 
 ## 2020-03-04
 
@@ -435,3 +449,91 @@ docstrings from a module
 - organize code bottom-up since Python does not allow forward references 
 
 ### 11:00 AM - break
+
+---
+
+## 2020-03-05
+
+### 11:10 AM
+- continue refactoring docs and tests for so5cg.py
+- TO DO: write a test SO5CG database in a temporary directory 
+to use as a test fixture
+
+### 12:15 PM - break
+
+---
+
+## 2020-03-14
+
+### 5:21 PM
+
+- Happy International Day of Mathematics (IDM) 
+aka Pi Day!
+- continue writing tests for so5cg.py
+- I am putting type annotations on all functions as part of
+their documentation
+- In Progress: Read https://www.python.org/dev/peps/pep-0483/
+- In Progress: This is a good cheat sheet: https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+
+### 6:06 PM - break
+
+---
+
+## 2020-03-15
+
+- continue reading about type annotations:
+https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+    - this cheat sheet is for a Python package names `mypy`
+    - Mypy is a static type checker for Python 3 and Python 2.7.
+    - finished reading the cheat sheet
+- pytest seems to understand the type annotations, or maybe raw Python does
+    - probably not, but there is a package that integrates mypy into pytest:
+    https://pypi.org/project/pytest-mypy/
+- continue reading PEP 483:
+https://www.python.org/dev/peps/pep-0483/
+    - DONE
+    - it gets very complicated, however the typing theory for Python meshes well with Z
+    in the sense that I can express the Z type constructors in Python
+- skim PEP 484 Type Hints:
+https://www.python.org/dev/peps/pep-0484/ 
+    - strongly inspired by `mypy`
+    - types are implemented in the module `typing` 
+    - this is a very long PEP
+    - I know enough now to annotate the functions in `acmpy`
+- NEXT: finish the test fixtures by creating an SO5CG database in a temporary directory
+
+### 12:25 PM - break
+
+---
+
+## 2020-03-22
+
+### 11:00 AM
+
+- continue developing tests for SO5CG
+- I added type annotations of so5cg.py
+- pytest has built-in fixtures for temporary directories, namely pass in
+the argument named `tmpdir` or `tmp_path` to the test function or method
+- see https://docs.pytest.org/en/latest/fixture.html#fixtures
+
+### 1:05 PM - break
+    
+### 3:30 PM
+
+- review pytest fixtures
+- wrote tests in test_so5cg.py
+- TODO: document the meaning of the labels for level 2 directories and data files
+
+### 6:19 PM - break
+
+---
+
+## 2020-04-02
+
+### 10:59 AM
+
+- document the meaning of the labels for level 2 directories and 
+data files - DONE
+- TODO: implement the on-demand file loading
+
+### 
