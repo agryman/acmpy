@@ -6,4 +6,4 @@
 # . bin/activate
 #
 
-source ~/.venv/acmpy/bin/activate
+source venv/bin/activate

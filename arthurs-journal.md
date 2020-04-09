@@ -536,4 +536,15 @@ the argument named `tmpdir` or `tmp_path` to the test function or method
 data files - DONE
 - TODO: implement the on-demand file loading
 
-### 
+### 11:53 AM break
+
+---
+
+## 2020-04-09
+
+### 5:15 PM Update to IntelliJ 2020.1
+
+- move virtual environment into project
+and capture requirements
+- updated README.md with new procedure for creating a virtual environment
+

@@ -2,54 +2,96 @@
 
 ## Virtual Environment
 
-This project is configured to run in a python3 virtual environment
-named `acmpy` created using the `venv` module.
+This project runs in a Python 3 virtual environment
+named `venv` that is created using the `venv` module.
 See <https://docs.python.org/3/tutorial/venv.html> for information
 about using virtual environments.
 
-To create the virtual environment, do the following.
-First create a directory where you want to keep all your virtual environments,
-e.g. `~/.venv`.
+Create the virtual environment as follows.
+Open a terminal window and change the current directory to the root directory ot the `acmpy` project.
+The run the following command.
 
-> mkdir ~/.venv
+```shell script
+python3 -m venv venv
+```
 
-Then make that the current directory and create the `acmpy` virtual envirnoment
-in it.
+This creates the `venv` directory and copies a set of files and directories into it.
+The `venv` directory will not be checked in to git because it is excluded by the `.gitignore` file.
 
-> cd ~/.venv
->
-> python3 -m venv acmpy
+Activate the `venv` virtual environment:
 
-This creates the `acmpy` dircotry and copies a set of files and directories into it.
-For example, the Python interpreter path is `~/.venv/acmpy/bin/python`
+```shell script
+source venv/bin/activate
+```
 
-To activate the `acmpy` virtual environment run the following bash command:
+Alternatively, the `acmpy` project `bin` directory contains the `activate.sh`
+shell script for activating the `venv` virtual environment:
 
-> source ~/.venv/acmpy/bin/activate
+```shell script
+. bin/activate.sh
+```
 
-The `bin` directory contains a shell script for activating the `acmpy`
-virtual environment, which you can run in the Terminal window as follows:
+Install the required Python packages using `pip` as follows.
+First install the latest version of `pip`.
 
-> . bin/activate
+```shell script
+pip install -U pip
+```
 
-To deactivate the virtual environment run:
+Next install the Python packages required to run, test, type check, and document the code:
 
-> deactivate
+```shell script
+pip install numpy
+pip install sympy
+pip install Sphinx
+pip install sphinx-math-dollar
+pip install pytest
+pip install mypy
+pip install matplotlib
+pip install numpydoc
+pip install jupyter
+```
 
-This project uses the `numpy` and `sympy` modules so install them into the
-activated `acmpy` virtual environment using this command:
+Finally, save the exact version information, so you can reliably reproduce the environment:
 
-> pip install numpy
->
-> pip install sympy
+```shell script
+pip freeze > requirements.txt
+```
+
+The virtual environment is now set up.
+If you are using an integrated development environment like IntelliJ or PyCharm, configure
+the project to use the Python interpretter in the virtual environment.
+Its path relative to the project root is `venv/bin/python`.
+
+To install the packages listed in `requirements.txt` into a new virtual environment:
+
+```shell script
+pip install -r requirements.txt
+```
 
 To list the installed modules:
 
-> pip list
+```shell script
+pip list
+```
 
 To launch the Python interpreter:
 
-> python
+```shell script
+python
+```
+
+To launch the Jupyter notebook server:
+
+```shell script
+jupyter notebook
+```
+
+To deactivate the virtual environment:
+
+```shell script
+deactivate
+```
 
 ## Project Structure
 
@@ -69,9 +111,10 @@ The documentation is contained in the `doc` directory.
 The documentation is generated from docstrings embedded in the Python source code.
 To build the HTML documentation, do the following:
 
-> cd doc
->
-> make html
+```shell script
+cd doc
+make html
+```
 
 The HTML documentation will be generated in the `doc/_build/html` directory.
 Open the `index.html` file in a Web browser.
