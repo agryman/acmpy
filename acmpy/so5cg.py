@@ -124,7 +124,7 @@ def parse_line(line: str) -> SO5FileLine:
     Parse ``line`` and if valid return the SO5CG data, else raise an exception.
 
     :param line: A string containing a float SO5CG coefficient and the 9 integers that label it.
-    :return: A tuple (coeff, (v1, a1, L1), (v2, a2, L2), (v3, a3, L3))
+    :return: A tuple (coeff, ((v1, a1, L1), (v2, a2, L2), (v3, a3, L3)))
 
     """
     if not type(line) is str:

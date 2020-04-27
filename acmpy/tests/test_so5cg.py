@@ -10,6 +10,7 @@ test1_dir1_name: str = 'v2=2'
 test1_dir1_label: int = 2
 
 # the level 1 directory dir1 contains the level 2 direcoty dir2
+
 test1_dir2_name: str = 'SO5CG_1_2_3'
 test1_dir2_label: SO5Dir2Label = (1, 2, 3)
 
@@ -22,13 +23,13 @@ test1_file_2_label: SO5FileLabel = (1, 2, 1, 4, 3)
 
 # the data file file_1 contains lines line_1, line_2, and line_3
 test1_file_1_line_1: str = ' +1.000000e+00      1    1    2      2    1    2      3    1    0'
-test1_file_1_data_1: SO5FileLine = (+1.000000e+00, (1, 1, 2), (2, 1, 2), (3, 1, 0))
+test1_file_1_data_1: SO5FileLine = (+1.000000e+00, ((1, 1, 2), (2, 1, 2), (3, 1, 0)))
 
 test1_file_1_line_2: str = ' +8.451543e-01      1    1    2      2    1    2      3    1    3'
-test1_file_1_data_2: SO5FileLine = (+8.451543e-01, (1, 1, 2), (2, 1, 2), (3, 1, 3))
+test1_file_1_data_2: SO5FileLine = (+8.451543e-01, ((1, 1, 2), (2, 1, 2), (3, 1, 3)))
 
 test1_file_1_line_3: str = ' +7.237469e-01      1    1    2      2    1    2      3    1    4'
-test1_file_1_data_3: SO5FileLine = (+7.237469e-01, (1, 1, 2), (2, 1, 2), (3, 1, 4))
+test1_file_1_data_3: SO5FileLine = (+7.237469e-01, ((1, 1, 2), (2, 1, 2), (3, 1, 4)))
 
 
 class Test_is_dir_name:

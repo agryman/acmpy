@@ -1,5 +1,15 @@
 # acmpy: Algebraic Collective Model in Python
 
+## Project Structure
+
+The code for this project is stored in a GitHub repository named
+[`agryman/acmpy`](https://github.com/agryman/acmpy).
+
+The code is developed using IntelliJ. 
+The `.idea` directory contains IntelliJ files.
+
+The Python code is contains in the `acmpy` directory.
+
 ## Virtual Environment
 
 This project runs in a Python 3 virtual environment
@@ -47,6 +57,7 @@ pip install Sphinx
 pip install sphinx-math-dollar
 pip install pytest
 pip install mypy
+pip install pytest-mypy
 pip install matplotlib
 pip install numpydoc
 pip install jupyter
@@ -92,16 +103,6 @@ To deactivate the virtual environment:
 ```shell script
 deactivate
 ```
-
-## Project Structure
-
-The code for this project is stored in a GitHub repository named
-[`agryman/acmpy`](https://github.com/agryman/acmpy).
-
-The code is developed using IntelliJ. 
-The `.idea` directory contains IntelliJ files.
-
-The Python code is contains in the `acmpy` directory.
 
 ## Documentation
 

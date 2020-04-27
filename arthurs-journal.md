@@ -544,7 +544,268 @@ data files - DONE
 
 ### 5:15 PM Update to IntelliJ 2020.1
 
-- move virtual environment into project
-and capture requirements
+- moved virtual environment into project and captured project requirements
 - updated README.md with new procedure for creating a virtual environment
 
+### 6:45 pm break
+
+---
+
+## 2020-04-10
+
+### 11:15 am
+
+- finish so5cg.py
+    - remove obsolete code from so5cg.py
+    - remove print statements from test_so5cg.py
+    - create a Jupyter notebook to document so5cg.py
+
+### 12:22 pm break
+
+### 4:18 pm
+- created notebook and described group theory basis for ACM
+
+### 6:44 pm break
+
+---
+
+## 2020-04-13
+
+### 10:36 am
+
+- I am refreshing my memory about group representation
+theory, reading the references on SO(5) > SO(3)
+- Write up my notes in a Jupyter notebook, and use SymPy
+- Start by creating a notebook for the SymPy tutorial
+- The tutorial is based on the one given at SciPy 2013 
+http://certik.github.io/scipy-2013-tutorial/html/index.html
+- The tutorial cites Sage which aims to be a full-featured system
+for mathematics. It uses SymPy. Going forward, I will look into Sage.
+It may be a better way to present acmpy to nuclear physicists.
+The acmpy code will be based on SymPy and not have any dependencies
+on Sage, but there may be benefits to using Sage.
+- read up to: Basic Operations
+
+### 12:30 pm break
+
+### 1:36 pm
+
+- I downloaded and installed the Mac app version of Sage-0.9.
+    - I immediately ran into a security error. The app is not signed so
+macOS Catalina 10.15.4 won't open it.
+    - The workaround was described in AskSage.
+You have to open System Preferences -> Security & Privacy -> General where
+the app is now listed. Click its button to allow it to be opened.
+    - I launched the app and got the error "Jupyter Server failed to start".
+    Again, the workaround was in AskSage at
+    https://ask.sagemath.org/question/49381/sagemath-90-app-macos-jupyter-server-fails-to-start/
+    You have to open a Terminal and launch the sage app. 
+    This fixes up all the paths. 
+    Type quit(). 
+    Then launch the app. 
+    Now it opens a Jupyter server.
+    - My first impression is very negative. 
+    SageMath appears to be a poorly integrated
+    grab bag of every piece of open source software that can be used for math. 
+    It even includes R. 
+    What's the advantage of using it versus the individual pieces?
+    Is it just a packaging effort?
+    - I am going to defer further investigate. 
+    Maybe read the PDF book I downloaded.
+    It might provide some motivation.
+- continue with SymPy tutorial: Basic Operations
+- read up to: Simplification
+
+### 3:45 pm break
+
+---
+
+## 2020-04-14
+
+### 5:17 am
+
+- SymPy tutorial: Simplification
+- read up to: Special Functions
+
+### 6:28 am break
+
+### 9:24 pm
+- SymPy tutorial: Special Functions
+- read up to: Solvers
+
+### 11:07 pm break
+
+---
+
+## 2020-04-16
+
+### 4:44 pm
+
+- SymPy tutorial: Solvers
+- finished reading Matrices
+- next: Advanced Expression Manipulation
+- finished tutorial
+
+### 6:39 pm break
+
+---
+
+## 2020-04-18
+
+- Sympy Module Reference: Vector 
+https://docs.sympy.org/latest/modules/vector/index.html
+- next: Dyadics
+
+### 2:30 pm break
+
+### 3:00 pm
+- reading: https://docs.sympy.org/latest/modules/vector/examples.html
+
+### 5:48 pm break
+
+### 8:04 pm
+- reading: https://docs.sympy.org/latest/modules/vector/examples.html
+- reading: https://docs.sympy.org/latest/modules/vector/api/classes.html
+
+### 9:20 pm break
+
+---
+
+## 2020-04-19
+
+### 9:30 am
+- scanned handwritten notes on SO(3) < SO(5) geometry
+- Jupyter notebooks do not allow me to define LaTeX macros using \newcommand
+    - I recall that this used to work
+    - find where I used this previously
+    - if this is a bug, learn how to report it to the Jupyter project
+- work on using SymPy to decomposed representations of SO(3) and explicitly
+construct the subgroup inclusion SO(3) < SO(5)
+- use Matrix class to represent vectors, dual vectors, linear transformations,
+tensor products, etc.
+
+### 1:00 pm break
+
+### 4:51 pm
+- continue writing SO(3) < SO(5) notebook
+
+### 6:10 pm break
+
+### 9:18 pm
+- continue writing SO(3) < SO(5)
+
+### 9:53 pm break
+
+---
+
+## 2020-04-24
+
+### 2:33 pm
+
+- I wrote up some notes using my tablet and would like to create a nice article
+using Z notation, illustrated by SymPy examples
+- How can I combine Z and Jupyter?
+- In the `acmpy/so5cg-notebook.ipynb`, some `\newcommand` macros work, 
+others are rendered as `undefined` in the IntelliJ notebook viewer,
+but all macros do work correctly in Jupyter.
+- Compare to `notes/so3-so5-subgroup-chain.ipynb` 
+- Is there a difference in the virtual environments I've been using?
+- Compare the in-project `venv` to  `~/.venv/acmpy`
+    - I was NOT using Jupyter in `~/.venv/acmpy`
+- I copied the `\newcommand` syntax from `acmpy/so5cg-notebook.ipynb` into
+`notes/so3-so5-subgroup-chain.ipynb`
+    - it appears to work correctly now
+    - NO, it is erratic. Sometimes the macros are executed and sometimes
+    they get inlined as red text.
+- I added the macros to a Raw NBConvert Cell
+    - sometimes they get picked up, sometimes they don't
+    - they do get picked up when I save the notebook as PDF or LaTeX
+- I think the correct way to get the macros to render is to use MathJax
+    - create a MathJax extension that contains the macros
+    - this will allow sharing across notebooks and the Web
+- read MathJax docs
+- This is getting too complicated
+- There is a JavaScript hook for Jupyter that allows the definition of
+MathJax macros
+    - `~/.jupyter/custom/custom.js`
+    - try to put common MathJax macros there
+    - see https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/JavaScript%20Notebook%20Extensions.html#
+    
+### 5:40 pm break
+
+---
+
+## 2020-04-25
+
+### 10:42 pm
+
+- I have been running into problems with how Jupyter notebooks render
+LaTeX `\newcommand`. It's been very erratic. Sometimes the macros are
+handled. Sometimes that are simply rendered as red text.
+- The problem may be in either Jupyter or MathJax.
+- Try to create the problem in MathJax. 
+    - See https://docs.mathjax.org/en/latest/index.html
+    - Today the notebook is behaving correctly!
+    - Perhaps the red text was really caused by syntax errors?
+    - Defer further investigation of MathJax until I encounter a reproducible error.
+- Write up my notes on SO(3) < SO(5) in a Z spec.
+    - Use pure LaTeX
+    - Use a Jupyter notebook for examples
+    - Maybe use TikZ for drawings
+    - Maybe create a Jupyter extension to render Z, implement this like
+    the TiKZ extension 
+        - use LaTeX directly to render the Z notation instead of 
+        trying to induce MathJax to do it.
+    - created `so3-so5.tex` and friends
+
+### 12:08 pm break
+
+### 1:00 pm
+
+- write `so3-so5.tex`
+- while writing the spec, I looked for some standard notation
+and found this wiki dedicated to mathematical proofs:
+https://proofwiki.org/wiki/Symbols:R
+
+### 6:09 pm break
+
+---
+
+## 2020-04-26
+
+### 11:00 am
+- continuing writing `so3-so5.tex`
+- TODO: develop the approach of asserting that a binary operation
+defines a group, and then producing the unique identity element and
+inverse operation from it, e.g. for addition define 0 to be the unique identity
+element and -x to be the unique inverse of x.
+
+### 12:32 am break
+
+### 1:43 pm
+
+- defer going into depth of abstract algebra
+- focus on group representations
+- change of plan: there are no shortcuts so develop the foundations
+
+### 6:20 pm
+
+---
+
+## 2020-04-27
+
+### 7:23 am
+
+- write `so3-so5.tex`
+
+### 8:00 am break
+
+### 10:30 am
+
+- continue
+
+### 12:27 pm break
+
+### 3:13 pm
+
+- continue
