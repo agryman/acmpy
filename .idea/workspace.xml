@@ -2,33 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/acmpy/so5cg-notebook.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mypy.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/2020-04-12 SO3 - SO5 subgroup chain.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/api/classes.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/examples.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/guide-to-vector.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/scalar-and-vector-field-functionality.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/calculus.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/matrices.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/simplification.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/solvers.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/tutorial.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/fuzzlib" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/preamble.sty" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/references.bib" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notes/so3-so5-subgroup-chain.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acmpy/so5cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/so5cg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acmpy/tests/test_so5cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy/tests/test_so5cg.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/fuzzlib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/preamble.sty" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/references.bib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.aux" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.aux" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.out" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.synctex.gz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +45,8 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="add_unversioned_files" value="$PROJECT_DIR$/doc/_build/html/index.html" />
@@ -322,7 +310,13 @@
       <workItem from="1587237397466" duration="3508000" />
       <workItem from="1587753152984" duration="5339000" />
       <workItem from="1587825431309" duration="15870000" />
-      <workItem from="1587935717373" duration="2811000" />
+      <workItem from="1587935717373" duration="4173000" />
+      <workItem from="1588170776717" duration="198000" />
+      <workItem from="1588175117407" duration="591000" />
+      <workItem from="1588181720145" duration="3857000" />
+      <workItem from="1588204359476" duration="720000" />
+      <workItem from="1588347700365" duration="562000" />
+      <workItem from="1588355544124" duration="208000" />
     </task>
     <servers />
   </component>
@@ -353,9 +347,10 @@
       <screen x="0" y="23" width="2560" height="1364" />
     </state>
     <state x="387" y="513" key="#com.intellij.fileTypes.FileTypeChooser/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586533456718" />
-    <state x="1608" y="440" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1586467043296">
-      <screen x="0" y="23" width="2560" height="1362" />
+    <state x="1608" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1588355464897">
+      <screen x="0" y="23" width="2560" height="1357" />
     </state>
+    <state x="1608" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1357@0.23.2560.1357" timestamp="1588355464897" />
     <state x="1608" y="440" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1585706975122" />
     <state x="1608" y="440" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1586467043296" />
     <state x="775" y="258" key="#so3-so5" timestamp="1587829413451">

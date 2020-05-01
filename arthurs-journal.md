@@ -809,3 +809,48 @@ element and -x to be the unique inverse of x.
 ### 3:13 pm
 
 - continue
+
+### 4:00 pm break
+
+---
+
+## 2020-04-29
+
+### 10:30 am
+
+- created new repo named `mathz` to contain articles on standard
+mathematical objects such as real numbers and vector spaces
+- moved articles from other repos into `mathz`
+- TODO: refactor `so3-so5.text` article to use definitions from `mathz` - DONE
+
+### 12:00 pm break
+
+### 1:37 pm
+
+- refactor `so3-so5.tex`
+- all common definitions have been moved to `mathz` repo
+- TODO: simplify definitions in `mathz`
+
+### 5:49 pm break
+
+### 7:52 pm
+
+- continue with `groups.tex`
+
+### 9:16 pm break
+
+---
+
+## 2020-05-01
+
+### 11:42 am
+
+- continue with `groups.tex`
+
+### 12:25 pm break
+
+### 1:49 pm
+
+- continue with `groups.tex` - DONE
+
+### 4:37 pm break

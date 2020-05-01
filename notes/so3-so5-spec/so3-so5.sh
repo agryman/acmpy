@@ -2,6 +2,6 @@
 date
 cd $(dirname $0)
 pwd
-cat /usr/local/bin/fuzzlib\
+cat ../../../mathz/shared/fuzzlib\
  so3-so5.sty > so3-so5.prelude
 fuzz -d -p so3-so5.prelude so3-so5
