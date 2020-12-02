@@ -852,5 +852,71 @@ mathematical objects such as real numbers and vector spaces
 ### 1:49 pm
 
 - continue with `groups.tex` - DONE
+- TODO: `vectors.tex` - use Abelian groups as base
 
-### 4:37 pm break
+### 4:43 pm break
+
+---
+
+## 2020-05-02
+
+### 1:12 pm
+
+- continue work on `mathz` repo
+- refactor `real-numbers.tex` - DONE
+- refactor `vector-spaces.tex`
+
+### 2:27 pm break
+
+---
+
+## 2020-05-03
+
+### 2:34 pm
+
+- refactor `vector-spaces.tex`
+
+### 6:25 pm break
+
+---
+
+## 2020-05-23
+
+### 3:26 pm
+
+- refactor `vector-spaces.tex`
+
+### 5:57 pm break
+
+---
+
+## 2020-05-24
+
+### 1:23 pm
+
+- refactor `vector-spaces.tex`
+- refactored definitions for real vector spaces
+- TODO: improve consistency of naming - DONE
+- TODO: refactor definitions for continuity and differentiability - DONE
+
+### 5:28 pm break
+
+---
+
+## 2020-05-25
+
+### 10:30 am
+
+- improve consistency of naming in vector-spaces.tex - DONE
+
+### 12:41 pm break
+
+### 3:31 pm
+
+- improve definitions of continuous functions - DONE
+
+### 4:12 pm
+
+- improve definitions of differentiable functions - DONE
+
+### 6:04 pm break

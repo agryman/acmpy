@@ -4,17 +4,6 @@
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/fuzzlib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/preamble.sty" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/references.bib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.aux" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.aux" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.out" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.synctex.gz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" beforeDir="false" afterPath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,6 +80,7 @@
         <auxil-path>/</auxil-path>
         <compile-twice>false</compile-twice>
         <output-format>PDF</output-format>
+        <latex-distribution>TEXLIVE</latex-distribution>
         <has-been-run>false</has-been-run>
         <bib-run-config>[]</bib-run-config>
         <makeindex-run-config />
@@ -317,6 +307,24 @@
       <workItem from="1588204359476" duration="720000" />
       <workItem from="1588347700365" duration="562000" />
       <workItem from="1588355544124" duration="208000" />
+      <workItem from="1588365754358" duration="229000" />
+      <workItem from="1588439522596" duration="1641000" />
+      <workItem from="1588530818418" duration="349000" />
+      <workItem from="1589044713055" duration="22000" />
+      <workItem from="1589044750589" duration="601000" />
+      <workItem from="1589048675298" duration="11000" />
+      <workItem from="1589293174717" duration="1218000" />
+      <workItem from="1589295489789" duration="8000" />
+      <workItem from="1590261921766" duration="305000" />
+      <workItem from="1590340787648" duration="628000" />
+      <workItem from="1590418188881" duration="602000" />
+      <workItem from="1590435090463" duration="497000" />
+      <workItem from="1590764361164" duration="7000" />
+      <workItem from="1590764891939" duration="5000" />
+      <workItem from="1591219249091" duration="220000" />
+      <workItem from="1591219502538" duration="1193000" />
+      <workItem from="1595451399210" duration="600000" />
+      <workItem from="1595699662235" duration="8000" />
     </task>
     <servers />
   </component>
@@ -393,6 +401,10 @@
     <state width="781" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1585919880151" />
     <state width="1563" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584915577707" />
     <state width="1054" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586558647317" />
+    <state x="1178" y="400" width="900" height="587" key="NewModule_or_Project.wizard" timestamp="1589293890623">
+      <screen x="0" y="23" width="2560" height="1362" />
+    </state>
+    <state x="1178" y="400" width="900" height="587" key="NewModule_or_Project.wizard/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1589293890623" />
     <state x="433" y="234" width="1320" height="909" key="SettingsEditor" timestamp="1587764213747">
       <screen x="0" y="23" width="2560" height="1362" />
     </state>
