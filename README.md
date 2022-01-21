@@ -8,7 +8,7 @@ The code for this project is stored in a GitHub repository named
 The code is developed using IntelliJ. 
 The `.idea` directory contains IntelliJ files.
 
-The Python code is contains in the `acmpy` directory.
+The Python code is contained in the `acmpy` directory.
 
 ## Virtual Environment
 
