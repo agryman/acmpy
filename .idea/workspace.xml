@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +27,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JupyterTrust" id="df189184-43be-4c97-b8b5-9f42ded0f901" />
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1YXcA61b4STxpEUQB4E1i0sKXpn" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -337,6 +341,7 @@
       <workItem from="1637876490474" duration="750000" />
       <workItem from="1637954187845" duration="601000" />
       <workItem from="1642803122839" duration="258000" />
+      <workItem from="1646425342752" duration="193000" />
     </task>
     <servers />
   </component>
@@ -442,15 +447,15 @@
     <state x="1206" y="334" key="run.anything.popup/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583247506012" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/acmpy$hello_world.coverage" NAME="hello_world Coverage Results" MODIFIED="1575746757699" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_gamma_TestNorm_test_345.coverage" NAME="Unittests for test_gamma.TestNorm.test_345 Coverage Results" MODIFIED="1580610902076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_so5_cg_TestSO5_CG_test_parse_v2.coverage" NAME="Unittests for test_so5_cg.TestSO5_CG.test_parse_v2 Coverage Results" MODIFIED="1580612063962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
-    <SUITE FILE_PATH="coverage/acmpy$Unittests_in_tests.coverage" NAME="Unittests in tests Coverage Results" MODIFIED="1580607440850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
-    <SUITE FILE_PATH="coverage/acmpy$Doctest_norm.coverage" NAME="Doctest norm Coverage Results" MODIFIED="1580596854319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy" />
-    <SUITE FILE_PATH="coverage/acmpy$test_so5cg.coverage" NAME="test_so5cg Coverage Results" MODIFIED="1586534260233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$console.coverage" NAME="console Coverage Results" MODIFIED="1575746086199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_gamma_TestNorm.coverage" NAME="Unittests for test_gamma.TestNorm Coverage Results" MODIFIED="1580610920357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
+    <SUITE FILE_PATH="coverage/acmpy$hello_world.coverage" NAME="hello_world Coverage Results" MODIFIED="1575746757699" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/acmpy$Doctest_norm.coverage" NAME="Doctest norm Coverage Results" MODIFIED="1580596854319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy" />
+    <SUITE FILE_PATH="coverage/acmpy$test_so5cg.coverage" NAME="test_so5cg Coverage Results" MODIFIED="1586534260233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$so5_cg.coverage" NAME="so5_cg Coverage Results" MODIFIED="1585842826967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_gamma_TestNorm_test_345.coverage" NAME="Unittests for test_gamma.TestNorm.test_345 Coverage Results" MODIFIED="1580610902076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
+    <SUITE FILE_PATH="coverage/acmpy$Unittests_in_tests.coverage" NAME="Unittests in tests Coverage Results" MODIFIED="1580607440850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$acm.coverage" NAME="acm Coverage Results" MODIFIED="1579386979095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="debuggerHistoryManager">

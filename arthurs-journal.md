@@ -29,7 +29,7 @@ of the Hamiltonian matrix and used an industry standard Fortran library.
 This same library was available in the Python numpy package.
 Symbolic computation can be done in Python using the SymPy package. 
 Furthermore, Maple notebooks could be replaced by Python Jupyter notebooks.
-I therefore recommended that we selected Python as the target language.
+I therefore recommended that we select Python as the target language.
 
 I gathered all the Maple code and stored it in the GitHub repository
 named acm14.
@@ -37,7 +37,7 @@ This repo contains both version 16 and 1.4 which is the published version.
 I collected relevant publications there too.
 
 David generously purchased a Maple licence for me.
-Was able to run the Maple code.
+I was able to run the Maple code.
 
 I then created the acmpy repo to store the Python code.
 
@@ -49,7 +49,7 @@ I then created the acmpy repo to store the Python code.
 
 ### 5:08 PM
 
-The ACM makes use of pre-computer SO(5) > SO(3) Clebsch-Gordan coefficients
+The ACM makes use of pre-computed SO(5) > SO(3) Clebsch-Gordan coefficients
 that are stored in disk files.
 My first Python programming goal is to read these files.
 I created so5cg.py for that purpose.
