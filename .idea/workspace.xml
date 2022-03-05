@@ -5,8 +5,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/journals/arthurs-journal-2019.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journals/arthurs-journal-2022.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/test-project-structure.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements-2020.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/arthurs-journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/acm1_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/acm1_4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/gamma.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/gamma.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/hello_world.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/hello_world.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/so5cg-notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/so5cg-notebook.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/so5cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/so5cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/tests/test_gamma.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_gamma.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy/tests/test_so5cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_so5cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arthurs-journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/arthurs-journal-2020.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/src/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/doc/src/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mypy.ini" beforeDir="false" afterPath="$PROJECT_DIR$/src/mypy.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/api/classes.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/modules/vector/api/classes.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/examples.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/modules/vector/examples.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/guide-to-vector.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/modules/vector/guide-to-vector.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/modules/vector/scalar-and-vector-field-functionality.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/modules/vector/scalar-and-vector-field-functionality.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/calculus.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/tutorial/calculus.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/matrices.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/tutorial/matrices.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/simplification.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/tutorial/simplification.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/solvers.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/tutorial/solvers.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/docs.sympy.org/tutorial/tutorial.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/docs.sympy.org/tutorial/tutorial.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.aux" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.aux" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.bcf" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.bcf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.out" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.prelude" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.prelude" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.run.xml" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.run.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sh" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.sty" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.sty" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.synctex.gz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex" beforeDir="false" afterPath="$PROJECT_DIR$/articles/so3-so5/so3-so5.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes/so3-so5-subgroup-chain.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/so3-so5-subgroup-chain.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,10 +85,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TODO_SCOPE" value="All Changed Files" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="add_unversioned_files" value="$PROJECT_DIR$/doc/_build/html/index.html" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/notes/so3-so5-spec" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -56,24 +99,28 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/notes/so3-so5-spec" />
       <recent name="$PROJECT_DIR$/bin" />
       <recent name="$PROJECT_DIR$/doc" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/doc" />
-      <recent name="$PROJECT_DIR$/acmpy" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/notebooks" />
+      <recent name="$PROJECT_DIR$/articles" />
+      <recent name="$PROJECT_DIR$/journals" />
+      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.so3-so5.sh">
+  <component name="RunManager" selected="Python.acm1_4">
     <configuration name="so3-so5" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory" temporary="true">
       <texify>
         <compiler>PDFLATEX</compiler>
@@ -83,7 +130,7 @@
         <viewer-command />
         <compiler-arguments />
         <envs />
-        <main-file>$PROJECT_DIR$/notes/so3-so5-spec/so3-so5.tex</main-file>
+        <main-file>$PROJECT_DIR$/articles/so3-so5/so3-so5.tex</main-file>
         <output-path>/</output-path>
         <auxil-path>/</auxil-path>
         <compile-twice>false</compile-twice>
@@ -93,6 +140,25 @@
         <bib-run-config>[]</bib-run-config>
         <makeindex-run-config>[]</makeindex-run-config>
       </texify>
+      <method v="2" />
+    </configuration>
+    <configuration name="acm1_4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="acmpy" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/acm1_4.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration name="console" type="PythonConfigurationType" factoryName="Python">
@@ -198,37 +264,22 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for acmpy.tests.test_so5cg" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/acmpy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;acmpy.tests.test_so5cg&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="LaTeX.so3-so5" />
       <item itemvalue="Python.console" />
       <item itemvalue="Python.hello_world" />
       <item itemvalue="Python.so5_cg" />
       <item itemvalue="Python.test_so5cg" />
-      <item itemvalue="Python tests.Unittests for acmpy.tests.test_so5cg" />
+      <item itemvalue="Python.acm1_4" />
       <item itemvalue="Shell Script.so3-so5.sh" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.acm1_4" />
         <item itemvalue="Shell Script.so3-so5.sh" />
         <item itemvalue="LaTeX.so3-so5" />
         <item itemvalue="Python.test_so5cg" />
         <item itemvalue="Python.so5_cg" />
-        <item itemvalue="Python tests.Unittests for acmpy.tests.test_so5cg" />
       </list>
     </recent_temporary>
   </component>
@@ -341,7 +392,10 @@
       <workItem from="1637876490474" duration="750000" />
       <workItem from="1637954187845" duration="601000" />
       <workItem from="1642803122839" duration="258000" />
-      <workItem from="1646425342752" duration="193000" />
+      <workItem from="1646425342752" duration="8304000" />
+      <workItem from="1646433903070" duration="121000" />
+      <workItem from="1646512710038" duration="1528000" />
+      <workItem from="1646515240069" duration="3464000" />
     </task>
     <servers />
   </component>
@@ -363,89 +417,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="735" y="368" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584894849619">
-      <screen x="0" y="23" width="2560" height="1363" />
-    </state>
-    <state x="735" y="368" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584894849619" />
-    <state x="387" y="513" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1586533456718">
-      <screen x="0" y="23" width="2560" height="1364" />
-    </state>
-    <state x="387" y="513" key="#com.intellij.fileTypes.FileTypeChooser/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586533456718" />
-    <state x="1608" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1588355464897">
-      <screen x="0" y="23" width="2560" height="1357" />
-    </state>
-    <state x="1608" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1357@0.23.2560.1357" timestamp="1588355464897" />
-    <state x="1608" y="440" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1585706975122" />
-    <state x="1608" y="440" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1586467043296" />
-    <state x="775" y="258" key="#so3-so5" timestamp="1587829413451">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="775" y="258" key="#so3-so5/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1587829413451" />
-    <state x="510" y="23" width="1080" height="1161" key="DiffContextDialog" timestamp="1586472042509">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="510" y="23" width="1080" height="1161" key="DiffContextDialog/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1586472042509" />
-    <state x="1249" y="522" key="FileChooserDialogImpl" timestamp="1586472216940">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="1249" y="522" key="FileChooserDialogImpl/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1586472216940" />
-    <state width="1054" height="346" key="GridCell.Tab.0.bottom" timestamp="1586558647317">
-      <screen x="0" y="23" width="2560" height="1364" />
-    </state>
-    <state width="2518" height="377" key="GridCell.Tab.0.bottom/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583149586800" />
-    <state width="781" height="346" key="GridCell.Tab.0.bottom/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1585919880151" />
-    <state width="1563" height="346" key="GridCell.Tab.0.bottom/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584915577708" />
-    <state width="1054" height="346" key="GridCell.Tab.0.bottom/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586558647317" />
-    <state width="1054" height="346" key="GridCell.Tab.0.center" timestamp="1586558647317">
-      <screen x="0" y="23" width="2560" height="1364" />
-    </state>
-    <state width="2518" height="377" key="GridCell.Tab.0.center/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583149586799" />
-    <state width="781" height="346" key="GridCell.Tab.0.center/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1585919880151" />
-    <state width="1563" height="346" key="GridCell.Tab.0.center/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584915577707" />
-    <state width="1054" height="346" key="GridCell.Tab.0.center/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586558647317" />
-    <state width="1054" height="346" key="GridCell.Tab.0.left" timestamp="1586558647316">
-      <screen x="0" y="23" width="2560" height="1364" />
-    </state>
-    <state width="2518" height="377" key="GridCell.Tab.0.left/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583149586798" />
-    <state width="781" height="346" key="GridCell.Tab.0.left/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1585919880150" />
-    <state width="1563" height="346" key="GridCell.Tab.0.left/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584915577706" />
-    <state width="1054" height="346" key="GridCell.Tab.0.left/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586558647316" />
-    <state width="1054" height="346" key="GridCell.Tab.0.right" timestamp="1586558647317">
-      <screen x="0" y="23" width="2560" height="1364" />
-    </state>
-    <state width="2518" height="377" key="GridCell.Tab.0.right/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583149586799" />
-    <state width="781" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1585919880151" />
-    <state width="1563" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1363@0.23.2560.1363" timestamp="1584915577707" />
-    <state width="1054" height="346" key="GridCell.Tab.0.right/-1280.439.1280.1001/0.23.2560.1364@0.23.2560.1364" timestamp="1586558647317" />
-    <state x="1178" y="400" width="900" height="587" key="NewModule_or_Project.wizard" timestamp="1589293890623">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="1178" y="400" width="900" height="587" key="NewModule_or_Project.wizard/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1589293890623" />
-    <state x="433" y="234" width="1320" height="909" key="SettingsEditor" timestamp="1587764213747">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="433" y="234" width="1320" height="909" key="SettingsEditor/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1587764213747" />
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog" timestamp="1583424598991">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.416.1280.1024/0.0.2560.1440@0.0.2560.1440" timestamp="1583166238551" />
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583246931296" />
-    <state x="952" y="416" key="com.intellij.ide.util.TipDialog/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1583424598991" />
-    <state x="-837" y="849" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1587935651351">
-      <screen x="-1280" y="416" width="1280" height="1024" />
-    </state>
-    <state x="-837" y="849" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-1280.416.1280.1024/0.0.2560.1440@-1280.416.1280.1024" timestamp="1587935651351" />
-    <state x="1219" y="471" width="1063" height="486" key="find.popup" timestamp="1587753176999">
-      <screen x="0" y="23" width="2560" height="1362" />
-    </state>
-    <state x="1219" y="471" width="1063" height="472" key="find.popup/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583248948725" />
-    <state x="1219" y="471" width="1063" height="486" key="find.popup/-1280.439.1280.1001/0.23.2560.1362@0.23.2560.1362" timestamp="1587753176999" />
-    <state x="1206" y="334" key="run.anything.popup" timestamp="1583247506012">
-      <screen x="0" y="23" width="2560" height="1361" />
-    </state>
-    <state x="1206" y="334" key="run.anything.popup/-1280.439.1280.1001/0.23.2560.1361@0.23.2560.1361" timestamp="1583247506012" />
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_so5_cg_TestSO5_CG_test_parse_v2.coverage" NAME="Unittests for test_so5_cg.TestSO5_CG.test_parse_v2 Coverage Results" MODIFIED="1580612063962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$console.coverage" NAME="console Coverage Results" MODIFIED="1575746086199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -453,6 +424,7 @@
     <SUITE FILE_PATH="coverage/acmpy$hello_world.coverage" NAME="hello_world Coverage Results" MODIFIED="1575746757699" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/acmpy$Doctest_norm.coverage" NAME="Doctest norm Coverage Results" MODIFIED="1580596854319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy" />
     <SUITE FILE_PATH="coverage/acmpy$test_so5cg.coverage" NAME="test_so5cg Coverage Results" MODIFIED="1586534260233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
+    <SUITE FILE_PATH="coverage/acmpy$acm1_4.coverage" NAME="acm1_4 Coverage Results" MODIFIED="1646517400833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy" />
     <SUITE FILE_PATH="coverage/acmpy$so5_cg.coverage" NAME="so5_cg Coverage Results" MODIFIED="1585842826967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/acmpy$Unittests_for_test_gamma_TestNorm_test_345.coverage" NAME="Unittests for test_gamma.TestNorm.test_345 Coverage Results" MODIFIED="1580610902076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />
     <SUITE FILE_PATH="coverage/acmpy$Unittests_in_tests.coverage" NAME="Unittests in tests Coverage Results" MODIFIED="1580607440850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/acmpy/tests" />

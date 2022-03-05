@@ -3,7 +3,7 @@
 # I will convert each Maple line into equivalent Python.
 
 # clearly, we are doing computer algebra, so import SymPy
-from sympy import *
+from sympy import Symbol, pi, sqrt, Integer, Rational
 
 # # acm.mpl (version 1.4, 27 Sept 2015)
 # #  - minor improvements over version 1.3 (details at end of file).

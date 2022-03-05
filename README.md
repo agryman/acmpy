@@ -71,7 +71,7 @@ pip freeze > requirements.txt
 
 The virtual environment is now set up.
 If you are using an integrated development environment like IntelliJ or PyCharm, configure
-the project to use the Python interpretter in the virtual environment.
+the project to use the Python interpreter in the virtual environment.
 Its path relative to the project root is `venv/bin/python`.
 
 To install the packages listed in `requirements.txt` into a new virtual environment:
@@ -140,4 +140,4 @@ To run the docstring tests, run the following command.
 ## Data Files
 
 This project assumes that the precomputed SO5 > SO3 Clebsch-Gordan coefficients
-have been installed in a directory outside of this project, e.g. `~/so5cg-data`.
+have been installed in a directory outside this project, e.g. `~/so5cg-data`.

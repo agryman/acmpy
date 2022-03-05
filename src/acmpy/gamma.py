@@ -12,6 +12,7 @@ Caveats
 
 from math import sqrt
 
+
 def norm(x, y):
     r"""
     Returns the norm $\sqrt{x^2+y^2}$ of a real 2-vector $(x,y)$.
@@ -40,4 +41,4 @@ def norm(x, y):
     5.0
 
     """
-    return sqrt(x**2 + y**2)
+    return sqrt(x ** 2 + y ** 2)

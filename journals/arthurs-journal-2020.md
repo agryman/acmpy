@@ -1,123 +1,4 @@
-# Arthur's Journal
-
-## 2019-12-08
-
-### 8:28 AM
-
-#### Recap
-
-I started this project on 2019-06-24 after a conversation
-with David Rowe.
-David said that he had published a Maple program that
-performed Algebraic Collective Model (ACM) computations in 2016,
-but few other researchers were using it.
-David thought that that main obstacle to adoption
-was that Maple required the purchase of a licence.
-David expressed a desired to see the program reimplemented in 
-freely available computer language.
-Since I was looking for a way to get re-engaged in math and physics,
-I offerred to take on the task.
-
-David published the ACM program in the journal Computer Physics
-Communications (CPC).
-I searched the CPC program library and found that Python was the most
-popular language.
-The Maple ACM program did both symbolic and numerical
-computation so next I confirmed that Python had this capability.
-The numerical computations were done to find the eigenvalues 
-of the Hamiltonian matrix and used an industry standard Fortran library.
-This same library was available in the Python numpy package.
-Symbolic computation can be done in Python using the SymPy package. 
-Furthermore, Maple notebooks could be replaced by Python Jupyter notebooks.
-I therefore recommended that we select Python as the target language.
-
-I gathered all the Maple code and stored it in the GitHub repository
-named acm14.
-This repo contains both version 16 and 1.4 which is the published version.
-I collected relevant publications there too.
-
-David generously purchased a Maple licence for me.
-I was able to run the Maple code.
-
-I then created the acmpy repo to store the Python code.
-
-### 8:47 AM - break
-
----
-
-## 2019-12-09
-
-### 5:08 PM
-
-The ACM makes use of pre-computed SO(5) > SO(3) Clebsch-Gordan coefficients
-that are stored in disk files.
-My first Python programming goal is to read these files.
-I created so5cg.py for that purpose.
-
-### 5:13 PM break
-
----
-
-## 2019-12-14
-
-### 10:57 AM
-- implement so5cg.py
-- use regex
-- see <https://docs.python.org/3/howto/regex.html#regex-howto>
-- read this article
-- coded parsing function parse_v2
-- next <https://docs.python.org/3/howto/regex.html#grouping>
-
-### 12:18 PM - break
-
----
-
-### 1:03 PM
-- continue reading
-
-
-### 2:39 PM
-- finished regex article
-- work on parsing a single line of the data file
-- does Python have C-line scanf?
-- no, but I can split the line by whitespace using the re.split() function
-- trim the leading leading and trailing whitespace using string strip() function
-- convert to float and int using float() and int()
-
-### 3:00 PM - break
-
-###8:38 PM
-- continue parsing line of file
-- done
-- read file and parse lines
-- done
-
-### 9:51 PM - break
-
----
-
-## 2019-12-15
-
-### 4:12 PM
-
-- continue coding so5cg.py
-- I implemented loading of all the files into a dictionary
-- it takes around 1 minute to load all CG files
-- change this to lazy loading since some calculations won't need all the files
-- just scan the directories initially and save the Path in the dictionary
-- on a request to retrieve the CG coefficient, check the existence of the Path entry on load it, 
-replacing the Path with the CG values loaded from the file
-- done loading just the file paths, this is very fast
-- next implement the retrieval operation
-- the theory behind the calculation is described in 
-Construction of SO(5) ⊃ SO(3) spherical harmonics and 
-Clebsch–Gordan coefficients by M.A. Caprio , D.J. Rowe , T.A. Welsh
-- that paper gives Mathmatica code and some calculated values
-- Welsh calculated the values provided here with unpublished C++ code
-- skim the paper
-- read the Maple code to understand the API
-
----
+# Arthur's Journal 2020
 
 ## 2020-01-08
 
@@ -182,7 +63,7 @@ code
 - I created a new IntelliJ project from the sympy sources, creating a new virtual environment
 - I ran `pip install mpmath` in the sympy virtual environment
 - I ran `bin/test` which runs all the sympy tests, looks OK but is taking time to complete
-- while the tests were stilling in the sympy project I viewed `README.rst` but the preview window showed errors
+- while the tests were still running in the sympy project I viewed `README.rst` but the preview window showed errors
 associated with `.. code-block:: python` directives, `Cannot analyze code. Pygments package not found.`
 - I presume that I need to `pip install Pygments` in the sympy virtual environment since it is the
 project interpreter
@@ -266,7 +147,7 @@ rebuilding Python
  on the PATH
  - I can run `sphinx-build --version` successfully in the acmpy virtual environment
  - I reorganized the `acmpy` project by creating a top level Python package named `acmpy`
- and moving al the Python source files into it
+ and moving all the Python source files into it
  - recall that after activating the `acmpy` virtual environment, I can interactively
  test modules, e.g. `acm1_4.py` by running `python -i -m acm1_4` 
  - I am overloading the name `acmpy` - it is a GitHub repo, an IntelliJ project,
@@ -295,7 +176,7 @@ rebuilding Python
  successfully generated the skeleton of the documentation
 - there is integrated support for Sphinx described here:
  <https://www.jetbrains.com/help/pycharm/generating-reference-documentation.html>
-- there is a support for creating a Run Configuration under Python Docs -> Sphinx Task which
+- there is support for creating a Run Configuration under Python Docs -> Sphinx Task which
 is described here: <https://www.jetbrains.com/help/pycharm/run-debug-configuration-sphinx-task.html>
 - add a docstring to a Python source file and include it in the API documentation
 - I am going to use the Sphinx project structure as a model, but it differs from the 
@@ -306,12 +187,12 @@ structure generated by `sphinx-quickstart`
 
 ### 3:12 PM
 
-- I created a test module name `acmpy.gamma` and added docstrings to it, including math
+- I created a test module named `acmpy.gamma` and added docstrings to it, including math
 - I replicated more of the structure of SymPy, including a `modules` directory and created an index and
 page for gamma. This seems very manual in contrast to say javadoc but it does provide a lot
 of control over the page content. Docstrings from the module are pulled into the rst file
 using several directives such as `automodule` and `autofunction`. I assume that each doctring in
-a module can be assessed individually. I need to read the Sphinx documentation more closely.
+a module can be accessed individually. I need to read the Sphinx documentation more closely.
 - I copied much of the Sphinx `conf.py` content, pip installed various extensions, and eventually
 succeeded in building the html for the `gamma` module including the typeset math.
 I was unable to get the `sympylive` extension working, but I don't need it yet.
@@ -363,7 +244,7 @@ tests. Copy the test approach from SymPy.
 then cut over now before profilerating a lot of unittest test cases
     - looks like SymPy uses it's own variant of pytest:
     <https://github.com/sympy/sympy/wiki/Running-tests>
-    - allow it might make sense in the log run to contribute acmpy to sympy, they may feel it is too niche
+    - although it might make sense in the long run to contribute acmpy to sympy, they may feel it is too niche
     - I'd prefer to use unittest since it is more mainstream
     - if there ever is an appreciable user base for acmpy then we can convert the tests
     - it's premature to assume SymPy would want acmpy
@@ -392,7 +273,7 @@ then cut over now before profilerating a lot of unittest test cases
 - created `tests/test_sample.py`
 - in the terminal, ran `pytest`
     - pytest found and ran all the tests, including the ones defined using `unittest`
-- I converted my tests to pytest. All ran as expected. pytest much simpler.
+- I converted my tests to pytest. All ran as expected. pytest is much simpler.
 - added an exception test - OK
 - Run doctests using pytest: `pytest --doctest-modules`
     - this runs all the tests in both the test functions and the docstrings
@@ -511,7 +392,7 @@ https://www.python.org/dev/peps/pep-0484/
 ### 11:00 AM
 
 - continue developing tests for SO5CG
-- I added type annotations of so5cg.py
+- I added type annotations to so5cg.py
 - pytest has built-in fixtures for temporary directories, namely pass in
 the argument named `tmpdir` or `tmp_path` to the test function or method
 - see https://docs.pytest.org/en/latest/fixture.html#fixtures
@@ -679,7 +560,7 @@ https://docs.sympy.org/latest/modules/vector/index.html
     - I recall that this used to work
     - find where I used this previously
     - if this is a bug, learn how to report it to the Jupyter project
-- work on using SymPy to decomposed representations of SO(3) and explicitly
+- work on using SymPy to decompose representations of SO(3) and explicitly
 construct the subgroup inclusion SO(3) < SO(5)
 - use Matrix class to represent vectors, dual vectors, linear transformations,
 tensor products, etc.
@@ -743,7 +624,7 @@ MathJax macros
 LaTeX `\newcommand`. It's been very erratic. Sometimes the macros are
 handled. Sometimes that are simply rendered as red text.
 - The problem may be in either Jupyter or MathJax.
-- Try to create the problem in MathJax. 
+- Try to recreate the problem in MathJax. 
     - See https://docs.mathjax.org/en/latest/index.html
     - Today the notebook is behaving correctly!
     - Perhaps the red text was really caused by syntax errors?
@@ -821,7 +702,7 @@ element and -x to be the unique inverse of x.
 - created new repo named `mathz` to contain articles on standard
 mathematical objects such as real numbers and vector spaces
 - moved articles from other repos into `mathz`
-- TODO: refactor `so3-so5.text` article to use definitions from `mathz` - DONE
+- TODO: refactor `so3-so5.tex` article to use definitions from `mathz` - DONE
 
 ### 12:00 pm break
 

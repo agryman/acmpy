@@ -17,7 +17,7 @@ import os
 import subprocess
 import sympy
 
-# add path the acmpy project
+# add path to the acmpy project
 sys.path.insert(0, os.path.abspath('../..'))
 
 # If your extensions are in another directory, add it here.
@@ -29,7 +29,7 @@ sys.path = ['ext'] + sys.path
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.linkcode', 'sphinx_math_dollar',
-              'sphinx.ext.mathjax', 'numpydoc', 'sympylive',
+              'sphinx.ext.mathjax', 'numpydoc', #'sympylive',
               'sphinx.ext.graphviz', 'matplotlib.sphinxext.plot_directive']
 
 # Enable warnings for all bad cross references. These are turned into errors

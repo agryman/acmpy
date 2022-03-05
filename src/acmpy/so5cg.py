@@ -119,6 +119,8 @@ SO5CoeffLabel = Tuple[SO5IrrepLabel, SO5IrrepLabel, SO5IrrepLabel]
 
 # Lines in SO5CG data files, e.g. +7.237469e-01      1    1    2      2    1    2      3    1    4
 SO5FileLine = Tuple[float, SO5CoeffLabel]
+
+
 def parse_line(line: str) -> SO5FileLine:
     """
     Parse ``line`` and if valid return the SO5CG data, else raise an exception.
@@ -132,7 +134,7 @@ def parse_line(line: str) -> SO5FileLine:
 
     fields = re.split(r'\s+', line.strip())
 
-    if(len(fields) != 10):
+    if (len(fields) != 10):
         raise ValueError("line must have have 10 fields")
 
     coeff = float(fields[0])
@@ -177,6 +179,8 @@ def datafile_dict(path: Path) -> Dict[SO5CoeffLabel, float]:
 SO5FileLabel = Tuple[int, int, int, int, int]
 
 datafile_name_re = re.compile(r'^SO5CG_(\d+)_(\d+)-(\d+)-(\d+)_(\d+)$')
+
+
 #: compiled regex for SO5CG data file names
 
 
@@ -187,6 +191,7 @@ def is_datafile_path(path: Path) -> bool:
     """
     return path.is_file() and (datafile_name_re.match(path.name) != None)
 
+
 def parse_datafile_name(name: str) -> Optional[SO5FileLabel]:
     """
     Return the SO5FileLabel (v1,v2,a2,L2,v3) encoded in name if valid, otherwise None.
@@ -194,8 +199,8 @@ def parse_datafile_name(name: str) -> Optional[SO5FileLabel]:
     :return: The label, e.g. (1,2,1,4,3) or None
     """
     m = datafile_name_re.match(name)
-    if(m):
-        labels = [int(m.group(i)) for i in range(1,6)]
+    if (m):
+        labels = [int(m.group(i)) for i in range(1, 6)]
         return labels[0], labels[1], labels[2], labels[3], labels[4]
     return None
 
@@ -207,6 +212,7 @@ def is_dir_name(name: str) -> bool:
     """
     return Path(name).is_dir()
 
+
 # Level 2 directories, e.g. SO5CG_1_2_3
 # The labels are (v1, v2, v3)
 
@@ -214,6 +220,8 @@ SO5Dir2Label = Tuple[int, int, int]
 #: SO5 level 2 directory label (v1,v2,v3)
 
 dir2_name_re = re.compile(r'^SO5CG_(\d+)_(\d+)_(\d+)$')
+
+
 #: compiled regex for level 2 directory names
 
 def is_dir2_path(path: Path) -> bool:
@@ -223,10 +231,11 @@ def is_dir2_path(path: Path) -> bool:
     """
     return path.is_dir() and (dir2_name_re.match(path.name) != None)
 
+
 def parse_dir2_name(name: str) -> Optional[SO5Dir2Label]:
     m = dir2_name_re.match(name)
-    if(m):
-        labels = [int(m.group(i)) for i in range(1,4)]
+    if (m):
+        labels = [int(m.group(i)) for i in range(1, 4)]
         return labels[0], labels[1], labels[2]
     return None
 
@@ -242,6 +251,8 @@ def dir2_dict(path: Path) -> dict:
 # Level 1 directories like "v2=1", "v2=2", etc.
 
 dir1_name_re = re.compile(r'^v2=(\d+)$')
+
+
 #: compiled regex pattern to match level 1 directory names
 
 def is_dir1_path(path: Path) -> bool:
@@ -268,7 +279,7 @@ def parse_dir1_name(name: str) -> Optional[int]:
 
     """
     m = dir1_name_re.match(name)
-    if(m):
+    if (m):
         return int(m.group(1))
     return None
 
@@ -276,9 +287,11 @@ def parse_dir1_name(name: str) -> Optional[int]:
 def dir1_dict(path: Path) -> dict:
     return {parse_dir2_name(dir2.name): dir2_dict(dir2) for dir2 in path.iterdir() if is_dir2_path(dir2)}
 
+
 # SO5CG database base directory
 
 default_base_name = expanduser('~/so5cg-data/')
+
 
 def base_dict(base_path: Path) -> dict:
     return {parse_dir1_name(dir1.name): dir1_dict(dir1) for dir1 in base_path.iterdir() if is_dir1_path(dir1)}
