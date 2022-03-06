@@ -143,13 +143,46 @@ Follow the structure used in the `centrifuge` project repo:
 
 ### 5:15 pm
 
+I committed and pushed the current changes.
+
+break at 5:20 pm
+
+## 2022-03-06
+
+### 3:17 pm
+
 After the above housekeeping, implement some new Python code, e.g.
 - `show_CG_file()`
 - work through `acm1.4a-examples.mw`
 - note that the source file `acm1_4.py` is very long
-- it is copied from `acm1.4a-examples.mw` which contains eight sections
-- split up the Python code into the corresponding eight sections
+  - it is copied from `acm1.4a-examples.mw` which contains eight sections
+  - split up the Python code into the corresponding eight sections - DONE
 
+Start implementation of `show_CG_file()`.
+Since this function involves the SO5 Clebsch-Gordan coefficients,
+put it in `so5cg.py`.
 
+Actually, it would be better to split up the huge `acm1_4.py` file into the
+eight sections and then incrementally implement the functions in their "proper"
+files.
 
+### 3:53 pm
 
+Splitting up `acm1_4.py`. - DONE
+
+### 4:40 pm
+
+Focus on `so5_so3_cg.py` and implement `show_CG_file()`.
+The Maple code used the keyword `local` to declare some
+variables.
+I've also seen the keywork `global`.
+Understand the Maple semantics and map these onto Python
+semantics.
+
+I've found the latest Maple Programming Guide (2011).
+The semantics is standard and aligns with Python.
+Basically, to modify a variable that is declared
+outside a function (procedure) you must declare it to be
+global.
+
+break 5:36 pm
