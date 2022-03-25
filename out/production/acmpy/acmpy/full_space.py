@@ -2,13 +2,6 @@
 
 diagonalising, basis transforming, and data displaying.
 """
-
-from typing import Optional
-from sympy import Expr, Matrix
-
-from acmpy.compat import nonnegint, require_nonnegint, require_algebraic
-from acmpy.internal_operators import OperatorSum
-
 # ###########################################################################
 # ####---------- Diagonalisation and Eigenbasis transformation ----------####
 # ###########################################################################
@@ -68,7 +61,7 @@ from acmpy.internal_operators import OperatorSum
 #   # However, in both cases, we still diagonalise only the individual
 #   # L-spaces.
 #
-#   if Op_Tame(ham_op) then  # work on L-spaces separately...
+#   if Op_Tame(ham_op) then  # work on L-spaces seperately...
 #
 #     for LL from L_min to LLM do
 #       sph_dim:=dimSO5r3_rngV(v_min,v_max,LL):
@@ -112,42 +105,8 @@ from acmpy.internal_operators import OperatorSum
 #
 #   [eigen_vals, eigen_bases, Xparams, Lvals];
 # end;
-
-LValues = tuple[nonnegint, ...]
-EigenValues = tuple[tuple[float, ...], ...]
-EigenBases = tuple[Matrix, ...]
-XParams = tuple[Expr, Expr, nonnegint, nonnegint, nonnegint, nonnegint]
-
-
-def DigXspace(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
-              nu_min: nonnegint, nu_max: nonnegint,
-              v_min: nonnegint, v_max: nonnegint,
-              L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, EigenBases, XParams, LValues]:
-    print('Not implemented.')
-    require_algebraic('anorm', anorm)
-    require_algebraic('lambda_base', lambda_base)
-    require_nonnegint('nu_min', nu_min)
-    require_nonnegint('nu_max', nu_max)
-    require_nonnegint('v_min', v_min)
-    require_nonnegint('v_max', v_max)
-    require_nonnegint('L_min', L_min)
-    if L_max is not None:
-        require_nonnegint('L_max', L_max)
-
-    LLM: nonnegint = L_min if L_max is None else L_max
-
-    Xparams: XParams = anorm, lambda_base, nu_min, nu_max, v_min, v_max
-
-    Lvals: LValues = ()
-    eigen_vals: EigenValues = ()
-    eigen_bases: EigenBases = ()
-
-    # TODO: finish implementation
-
-    return eigen_vals, eigen_bases, Xparams, Lvals
-
+#
+#
 # # The following procedure Eigenfiddle diagonalises the Matrix which is
 # # passed to it, and returns a pair
 # #                          [eigs_list,basis_Mat].
@@ -935,11 +894,8 @@ def DigXspace(ham_op: OperatorSum,
 #
 #   ACM_ScaleOrAdapt(0,0,_passed):
 # end;
-
-
-def ACM_Scale(*args):
-    return ACM_ScaleOrAdapt(0, 0, *args)
-
+#
+#
 # # The following procedure ACM_Adapt invokes the procedure ACM_ScaleOrAdapt
 # # above with fit_eig=1 and fit_rat=1 so that the values of the scaling
 # # parameters glb_eig_sft, glb_rat_sft and glb_amp_sft are recalculated
@@ -955,7 +911,5 @@ def ACM_Scale(*args):
 #
 #   ACM_ScaleOrAdapt(1,1,_passed):
 # end;
-
-
-def ACM_Adapt(*args):
-    return ACM_ScaleOrAdapt(1, 1, *args)
+#
+#

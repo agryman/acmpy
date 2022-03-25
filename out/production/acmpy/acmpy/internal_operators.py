@@ -1,250 +1,4 @@
 """5. Procedures that obtain the internal representation of operators."""
-
-from functools import cache
-from typing import Optional
-
-from sympy import Symbol, pi, sqrt, Integer, Rational, sympify, Expr, \
-    S, factorial, Matrix, diag, eye
-
-from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
-from acmpy.so5_so3_cg import CG_SO5r3, SO5SO3Label
-from acmpy.spherical_space import lbsSO5r3_rngVvarL, SO5SO3Labels, dimSO3, dimSO5r3_rngVvarL
-
-OperatorProduct = tuple[Expr, list[Symbol]]
-OperatorSum = list[OperatorProduct]
-
-# # The following is a list containing the symbolic names for ten operators
-# # that are the "basic" radial operators.
-# # The way that they alter lambda is not fixed, but is determined
-# # automatically.
-#
-# Radial_Operators:=[Radial_Sm, Radial_S0, Radial_Sp,
-#                    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-#                    Radial_b, Radial_bm, Radial_Db]:
-"""
-Implement all Maple symbols as SymPy symbols.
-These symbols are operators, so their multiplication should be noncommutative.
-"""
-Radial_Sm: Symbol = Symbol('Radial_Sm', commutative=False)
-Radial_S0: Symbol = Symbol('Radial_S0', commutative=False)
-Radial_Sp: Symbol = Symbol('Radial_Sp', commutative=False)
-Radial_b2: Symbol = Symbol('Radial_b2', commutative=False)
-Radial_bm2: Symbol = Symbol('Radial_bm2', commutative=False)
-Radial_D2b: Symbol = Symbol('Radial_D2b', commutative=False)
-Radial_bDb: Symbol = Symbol('Radial_bDb', commutative=False)
-Radial_b: Symbol = Symbol('Radial_b', commutative=False)
-Radial_bm: Symbol = Symbol('Radial_bm', commutative=False)
-Radial_Db: Symbol = Symbol('Radial_Db', commutative=False)
-
-"""
-Radial_Operators is a Maple list.
-A Maple list is an immutable sequence of objects.
-It should be implemented in Python as a tuple.
-"""
-Radial_Operators: tuple[Symbol, ...] = (
-    Radial_Sm, Radial_S0, Radial_Sp,
-    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-    Radial_b, Radial_bm, Radial_Db
-)
-
-# # They will eventually be exchanged for operators in which the shift
-# # is specific. The first seven keep their names (for zero shift),
-# # but each instance of the final three will be exchanged for a
-# # symbolic name that indicates a shift by a shift of -1,0 or +1.
-# # The following lists will be used to achieve that.
-"""
-Radial_pl, Radial_ml, and Radial_zl are Maple tables.
-A Maple table should be implemented as a Python dictionary.
-"""
-# Radial_pl:=[Radial_b=Radial_b_pl,Radial_bm=Radial_bm_pl,
-#             Radial_Db=Radial_Db_pl]:
-Radial_b_pl: Symbol = Symbol('Radial_b_pl', commutative=False)
-Radial_bm_pl: Symbol = Symbol('Radial_bm_pl', commutative=False)
-Radial_Db_pl: Symbol = Symbol('Radial_Db_pl', commutative=False)
-Radial_pl: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_pl,
-    Radial_bm: Radial_bm_pl,
-    Radial_Db: Radial_Db_pl
-}
-
-# Radial_ml:=[Radial_b=Radial_b_ml,Radial_bm=Radial_bm_ml,
-#             Radial_Db=Radial_Db_ml]:
-Radial_b_ml: Symbol = Symbol('Radial_b_ml', commutative=False)
-Radial_bm_ml: Symbol = Symbol('Radial_bm_ml', commutative=False)
-Radial_Db_ml: Symbol = Symbol('Radial_Db_ml', commutative=False)
-Radial_ml: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_ml,
-    Radial_bm: Radial_bm_ml,
-    Radial_Db: Radial_Db_ml
-}
-
-# Radial_zl:=[Radial_b=Radial_b_zl,Radial_bm=Radial_bm_zl,
-#             Radial_Db=Radial_Db_zl]:
-Radial_b_zl: Symbol = Symbol('Radial_b_zl', commutative=False)
-Radial_bm_zl: Symbol = Symbol('Radial_bm_zl', commutative=False)
-Radial_Db_zl: Symbol = Symbol('Radial_Db_zl', commutative=False)
-Radial_zl: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_zl,
-    Radial_bm: Radial_bm_zl,
-    Radial_Db: Radial_Db_zl
-}
-
-# # The following indicates the SO(5) spherical harmonics for which
-# # SO(5)>SO(3) Clebsch-Gordon coefficients are available,
-# # and enables the v,alpha,L quantum numbers to be readily
-# # obtained from the symbolic names.
-#
-# SpHarm_Table:=table([
-#   SpHarm_010=[0,1,0],
-#   SpHarm_112=[1,1,2],
-#   SpHarm_212=[2,1,2], SpHarm_214=[2,1,4],
-#   SpHarm_310=[3,1,0], SpHarm_313=[3,1,3], SpHarm_314=[3,1,4],
-#   SpHarm_316=[3,1,6],
-#   SpHarm_412=[4,1,2], SpHarm_414=[4,1,4], SpHarm_415=[4,1,5],
-#   SpHarm_416=[4,1,6], SpHarm_418=[4,1,8],
-#   SpHarm_512=[5,1,2], SpHarm_514=[5,1,4], SpHarm_515=[5,1,5],
-#   SpHarm_516=[5,1,6], SpHarm_517=[5,1,7], SpHarm_518=[5,1,8],
-#   SpHarm_51A=[5,1,10],
-#   SpHarm_610=[6,1,0], SpHarm_613=[6,1,3], SpHarm_614=[6,1,4],
-#   SpHarm_616=[6,1,6], SpHarm_626=[6,2,6], SpHarm_617=[6,1,7],
-#   SpHarm_618=[6,1,8], SpHarm_619=[6,1,9], SpHarm_61A=[6,1,10],
-#   SpHarm_61C=[6,1,12]
-# ]):
-"""
-Implement SpHarm_Table as a Python dictionary whose keys are symbols
-and whose values are (v, alpha, L) integer tuples.
-"""
-SpHarm_010: Symbol = Symbol('SpHarm_010', commutative=False)
-SpHarm_112: Symbol = Symbol('SpHarm_112', commutative=False)
-SpHarm_212: Symbol = Symbol('SpHarm_212', commutative=False)
-SpHarm_214: Symbol = Symbol('SpHarm_214', commutative=False)
-SpHarm_310: Symbol = Symbol('SpHarm_310', commutative=False)
-SpHarm_313: Symbol = Symbol('SpHarm_313', commutative=False)
-SpHarm_314: Symbol = Symbol('SpHarm_314', commutative=False)
-SpHarm_316: Symbol = Symbol('SpHarm_316', commutative=False)
-SpHarm_412: Symbol = Symbol('SpHarm_412', commutative=False)
-SpHarm_414: Symbol = Symbol('SpHarm_414', commutative=False)
-SpHarm_415: Symbol = Symbol('SpHarm_415', commutative=False)
-SpHarm_416: Symbol = Symbol('SpHarm_416', commutative=False)
-SpHarm_418: Symbol = Symbol('SpHarm_418', commutative=False)
-SpHarm_512: Symbol = Symbol('SpHarm_512', commutative=False)
-SpHarm_514: Symbol = Symbol('SpHarm_514', commutative=False)
-SpHarm_515: Symbol = Symbol('SpHarm_515', commutative=False)
-SpHarm_516: Symbol = Symbol('SpHarm_516', commutative=False)
-SpHarm_517: Symbol = Symbol('SpHarm_517', commutative=False)
-SpHarm_518: Symbol = Symbol('SpHarm_518', commutative=False)
-SpHarm_51A: Symbol = Symbol('SpHarm_51A', commutative=False)
-SpHarm_610: Symbol = Symbol('SpHarm_610', commutative=False)
-SpHarm_613: Symbol = Symbol('SpHarm_613', commutative=False)
-SpHarm_614: Symbol = Symbol('SpHarm_614', commutative=False)
-SpHarm_616: Symbol = Symbol('SpHarm_616', commutative=False)
-SpHarm_626: Symbol = Symbol('SpHarm_626', commutative=False)
-SpHarm_617: Symbol = Symbol('SpHarm_617', commutative=False)
-SpHarm_618: Symbol = Symbol('SpHarm_618', commutative=False)
-SpHarm_619: Symbol = Symbol('SpHarm_619', commutative=False)
-SpHarm_61A: Symbol = Symbol('SpHarm_61A', commutative=False)
-SpHarm_61C: Symbol = Symbol('SpHarm_61C', commutative=False)
-
-SpHarm_Table: dict[Symbol, SO5SO3Label] = {
-    SpHarm_010: (0, 1, 0),
-    SpHarm_112: (1, 1, 2),
-    SpHarm_212: (2, 1, 2),
-    SpHarm_214: (2, 1, 4),
-    SpHarm_310: (3, 1, 0),
-    SpHarm_313: (3, 1, 3),
-    SpHarm_314: (3, 1, 4),
-    SpHarm_316: (3, 1, 6),
-    SpHarm_412: (4, 1, 2),
-    SpHarm_414: (4, 1, 4),
-    SpHarm_415: (4, 1, 5),
-    SpHarm_416: (4, 1, 6),
-    SpHarm_418: (4, 1, 8),
-    SpHarm_512: (5, 1, 2),
-    SpHarm_514: (5, 1, 4),
-    SpHarm_515: (5, 1, 5),
-    SpHarm_516: (5, 1, 6),
-    SpHarm_517: (5, 1, 7),
-    SpHarm_518: (5, 1, 8),
-    SpHarm_51A: (5, 1, 10),
-    SpHarm_610: (6, 1, 0),
-    SpHarm_613: (6, 1, 3),
-    SpHarm_614: (6, 1, 4),
-    SpHarm_616: (6, 1, 6),
-    SpHarm_626: (6, 2, 6),
-    SpHarm_617: (6, 1, 7),
-    SpHarm_618: (6, 1, 8),
-    SpHarm_619: (6, 1, 9),
-    SpHarm_61A: (6, 1, 10),
-    SpHarm_61C: (6, 1, 12)
-}
-
-# # Form a list of the available operator symbols in this table.
-#
-# SpHarm_Operators:=map(op,[indices(SpHarm_Table)]):
-"""
-The indices of a Maple table is a sequence of lists of keys.
-The key value is the operand of the list constructor so the op function must be applied to it.
-In Python, we can simply turn the dictionary keys into a list of keys.
-"""
-SpHarm_Operators: tuple[Symbol, ...] = tuple(SpHarm_Table.keys())
-
-# # We also make use of SpDiag_sqLdim and SpDiag_sqLdiv which
-# # denote operators represented by diagonal matrices with entries
-# #     (-1)^{L_i}*sqrt(2L_i+1)
-# # and (-1)^{L_i}/sqrt(2L_i+1) respectively.
-#
-# Spherical_Operators:=[op(SpHarm_Operators),SpDiag_sqLdim,SpDiag_sqLdiv]:
-"""Implement SpDiag_sqLdim and SpDiag_sqLdiv as noncommutative symbols."""
-SpDiag_sqLdim: Symbol = Symbol('SpDiag_sqLdim', commutative=False)
-SpDiag_sqLdiv: Symbol = Symbol('SpDiag_sqLdiv', commutative=False)
-Spherical_Operators = SpHarm_Operators + (SpDiag_sqLdim, SpDiag_sqLdiv)
-
-# # The four operators
-# #       pi, [pi x pi]_{v=2,L=2}, [pi x pi]_{v=2,L=L}, [q x pi x pi]_{v=3,L=0}
-# # intrinsically affect the whole product space:
-#
-# Xspace_Operators:=[ Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi ]:
-Xspace_Pi: Symbol = Symbol('Xspace_Pi', commutative=False)
-Xspace_PiPi2: Symbol = Symbol('Xspace_PiPi2', commutative=False)
-Xspace_PiPi4: Symbol = Symbol('Xspace_PiPi4', commutative=False)
-Xspace_PiqPi: Symbol = Symbol('Xspace_PiqPi', commutative=False)
-Xspace_Operators: tuple[Symbol, ...] = (Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi)
-
-# # The following provide useful conversion factors from the SO(5)
-# # spherical harmonics to more physically relevant operators;
-# # see Table IV.
-# # (Note that often (e.g. by RepSO5_Y_rem), the operator will be represented
-# # with the 4*Pi already incorporated - and the FourPi should be cancelled).
-# # Note that evalf will need to be used somewhere further down the line
-# # to convert from these symbolic values to actual floating point values.
-#
-# FourPi:=4*Pi;
-"""Maple Pi corresponds to SymPy pi."""
-FourPi: Expr = 4 * pi
-
-# Convert_112:=FourPi/sqrt(15);       # multiplies Y112 to get Q
-# Convert_212:=-FourPi*sqrt(2/105);   # multiplies Y212 to get [QxQ]_(L=4)
-# Convert_310:=FourPi/3;              # multiplies Y310 to get cos(3*gamma)
-# Convert_316:=FourPi/3*sqrt(2/35);   # multiplies Y316 to get [QxQxQ]_(L=6)
-# Convert_610:=2*FourPi/sqrt(15);     # multiplies Y610 to get [3*cos(3*gamma)+1]
-# Convert_red:=1/FourPi;              # converts ME_SO5red to <v3|||v2|||v1>
-Convert_112: Expr = FourPi / sqrt(Integer(15))
-Convert_212: Expr = -FourPi * sqrt(Rational(2, 105))
-Convert_310: Expr = FourPi / 3
-Convert_316: Expr = FourPi / 3 * sqrt(Rational(2, 35))
-Convert_610: Expr = 2 * FourPi / sqrt(Integer(15))
-Convert_red: Expr = 1 / FourPi
-
-# # The following quad_op specifies, in internal format, the quadrupole
-# # operator. quadRigid_op is more appropriate for rigid-beta models.
-#
-# quad_op:=[ [Convert_112, [Radial_b,SpHarm_112]] ]:
-# quadRigid_op:=[ [Convert_112, [SpHarm_112]] ]:
-"""Refer to: 7.3. Internal representation of Hamiltonians and other operators """
-quad_op: OperatorSum = [(Convert_112, [Radial_b, SpHarm_112])]
-quadRigid_op: OperatorSum = [(Convert_112, [SpHarm_112])]
-
-
 # ###########################################################################
 # ################# Representations of spherical harmonics ##################
 # ###########################################################################
@@ -265,24 +19,8 @@ quadRigid_op: OperatorSum = [(Convert_112, [SpHarm_112])]
 #     * sqrt( (2*v+3) * (2*w+3) * (sigma+4) / (u+2) / (u+1)
 #             * (sigma-2*u+1)! * (sigma-2*w+1)! * (sigma-2*v+1)! / (sigma+3)! );
 # end:
-def ME_SO5red(u: nonnegint, w: nonnegint, v: nonnegint) -> Expr:
-    require_nonnegint('u', u)
-    require_nonnegint('w', w)
-    require_nonnegint('v', v)
-
-    if u + v < w or u + w < v or v + w < u or is_odd(u + v + w):
-        return S.Zero
-
-    sigma: Expr = S(v + w + u)
-    halfsigma: Expr = sigma / 2
-
-    return factorial(halfsigma + 1) / \
-           (factorial(halfsigma - u) * factorial(halfsigma - v) * factorial(halfsigma - w)) * \
-           sqrt((2 * v + 3) * (2 * w + 3) * (sigma + 4) / (u + 2) / (u + 1) *
-                factorial(sigma - 2 * u + 1) * factorial(sigma - 2 * w + 1) *
-                factorial(sigma - 2 * v + 1) / factorial(sigma + 3))
-
-
+#
+#
 # # The following nine functions are useful instances of the above,
 # # with different normalisations: they provide SO(5) (doubly) reduced
 # # matrix elements for Q and [QxQ]_(v=2) and [QxQxQ]_(v=3).
@@ -297,91 +35,23 @@ def ME_SO5red(u: nonnegint, w: nonnegint, v: nonnegint) -> Expr:
 # # The following gives <v+1|||Q|||v> and <v-1|||Q|||v>
 #
 # Qred_p1:=(v) -> sqrt((v+1)/(2*v+5)):
-def Qred_p1(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = v + 1
-    q: int = 2 * v + 5
-    return sqrt(Rational(p, q))
-
-
 # Qred_m1:=(v) -> sqrt((v+2)/(2*v+1)):
-def Qred_m1(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = v + 2
-    q: int = 2 * v + 1
-    return sqrt(Rational(p, q))
-
-
+#
 # # The following gives <v+2|||QxQ|||v>, <v|||QxQ|||v> & <v-2|||QxQ|||v>
 #
 # QxQred_p2:=(v) -> sqrt((v+1)*(v+2)/(2*v+5)/(2*v+7)):
-def QxQred_p2(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = (v + 1) * (v + 2)
-    q: int = (2 * v + 5) * (2 * v + 7)
-    return sqrt(Rational(p, q))
-
-
 # QxQred_0:=(v)  -> sqrt(6*v*(v+3)/5/(2*v+1)/(2*v+5)):
-def QxQred_0(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = 6 * v * (v + 3)
-    q: int = 5 * (2 * v + 1) * (2 * v + 5)
-    return sqrt(Rational(p, q))
-
-
 # QxQred_m2:=(v) -> sqrt((v+1)*(v+2)/(2*v+1)/(2*v-1)):
-def QxQred_m2(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = (v + 1) * (v + 2)
-    q: int = (2 * v + 1) * (2 * v - 1)
-    return sqrt(Rational(p, q))
-
-
+#
 # # The following gives <v+3|||QxQxQ|||v>, <v+1|||QxQxQ|||v>
 # #                     <v-1|||QxQxQ|||v>, <v-3|||QxQxQ|||v>
 #
 # QxQxQred_p3:=(v) -> sqrt((v+1)*(v+2)*(v+3)/(2*v+5)/(2*v+7)/(2*v+9)):
-def QxQxQred_p3(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = (v + 1) * (v + 2) * (v + 3)
-    q: int = (2 * v + 5) * (2 * v + 7) * (2 * v + 9)
-    return sqrt(Rational(p, q))
-
-
 # QxQxQred_p1:=(v) -> 3*sqrt(v*(v+1)*(v+4)/7/(2*v+1)/(2*v+5)/(2*v+7)):
-def QxQxQred_p1(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = v * (v + 1) * (v + 4)
-    q: int = 7 * (2 * v + 1) * (2 * v + 5) * (2 * v + 7)
-    return 3 * sqrt(Rational(p, q))
-
-
 # QxQxQred_m1:=(v) -> 3*sqrt((v-1)*(v+2)*(v+3)/7/(2*v-1)/(2*v+1)/(2*v+5)):
-def QxQxQred_m1(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = (v - 1) * (v + 2) * (v + 3)
-    q: int = 7 * (2 * v - 1) * (2 * v + 1) * (2 * v + 5)
-    return 3 * sqrt(Rational(p, q))
-
-
 # QxQxQred_m3:=(v) -> sqrt(v*(v+1)*(v+2)/(2*v-3)/(2*v-1)/(2*v+1)):
-def QxQxQred_m3(v: nonnegint) -> Expr:
-    require_nonnegint('v', v)
-
-    p: int = v * (v + 1) * (v * 2)
-    q: int = (2 * v - 3) * (2 * v - 1) * (2 * v + 1)
-    return sqrt(Rational(p, q))
-
-
+#
+#
 # # The following procedure ME_SO5r3 returns the (alternative SO(3) reduced)
 # # matrix element
 # #
@@ -403,12 +73,8 @@ def QxQxQred_m3(v: nonnegint) -> Expr:
 #
 #    CG_SO5r3(v_i,al_i,L_i,v,al,L,v_f,al_f,L_f) * ME_SO5red(v_f,v,v_i):
 # end;
-def ME_SO5r3(v_f: int, al_f: int, L_f: int,
-             v: int, al: int, L: int,
-             v_i: int, al_i: int, L_i: int) -> Expr:
-    return CG_SO5r3(v_i, al_i, L_i, v, al, L, v_f, al_f, L_f) * ME_SO5red(v_f, v, v_i)
-
-
+#
+#
 # # The following procedure RepSO5_Y_rem returns a Matrix of
 # # (alternative SO(3) reduced) matrix elements
 # #
@@ -439,22 +105,8 @@ def ME_SO5r3(v_f: int, al_f: int, L_f: int,
 #   Matrix( nops(states), (i,j)->evalf(
 #                  ME_SO5r3(op(states[i]),v,al,L,op(states[j])) )):
 # end:
-"""
-The Maple remember option corresponds to the Python @cache decorator.
-To forget the RepSO5_Y_rem cache call: RepSO5_Y_rem.cache_clear().
-"""
-
-
-@cache
-def RepSO5_Y_rem(v: int, al: int, L: int,
-                 v_min: int, v_max: int,
-                 L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-    return Matrix([[ME_SO5r3(*i, v, al, L, *j).evalf()
-                    for j in states]
-                   for i in states])
-
-
+#
+#
 # # The following procedure RepSO5_Y_alg is the same as RepSO5_Y_rem
 # # except that evalf is not used, and thus the elements of the
 # # returned matrix come out (partially) algebraic.
@@ -470,16 +122,9 @@ def RepSO5_Y_rem(v: int, al: int, L: int,
 #   Matrix( nops(states), (i,j)->
 #                  ME_SO5r3(op(states[i]),v,al,L,op(states[j])) ):
 # end:
-def RepSO5_Y_alg(v: int, al: int, L: int,
-                 v_min: int, v_max: int,
-                 L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-
-    return Matrix([[ME_SO5r3(*i, v, al, L, *j)
-                    for j in states]
-                   for i in states])
-
-
+#
+#
+#
 # # The following procedure RepSO5_sqLdim returns a Matrix acting on
 # # the states with v_min <= v_i,v_f <= v_max and L_min <= L_i,L_f <= L_max,
 # # which is diagonal with entries (-1)^L_i*sqrt(2L_i+1).
@@ -492,13 +137,7 @@ def RepSO5_Y_alg(v: int, al: int, L: int,
 #   Matrix(map(x->evalf(eval((-1)^(x[3])*sqrt(dimSO3(x[3])))),states),
 #                                shape=diagonal,scan=diagonal);
 # end:
-def RepSO5_sqLdim(v_min: int, v_max: int,
-                  L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-
-    return diag(*(((-1) ** L * sqrt(dimSO3(L))).evalf() for (_, _, L) in states))
-
-
+#
 # # The following procedure RepSO5_sqLdiv returns a Matrix acting on
 # # the states with v_min <= v_i,v_f <= v_max and L_min <= L_i,L_f <= L_max,
 # # which is diagonal with entries (-1)^L_i/sqrt(2L_i+1).
@@ -511,13 +150,8 @@ def RepSO5_sqLdim(v_min: int, v_max: int,
 #   Matrix(map(x->evalf(eval((-1)^(x[3])/sqrt(dimSO3(x[3])))),states),
 #                                shape=diagonal,scan=diagonal);
 # end:
-def RepSO5_sqLdiv(v_min: int, v_max: int,
-                  L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-
-    return diag(*(((-1) ** L / sqrt(dimSO3(L))).evalf() for (_, _, L) in states))
-
-
+#
+#
 # # The following procedure RepSO5r3_Prod returns a Matrix that represents
 # # (up to a normalisation given below) the product of spherical harmonics
 # # on the space of states with v_min <= v_i,v_f <= v_max and
@@ -536,7 +170,7 @@ def RepSO5_sqLdiv(v_min: int, v_max: int,
 # #                       (-1)^{L_i}/sqrt(2L_i+1).
 #
 # # The returned Matrix is obtained simply by multiplying
-# # together the individual Matrices for the entries of ys_op.
+# # together the individual Matrixes for the entries of ys_op.
 # # Therefore, the result is meaningful only for certain products:
 # #   1. at most one entry having non-zero angular momentum;
 # #   2. Same, but also with products of the form
@@ -561,15 +195,7 @@ def RepSO5_sqLdiv(v_min: int, v_max: int,
 #   forget(RepSO5_Y_rem):
 #   rep:
 # end:
-def RepSO5r3_Prod(ys_op: list,
-                  v_min: int, v_max: int,
-                  L_min: int, L_max: int) -> Matrix:
-    rep: Matrix = RepSO5r3_Prod_wrk(ys_op, v_min, v_max, L_min, L_max)
-
-    RepSO5_Y_rem.cache_clear()
-    return rep
-
-
+#
 # # The following procedure RepSO5r3_Prod_rem is exactly the same as
 # # the above except that has the remember option, and doesn't clear
 # # the remember tables for RepSO5_Y_rem.
@@ -580,14 +206,7 @@ def RepSO5r3_Prod(ys_op: list,
 #
 #   RepSO5r3_Prod_wrk(_passed):
 # end:
-@cache
-def RepSO5r3_Prod_rem(ys_op: list,
-                      v_min: int, v_max: int,
-                      L_min: int, L_max: int) -> Matrix:
-
-    return RepSO5r3_Prod_wrk(ys_op, v_min, v_max, L_min, L_max)
-
-
+#
 # # The following procedure RepSO5r3_Prod_wrk is as the above two,
 # # but does all the work for those, without being concerned by
 # # remembering stuff.
@@ -653,36 +272,8 @@ def RepSO5r3_Prod_rem(ys_op: list,
 #
 #    Mat_product;
 # end:
-def RepSO5r3_Prod_wrk(ys_op: list,
-                      v_min: int, v_max: int,
-                      L_min: int, L_max: int) -> Matrix:
-    n: int = len(ys_op)
-
-    if n == 0:
-        return eye(dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max))
-
-    Mat_product: Optional[Matrix] = None
-    for ys_op_i in ys_op:
-        M: Optional[Matrix] = None
-
-        if isinstance(ys_op_i, tuple) and len(ys_op_i) == 3:
-            M = RepSO5_Y_rem(*ys_op_i, v_min, v_max, L_min, L_max)
-        elif ys_op_i in SpHarm_Table:
-            M = RepSO5_Y_rem(*SpHarm_Table[ys_op_i], v_min, v_max, L_min, L_max)
-        elif ys_op_i == SpDiag_sqLdim:
-            M = RepSO5_sqLdim(v_min, v_max, L_min, L_max)
-        elif ys_op_i == SpDiag_sqLdiv:
-            M = RepSO5_sqLdiv(v_min, v_max, L_min, L_max)
-        else:
-            raise ValueError(f'Invalid SO(5) harmonic designator {ys_op_i}')
-
-        assert M is not None
-        Mat_product = Matrix(M) if Mat_product is None else Mat_product * M
-
-    assert Mat_product is not None
-    return Mat_product
-
-
+#
+#
 # # The following procedure NumSO5r3_Prod examines the list ys_op, and
 # # determines how many of its entries denote spherical harmonics,
 # # either from
@@ -709,19 +300,8 @@ def RepSO5r3_Prod_wrk(ys_op: list,
 #
 #   ct;
 # end:
-def NumSO5r3_Prod(ys_op: list) -> int:
-    print('Not implemented.')
-    ct: int = 0
-
-    for ys_op_i in ys_op:
-        if isinstance(ys_op_i, tuple) and len(ys_op_i) == 3:
-            ct += 1
-        elif ys_op_i in SpHarm_Table:
-            ct += 1
-
-    return ct
-
-
+#
+#
 # ###########################################################################
 # ####------------------- Specification of Operators --------------------####
 # ###########################################################################
@@ -753,12 +333,7 @@ def NumSO5r3_Prod(ys_op: list) -> int:
 # # NUMBER=nu, ALFA=alpha.
 #
 # # See Section 7.3 for more details.
-SENIORITY: Symbol = Symbol('SENIORITY')
-ANGMOM: Symbol = Symbol('ANGMOM')
-NUMBER: Symbol = Symbol('NUMBER')
-ALFA: Symbol = Symbol('ALFA')
-
-
+#
 # ###########################################################################
 #
 # # The procedure ACM_Hamiltonian below produces the encoding of
@@ -766,7 +341,7 @@ ALFA: Symbol = Symbol('ALFA')
 # # the user doesn't need to know anything about the encoding method.
 # # This procedure takes up to 14 parameters that specify coefficients
 # # of (b denotes beta, g denotes gamma)
-# #    Laplacian, 1, b^2, b^4, b^(-2),
+# #    Laplacian, 1, b^2, b^4,b^(-2),
 # #      b*cos(3g), b^3*cos(3g), b^5*cos(3g), b^(-1)*cos(3g),
 # #      cos(3g)^2, b^2*cos(3g)^2, b^4*cos(3g)^2, b^(-2)*cos(3g)^2,
 # #      [pi x q x pi]_(v=3,L=0).
@@ -817,72 +392,11 @@ ALFA: Symbol = Symbol('ALFA')
 #
 #   our_op:
 # end:
-def ACM_Hamiltonian(c11: IntFloatExpr = 0,
-                    c20: IntFloatExpr = 0,
-                    c21: IntFloatExpr = 0,
-                    c22: IntFloatExpr = 0,
-                    c23: IntFloatExpr = 0,
-                    c30: IntFloatExpr = 0,
-                    c31: IntFloatExpr = 0,
-                    c32: IntFloatExpr = 0,
-                    c33: IntFloatExpr = 0,
-                    c40: IntFloatExpr = 0,
-                    c41: IntFloatExpr = 0,
-                    c42: IntFloatExpr = 0,
-                    c43: IntFloatExpr = 0,
-                    c50: IntFloatExpr = 0) -> OperatorSum:
-    c11 = sympify(c11)
-    c20 = sympify(c20)
-    c21 = sympify(c21)
-    c22 = sympify(c22)
-    c23 = sympify(c23)
-    c30 = sympify(c30)
-    c31 = sympify(c31)
-    c32 = sympify(c32)
-    c33 = sympify(c33)
-    c40 = sympify(c40)
-    c41 = sympify(c41)
-    c42 = sympify(c42)
-    c43 = sympify(c43)
-    c50 = sympify(c50)
-
-    our_op: OperatorSum = [] if c11 == 0 \
-        else [(c11, [Radial_D2b]),
-              (-c11 * (2 + SENIORITY * (SENIORITY + 3)), [Radial_bm2])]
-    if c20 != 0:
-        our_op.append((c20, []))
-    if c21 != 0:
-        our_op.append((c21, [Radial_b2]))
-    if c22 != 0:
-        our_op.append((c22, [Radial_b2, Radial_b2]))
-    if c23 != 0:
-        our_op.append((c23, [Radial_bm2]))
-    if c30 != 0:
-        our_op.append((c30 * Convert_310, [Radial_b, SpHarm_310]))
-    if c31 != 0:
-        our_op.append((c31 * Convert_310, [Radial_b2, Radial_b, SpHarm_310]))
-    if c32 != 0:
-        our_op.append((c32 * Convert_310, [Radial_b2, Radial_b2, Radial_b, SpHarm_310]))
-    if c33 != 0:
-        our_op.append((c33 * Convert_310, [Radial_bm, SpHarm_310]))
-    if c40 != 0:
-        our_op.append((c40 * Convert_310 ** 2, [SpHarm_310, SpHarm_310]))
-    if c41 != 0:
-        our_op.append((c41 * Convert_310 ** 2, [Radial_b2, SpHarm_310, SpHarm_310]))
-    if c42 != 0:
-        our_op.append((c42 * Convert_310 ** 2, [Radial_b2, Radial_b2, SpHarm_310, SpHarm_310]))
-    if c43 != 0:
-        our_op.append((c43 * Convert_310 ** 2, [Radial_bm2, SpHarm_310, SpHarm_310]))
-    if c50 != 0:
-        our_op.append((c50, [Xspace_PiqPi]))
-
-    return our_op
-
-
+#
 # # The procedure ACM_HamRigidBeta below produces the encoding of
 # # certain Hamiltonians that are appropriate for rigid-beta models
 # # (they don't involve beta). There are up to eight numerical
-# # arguments that stipulate the coefficients of
+# # arguments that stipule the coefficients of
 # #    SO(5) Casimir, 1, cos(3g)
 # #    cos(3g)^2, cos(3g)^3, cos(3g)^4, cos(3g)^5, cos(3g)^6.
 # # The final argument (0 or 1, the former the default) indicates whether
@@ -912,32 +426,7 @@ def ACM_Hamiltonian(c11: IntFloatExpr = 0,
 #
 #   our_op:
 # end:
-def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
-                     con: IntFloatExpr = 0,
-                     c1: IntFloatExpr = 0,
-                     c2: IntFloatExpr = 0,
-                     c3: IntFloatExpr = 0,
-                     c4: IntFloatExpr = 0,
-                     c5: IntFloatExpr = 0,
-                     c6: IntFloatExpr = 0,
-                     flag: int = 0) -> OperatorSum:
-    if flag not in {0, 1}:
-        raise ValueError(f'Unrecognised flag: {flag}')
-
-    cs: list[Expr] = [sympify(c) for c in [con, c1, c2, c3, c4, c5, c6]]
-    our_op: OperatorSum = ACM_HamSH3(*cs) if flag == 0 else ACM_HamSH6(*cs)
-
-    cas = sympify(cas)
-    if cas != 0:
-        cas_op: OperatorProduct = (cas * SENIORITY * (SENIORITY + 3), [])
-        if len(our_op) > 0:
-            our_op = [cas_op] + our_op
-        else:
-            our_op = [cas_op]
-
-    return our_op
-
-
+#
 # # The procedure ACM_HamSH3 below provides the ACM encoding for linear
 # # combinations of
 # #    1, cos(3g), cos(3g)^2, cos(3g)^3, cos(3g)^4, cos(3g)^5, cos(3g)^6,
@@ -981,20 +470,8 @@ def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
 #                                  SpHarm_310,SpHarm_310]] ]: fi:
 #   our_op:
 # end:
-def ACM_HamSH3(c0=0,
-               c1=0,
-               c2=0,
-               c3=0,
-               c4=0,
-               c5=0,
-               c6=0,
-               c7=0,
-               c8=0) -> OperatorSum:
-    print('Not implemented.')
-
-    return []
-
-
+#
+#
 # # The procedure ACM_HamSH6 below provides the ACM encoding for linear
 # # combinations of
 # #    1, cos(3g), cos(3g)^2, cos(3g)^3, cos(3g)^4, cos(3g)^5, cos(3g)^6,
@@ -1050,20 +527,8 @@ def ACM_HamSH3(c0=0,
 #                           [SpHarm_610,SpHarm_610,SpHarm_610,SpHarm_610]] ]: fi:
 #   our_op:
 # end:
-def ACM_HamSH6(c0=0,
-               c1=0,
-               c2=0,
-               c3=0,
-               c4=0,
-               c5=0,
-               c6=0,
-               c7=0,
-               c8=0) -> OperatorSum:
-    print('Not implemented.')
-
-    return []
-
-
+#
+#
 # # The following procedure Op_AM returns the SO(3) AM of an operator.
 # # This operator is given in the form described above.
 # # If the operator doesn't have definite AM then minus the largest value
@@ -1100,33 +565,8 @@ def ACM_HamSH6(c0=0,
 #
 #     first:
 # end:
-def Op_AM(WOp: OperatorSum) -> int:
-    if len(WOp) == 0:
-        return 0
-
-    first: int = 0
-
-    for i in range(1, len(WOp) + 1):
-        Wterm = WOp[i - 1][1]
-        am: int = 0
-        for t in Wterm:
-            if t in SpHarm_Operators:
-                am += SpHarm_Table[t][2]
-            elif t in {Xspace_Pi, Xspace_PiPi2}:
-                am += 2
-            elif t == Xspace_PiPi4:
-                am += 4
-
-        if i == 1:
-            first = am
-        elif 0 <= first != am:
-            first = -max(first, am)
-        elif first < 0 and am > -first:
-            first = -am
-
-    return first
-
-
+#
+#
 # # The following procedure Op_Parity returns the parity of an operator.
 # # This operator is given in the form described above.
 # # It returns 0 or 1 accordingly. If the operator has indeterminate
@@ -1159,14 +599,9 @@ def Op_AM(WOp: OperatorSum) -> int:
 #
 #     first:
 # end:
-def Op_Parity(WOp: OperatorSum) -> int:
-    print('Not implemented.')
-
-    return 0
-
-
+#
 # # The following procedure Op_Tame determines whether an operator
-# # doesn't contain any of
+# # doesn't contain either of
 # #           Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4.
 # # If not, it returns true (boolean), otherwise false.
 # # Later, this is used, in the case of a Hamiltonian, to indicate whether
@@ -1190,12 +625,7 @@ def Op_Parity(WOp: OperatorSum) -> int:
 #
 #     true:
 # end:
-def Op_Tame(WOp: OperatorSum) -> int:
-    print('Not implemented.')
-
-    return 0
-
-
+#
 # # The following three values specify particular (linear combinations of)
 # # operators.
 # # laplacian_op encodes the SO(5) Laplacian.
@@ -1209,18 +639,14 @@ def Op_Tame(WOp: OperatorSum) -> int:
 #
 # laplacian_op:=[ [1,[Radial_D2b]],
 #                      [-(2+SENIORITY*(SENIORITY+3)),[Radial_bm2]] ]:
-laplacian_op: OperatorSum = [(S.One, [Radial_D2b]),
-                             (-(2 + SENIORITY * (SENIORITY + 3)), [Radial_bm2])]
-
+#
+#
 # comm_su11_op:=[ [ 1,[Radial_Sm,Radial_Sp]],
 #                      [-1,[Radial_Sp,Radial_Sm]],
 #                      [-2,[Radial_S0]] ]:
-comm_su11_op: OperatorSum = [(S.One, [Radial_Sm, Radial_Sp]),
-                             (S.NegativeOne, [Radial_Sp, Radial_Sm]),
-                             (-S(2), [Radial_S0])]
+#
 # comm_bdb_op:=[ [-1,[Radial_b,Radial_Db]],
 #                     [1,[Radial_Db,Radial_b]],
 #                     [-1,[]] ]:
-comm_bdb_op: OperatorSum = [(S.NegativeOne, [Radial_b, Radial_Db]),
-                            (S.One, [Radial_Db, Radial_b]),
-                            (S.NegativeOne, [])]
+#
+#

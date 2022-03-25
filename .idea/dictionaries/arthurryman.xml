@@ -2,8 +2,28 @@
   <dictionary name="arthurryman">
     <words>
       <w>acmpy</w>
+      <w>angmom</w>
       <w>clebsch</w>
+      <w>coeff</w>
+      <w>coeffs</w>
+      <w>diagonalisation</w>
+      <w>eigenbasis</w>
+      <w>halfsigma</w>
+      <w>hamiltonians</w>
+      <w>iquo</w>
+      <w>irem</w>
+      <w>irreps</w>
+      <w>lmin</w>
       <w>noncommutative</w>
+      <w>nonnegative</w>
+      <w>nonnegint</w>
+      <w>nops</w>
+      <w>posint</w>
+      <w>qred</w>
+      <w>readdata</w>
+      <w>seniorities</w>
+      <w>sympified</w>
+      <w>vall</w>
     </words>
   </dictionary>
 </component>

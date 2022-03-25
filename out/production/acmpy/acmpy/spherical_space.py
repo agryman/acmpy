@@ -1,11 +1,7 @@
 """"4. Procedures that pertain only to the spherical (gamma,Omega) space."""
 
-from typing import Optional
-
-from acmpy.compat import require_int, require_nonnegint, require_nonnegint_range,\
-    iquo, irem, nonnegint, posint
-from acmpy.so5_so3_cg import Alpha, AngularMomentum, Seniority, SO5SO3Label, SO5SO3Labels
-
+from acmpy.types import require_int
+from acmpy.compat import iquo, irem
 
 # ###########################################################################
 # ####------------- Representations on the spherical space --------------####
@@ -15,42 +11,19 @@ from acmpy.so5_so3_cg import Alpha, AngularMomentum, Seniority, SO5SO3Label, SO5
 # # irreducible representations (symmetric).
 #
 # dimSO3:=(L::nonnegint) -> 2*L+1:                    # SO(3) irrep dimension
-def dimSO3(L: nonnegint) -> posint:
-    require_nonnegint('L', L)
-
-    return 2 * L + 1
-
-
 # dimSO5:=(v::nonnegint) -> (v+1)*(v+2)*(2*v+3)/6:    # SO(5) irrep dimension
-def dimSO5(v: nonnegint) -> posint:
-    require_nonnegint('v', v)
-
-    return (v + 1) * (v + 2) * (2 * v + 3) // 6
-
-
+#
 # # The following returns the total number of SO(3) irreps
 # # (some possibly equivalent) in the SO(5) irrep of seniority v.
 #
 # dimSO5r3_allL:=(v::nonnegint) -> iquo( v*(v+3), 6 ) + 1:
-def dimSO5r3_allL(v: nonnegint) -> posint:
-    require_nonnegint('v', v)
-
-    return iquo(v * (v + 3), 6) + 1
-
-
+#
 # # The following sums the previous over the range v_min...v_max of seniorities.
 #
 # dimSO5r3_rngVallL:=(v_min::nonnegint,v_max::nonnegint)
 #     -> add(dimSO5r3_allL(v),v=v_min..v_max):
-def dimSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> posint:
-    require_nonnegint('v_min', v_min)
-    require_nonnegint('v_max', v_max)
-    if v_min > v_max:
-        raise ValueError(f'v_min: {v_min} is greater than v_max: {v_max}')
-
-    return sum(dimSO5r3_allL(v) for v in range(v_min, v_max + 1))
-
-
+#
+#
 # # The following procedure gives the multiplicity of SO(3) irreps of
 # # angular momentum L in the SO(5) irrep of seniority v. It uses (6).
 # # It then provides the maximum value of the "missing" label alpha
@@ -75,6 +48,8 @@ def dimSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> posint:
 #   fi:
 # end:
 #
+
+
 def dimSO5r3(v: int, L: int) -> int:
     require_int('v', v)
     require_int('L', L)
@@ -82,11 +57,8 @@ def dimSO5r3(v: int, L: int) -> int:
     if v < 0 or L < 0 or L > 2 * v:
         return 0
 
-    two_b: int = L + 3 * irem(L, 2)
-    assert two_b % 2 == 0
-
-    b: int = two_b // 2
     d: int = 0
+    b: int = (L + 3 * irem(L, 2)) // 2
 
     if v >= b:
         d = 1 + iquo(v - b, 3)
@@ -96,7 +68,6 @@ def dimSO5r3(v: int, L: int) -> int:
 
     return d
 
-
 # # We now provide formulae similar to those above, counting SO(3) irreps,
 # # but with L fixed or taking a range L_min,...,Lmax
 # # (if Lmax is not given, then it is assumed that Lmin=Lmax).
@@ -105,39 +76,18 @@ def dimSO5r3(v: int, L: int) -> int:
 #
 # dimSO5r3_rngL:=(v::nonnegint,L_min::nonnegint,L_max::nonnegint)
 #     -> add( dimSO5r3(v,j), j=L_min..L_max):
-def dimSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> int:
-    require_nonnegint('v', v)
-    require_nonnegint_range('L', L_min, L_max)
-
-    return sum(dimSO5r3(v, j) for j in range(L_min, L_max + 1))
-
-
+#
 # # The following counts SO(3) irreps for a range of v and fixed L.
 #
 # dimSO5r3_rngV:=(v_min::nonnegint,v_max::nonnegint,L::nonnegint)
 #     -> add( dimSO5r3(i,L),i=v_min..v_max):
-def dimSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> int:
-    require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint('L', L)
-
-    return sum(dimSO5r3(i, L) for i in range(v_min, v_max + 1))
-
-
+#
 # # The following counts SO(3) irreps for a range of v and a range of L.
 #
 # dimSO5r3_rngVrngL:=(v_min::nonnegint,v_max::nonnegint,
 #                     L_min::nonnegint,L_max::nonnegint)
 #     -> add(dimSO5r3_rngL(i,L_min,L_max),i=v_min..v_max):
-def dimSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: nonnegint) -> int:
-    require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint_range('L', L_min, L_max)
-
-    return sum(dimSO5r3(i, j)
-               for i in range(v_min, v_max + 1)
-               for j in range(L_min, L_max + 1))
-
-
+#
 # # The following also counts SO(3) irreps for a range of v and a range of L,
 # # but if Lmax is not given, then it is assumed that Lmin=Lmax.
 #
@@ -145,14 +95,7 @@ def dimSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
 #                     L_min::nonnegint,L_max::nonnegint)
 #     -> `if`(_npassed>3,dimSO5r3_rngVrngL(_passed),
 #                        dimSO5r3_rngV(_passed)):
-def dimSO5r3_rngVvarL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: Optional[nonnegint] = None) -> int:
-    if L_max is not None:
-        return dimSO5r3_rngVrngL(v_min, v_max, L_min, L_max)
-
-    return dimSO5r3_rngV(v_min, v_max, L_min)
-
-
+#
 # ###########################################################################
 #
 # # We now specify procedures which give lists of labels that correspond
@@ -173,14 +116,8 @@ def dimSO5r3_rngVvarL(v_min: nonnegint, v_max: nonnegint,
 # lbsSO5r3_allL:=proc(v::nonnegint,$)
 #     [seq(seq([a,LL],a=1..dimSO5r3(v,LL)),LL=0..2*v)]:
 # end:
-def lbsSO5r3_allL(v: nonnegint) -> list[tuple[Alpha, AngularMomentum]]:
-    require_nonnegint('v', v)
-
-    return [(a, LL)
-            for LL in range(2 * v + 1)
-            for a in range(1, dimSO5r3(v, LL) + 1)]
-
-
+#
+#
 # # The following returns a list of labels [v,alpha,L] for the
 # # range v_min...v_max of seniorities.
 #
@@ -192,15 +129,7 @@ def lbsSO5r3_allL(v: nonnegint) -> list[tuple[Alpha, AngularMomentum]]:
 #                                                       LL=0..2*v_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> SO5SO3Labels:
-    require_nonnegint_range('v', v_min, v_max)
-
-    return [(u, a, LL)
-            for LL in range(2 * v_max + 1)
-            for u in range(v_min, v_max + 1)
-            for a in range(1, dimSO5r3(u, LL) + 1)]
-
-
+#
 # # The following returns a list of labels [v,alpha,L] for a fixed seniority
 # # v, but L restricted to the range L_min...L_max of SO(3) angular momenta.
 #
@@ -211,17 +140,9 @@ def lbsSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> SO5SO3Labels:
 #     [seq(seq([v,a,LL],a=1..dimSO5r3(v,LL)),LL=L_min..L_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> SO5SO3Labels:
-    require_nonnegint('v', v)
-    require_nonnegint_range('L', L_min, L_max)
-
-    return [(v, a, LL)
-            for LL in range(L_min, L_max + 1)
-            for a in range(1, dimSO5r3(v, LL) + 1)]
-
-
+#
 # # The following returns a list of labels [v,alpha,L] for a range of
-# # seniorities v_min,..,v_max, but fixed SO(3) angular momentum L.
+# # seniorities v_min,..,vmax, but fixed SO(3) angular momentum L.
 #
 # lbsSO5r3_rngV:=proc(v_min::nonnegint,v_max::nonnegint,L::nonnegint,$)
 #   if v_min>v_max then
@@ -230,15 +151,7 @@ def lbsSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> SO5SO3Lab
 #     [seq(seq([u,a,L],a=1..dimSO5r3(u,L)),u=v_min..v_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> SO5SO3Labels:
-    require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint('L', L)
-
-    return [(u, a, L)
-            for u in range(v_min, v_max + 1)
-            for a in range(1, dimSO5r3(u, L) + 1)]
-
-
+#
 # # The following returns a list of labels [v,alpha,L] for ranges of
 # # seniorities v_min,..,vmax, and SO(3) angular momenta L_min,..,Lmax.
 #
@@ -251,17 +164,7 @@ def lbsSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> SO5SO3Lab
 #                                   LL=L_min..L_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: nonnegint) -> SO5SO3Labels:
-    require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint_range('L', L_min, L_max)
-
-    return [(u, a, LL)
-            for LL in range(L_min, L_max + 1)
-            for u in range(v_min, v_max + 1)
-            for a in range(1, dimSO5r3(u, LL) + 1)]
-
-
+#
 # # The following returns a list of labels [v,alpha,L] for ranges of
 # # seniorities v_min,..,vmax, and SO(3) angular momenta L_min,..,Lmax,
 # # but the final argument L_max may be omitted, in which case L_max=L_min
@@ -278,19 +181,5 @@ def lbsSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
 #     [seq(seq([u,a,L_min],a=1..dimSO5r3(u,L_min)),u=v_min..v_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngVvarL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: Optional[nonnegint] = None
-                      ) -> SO5SO3Labels:
-    require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint('L', L_min)
-
-    if L_max is not None:
-        require_nonnegint_range('L', L_min, L_max)
-        return [(u, a, LL)
-                for LL in range(L_min, L_max + 1)
-                for u in range(v_min, v_max + 1)
-                for a in range(1, dimSO5r3(u, LL) + 1)]
-
-    return [(u, a, L_min)
-            for u in range(v_min, v_max + 1)
-            for a in range(1, dimSO5r3(u, L_min))]
+#
+#

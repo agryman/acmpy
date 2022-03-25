@@ -258,7 +258,7 @@
 #       # could put other Xpsace operators here!
 #
 #       else
-#         error "OperatorSum %1 undefined", this_op:
+#         error "Operator %1 undefined", this_op:
 #       fi:
 #
 #       # Now multiply in this Xspace operator
