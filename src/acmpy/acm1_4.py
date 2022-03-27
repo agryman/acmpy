@@ -1,9 +1,10 @@
-# This file was seeded with the contents of the Maple code acm1.4.mpl which is the published version.
-# Each line of the Maple code has been commented with a Python line comment so the code is valid Python.
-# I will convert each Maple line into equivalent Python.
+"""
+This file was seeded with the contents of the Maple code acm1.4.mpl which is the published version.
+Each line of the Maple code has been commented with a Python line comment so the code is valid Python.
+I will convert each Maple line into equivalent Python.
+"""
+from acmpy.globals import ACM_set_defaults
 
-# clearly, we are doing computer algebra, so import SymPy
-from sympy import Symbol, pi, sqrt, Integer, Rational
 
 # # acm.mpl (version 1.4, 27 Sept 2015)
 # #  - minor improvements over version 1.3 (details at end of file).
@@ -64,7 +65,7 @@ from sympy import Symbol, pi, sqrt, Integer, Rational
 # #   6. Procedures that represent operators on the full (cross-product)
 # #      Hilbert space;
 # #   7. Procedures that perform calculations on the full Hilbert space:
-# #      diagonalisating, basis transforming, and data displaying.
+# #      diagonalizing, basis transforming, and data displaying.
 # #   8. Procedures that aid the production of the data for the
 # #      particular Hamiltonians considered in [RWC2009].
 #
@@ -99,7 +100,9 @@ from sympy import Symbol, pi, sqrt, Integer, Rational
 # # We now set default values for all the global parameters
 #
 # ACM_set_defaults(0):
-#
+ACM_set_defaults(0)
+
+
 # ######################################################################
 # ######################################################################
 #
@@ -142,11 +145,9 @@ from sympy import Symbol, pi, sqrt, Integer, Rational
 # #        RepRadial_param because Maple doesn't automatically
 # #        perform GAMMA cancellations for large values (>100) of
 # #        its arguments (one wonders why not just for large values!).
-# #    10. Removed a couple of unncessary Matrix assigments,
+# #    10. Removed a couple of unnecessary Matrix assignments,
 # #        because the calculations were carried out 'inplace'.
 #
 # ######################################################################
 # ###  End of Maple code file acm1.4.mpl .
 # ######################################################################
-#
-#

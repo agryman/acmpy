@@ -1,4 +1,15 @@
 """2. Procedures that pertain only to the radial (beta) space."""
+
+from typing import Callable
+from functools import cache
+
+from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix
+
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range
+
+Nu = nonnegint
+
+
 # ###########################################################################
 # ####--------------- Representations on the radial space ---------------####
 # ###########################################################################
@@ -17,8 +28,13 @@
 #
 # dimRadial:=(nu_min::nonnegint,nu_max::nonnegint)
 #   -> `if`(nu_max>=nu_min,nu_max-nu_min+1,0):
-#
-#
+def dimRadial(nu_min: nonnegint, nu_max: nonnegint) -> nonnegint:
+    require_nonnegint('nu_min', nu_min)
+    require_nonnegint('nu_max', nu_max)
+
+    return nu_max - nu_min + 1 if nu_max >= nu_min else 0
+
+
 # lbsRadial:=proc(nu_min::nonnegint,nu_max::nonnegint)
 #   if nu_min>nu_max then
 #     error("Radial range invalid");
@@ -26,8 +42,12 @@
 #     [seq(i,i=nu_min..nu_max)];
 #   fi:
 # end:
-#
-#
+def lbsRadial(nu_min: nonnegint, nu_max: nonnegint) -> list[Nu]:
+    require_nonnegint_range('nu', nu_min, nu_max)
+
+    return list(range(nu_min, nu_max + 1))
+
+
 # ###########################################################################
 #
 # # The functions that follow calculate single matrix elements
@@ -52,7 +72,13 @@
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_S0(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    return lambdaa / 2 + mu_i if mu_f == mu_i else S.Zero
+
+
 # ME_Radial_Sp:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
 #   if mu_f=mu_i+1 then
 #     sqrt( (lambda + mu_i)*(mu_i+1) );
@@ -60,7 +86,13 @@
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_Sp(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    return sqrt((lambdaa + mu_i) * (mu_i + 1)) if mu_f == mu_i + 1 else S.Zero
+
+
 # ME_Radial_Sm:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
 #   if mu_f=mu_i-1 then
 #     sqrt( (lambda + mu_i - 1)*mu_i );
@@ -68,8 +100,13 @@
 #     0;
 #   fi;
 # end:
-#
-#
+def ME_Radial_Sm(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    return sqrt((lambdaa + mu_i - 1) * mu_i) if mu_f == mu_i - 1 else S.Zero
+
+
 # # The following give matrix elements of beta^2 for lambda'=lambda
 # # using (21).
 #
@@ -84,7 +121,20 @@
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_b2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    if mu_f == mu_i - 1:
+        return sqrt((lambdaa + mu_i - 1) * mu_i)
+    if mu_f == mu_i:
+        return lambdaa + 2 * mu_i
+    if mu_f == mu_i + 1:
+        return sqrt((lambdaa + mu_i) * (mu_i + 1))
+
+    return S.Zero
+
+
 # # The following gives matrix elements of 1/beta^2 for lambda'=lambda
 # # using (22). It uses the subsequent procedure for which mu_f >= mu_i.
 # # (restriction to lambda>1).
@@ -103,13 +153,32 @@
 #     ME_Radial_pt(lambda,mu_i,mu_f);
 #   fi:
 # end:
-#
+def ME_Radial_bm2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+    if lambdaa == S.NegativeOne:
+        raise ValueError('Singular 1/beta^2 for lambda=1')
+    if lambdaa.is_integer and (lambdaa <= -mu_i or lambdaa <= -mu_f):
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
+
+    mu_1: nonnegint = max(mu_f, mu_i)
+    mu_2: nonnegint = min(mu_f, mu_i)
+    return ME_Radial_pt(lambdaa, mu_1, mu_2)
+
+
 # ME_Radial_pt:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
 #   (-1)^(mu_f-mu_i) * sqrt( (factorial(mu_f)*GAMMA(lambda+mu_i))
 #                                /(factorial(mu_i)*GAMMA(lambda+mu_f)) )
 #                   / (lambda-1);
 # end:
-#
+def ME_Radial_pt(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    return (-1) ** (mu_f - mu_i) * sqrt(factorial(mu_f) * gamma(lambdaa + mu_i) /
+                                        (factorial(mu_i) * gamma(lambdaa + mu_f))) / (lambdaa - 1)
+
+
 # # The following gives matrix elements of d^2/d(beta)^2 for lambda'=lambda
 # # using (23).
 #
@@ -131,7 +200,24 @@
 #     stuff+(lambda-(3/2))*(lambda-(1/2))*ME_Radial_pt(lambda,mu_i,mu_f);
 #   fi:
 # end:
-#
+def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+    require_nonnegint('mu_f', mu_f)
+    require_nonnegint('mu_i', mu_i)
+
+    if mu_f == mu_i - 1:
+        stuff = sqrt((lambdaa + mu_i) * mu_f)
+    elif mu_f == mu_i:
+        stuff = -lambdaa - 2 * mu_i
+    elif mu_f == mu_i + 1:
+        stuff = sqrt((lambdaa + mu_i) * (mu_i + 1))
+    else:
+        stuff = 0
+
+    mu_1: nonnegint = max(mu_f, mu_i)
+    mu_2: nonnegint = min(mu_f, mu_i)
+    return stuff + (lambdaa - Rational(3, 2)) * (lambdaa - Rational(1, 2)) * ME_Radial_pt(lambdaa, mu_1, mu_2)
+
+
 # # The following gives matrix elements of beta*d/d(beta) for lambda'=lambda
 # # using (24).
 #
@@ -448,7 +534,15 @@
 #   simplify(Matrix(nu_max-nu_min+1,(i,j)->ME(lambda,nu_min-1+i,nu_min-1+j)),
 #        GAMMA,radical):
 # end:
-#
+@cache
+def RepRadial(ME: Callable, lambdaa: Expr,
+              nu_min: nonnegint, nu_max: nonnegint
+              ) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # # The following works similarly to RepRadial above, but takes an additional
 # # parameter which is passed to the procedure ME which calculates the
 # # matrix elements. This enables the construction of representations of
@@ -463,6 +557,14 @@
 #                   (i,j)->ME(lambda,nu_min-1+i,nu_min-1+j,param)),
 #        GAMMA,radical):
 # end:
+@cache
+def RepRadial_param(ME: Callable, lambdaa: Expr,
+                    nu_min: nonnegint, nu_max: nonnegint, param: int
+                    ) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
 #
 #
 # # The following returns the square root of the matrix obtained above.
@@ -477,8 +579,15 @@
 # #
 # #  MatrixPower(evalf(RepRadial(ME,lambda,nu_min,nu_max)),1/2):
 # #end:
-#
-#
+@cache
+def RepRadial_sq(ME: Callable, lambdaa: Expr,
+                    nu_min: nonnegint, nu_max: nonnegint
+                    ) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # # The following returns the positive definite square root of a
 # # symmetric Matrix, using my Eigenfiddle procedure (defined later)
 # # which provides a convenient interface to Maple's Eigenvectors procedure.
@@ -499,6 +608,12 @@
 #
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
+@cache
+def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
 #
 # # The following is similar to the above to produce the inverse of
 # # the square root of a Matrix.
@@ -519,8 +634,13 @@
 #
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
-#
-#
+@cache
+def Matrix_sqrtInv(Amatrix: Matrix) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # ###########################################################################
 #
 # # The following represents the radial operator beta^K * d^T/d(beta)^T,
@@ -762,7 +882,16 @@
 #   combine(simplify(Mat_product, sqrt),radical):
 #
 # end:
-#
+@cache
+def RepRadial_bS_DS(K: int, T: nonnegint, anorm:Expr,
+                    lambdaa: Expr, R: int,
+                    nu_min: nonnegint, nu_max: nonnegint
+                    ) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # # The following procedure is (only) called by the above RepRadial_bS_DS:
 # # it considers a term of the form beta^K * d^T/d(beta)^T, and for
 # # a specific overall lambda shift R, indicates how to sensibly assign
@@ -892,9 +1021,16 @@
 #   combine(simplify(Mat_product, sqrt),radical):
 #
 # end;
-#
-#
-#
+@cache
+def RepRadialshfs_Prod(rps_op: list, anorm: Expr,
+                       lambdaa: Expr, lambda_shfs: list,
+                       nu_min: nonnegint, nu_max: nonnegint
+                       ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # # The following represents a product Op of radial operators, specified by a
 # # list rbs_op, between two bases with the difference between their lambda
 # # values given by lambda_var. It returns the explicit matrix of
@@ -1059,8 +1195,15 @@
 #     fi:
 #
 # end;
-#
-#
+@cache
+def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
+                       lambdaa: Expr, lambda_var: int,
+                       nu_min: nonnegint, nu_max: nonnegint,
+                       nu_lap :nonnegint =0) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
 # # The following parses a list of the basic radial operators
 # #     Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
 # #     Radial_b,  Radial_bm, Radial_Db,
@@ -1333,5 +1476,11 @@
 #
 #   Mat;
 # end:
-#
-#
+@cache
+def RepRadial_LC_rem(rlc_op: list[list], anorm: Expr,
+                     lambdaa: Expr, lambda_var: int,
+                     nu_min: nonnegint, nu_max: nonnegint,
+                     nu_lap: nonnegint = 0) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()

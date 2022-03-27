@@ -1,4 +1,18 @@
 """6. Procedures that represent operators on the full (cross-product) Hilbert space."""
+
+from typing import Optional
+from functools import cache
+
+from sympy import S, Symbol, Expr, Matrix, zeros, diag
+
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint
+from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, \
+    Alpha, AngularMomentum, Seniority, SO5SO3Label
+from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
+    RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem
+from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem
+
+
 # ###########################################################################
 # ####-------------- Representing operators on full Xspace --------------####
 # ###########################################################################
@@ -19,8 +33,18 @@
 #
 #     dimRadial(nu_min,nu_max)*dimSO5r3_rngVvarL(_passed[3..-1]):
 # end:
-#
-#
+def dimXspace(nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> nonnegint:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('L', L_min, L_max)
+
+    return dimRadial(nu_min, nu_max) * dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+
 # # The following procedure lbsXspace returns a list of labels [nu,v,alpha,L]
 # # for the basis states of the truncated Hilbert space:
 # # nu takes the range nu_min,..,nu_max, v takes the range v_min,..,v_max,
@@ -40,8 +64,25 @@
 #
 #   [seq( seq( [nu,op(s)], nu in rad_labels), s in sph_labels)];
 # end:
-#
-#
+XspaceLabel = tuple[Nu, Seniority, Alpha, AngularMomentum]
+
+
+def lbsXspace(nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint]
+              ) -> list[XspaceLabel]:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('L', L_min, L_max)
+
+    rad_labels: list[Nu] = lbsRadial(nu_min, nu_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+    return [(nu,) + s for s in sph_labels for nu in rad_labels]
+
+
 # ###########################################################################
 #
 #
@@ -62,7 +103,7 @@
 # # The final argument L_max is optional - if omitted then L_max=L_min,
 # # so that a single angular momentum value is used.
 #
-# # By alternative, we mean that the matrix elements should be mulitplied by
+# # By alternative, we mean that the matrix elements should be multiplied by
 # # sqrt(2*L_f+1) to get the genuine SO(3)-reduced matrix elements of the
 # # operator in question (see (37)). These are useful in practical use,
 # # because this 1/sqrt(2*L_f+1) appears in the Wigner-Eckart theorem
@@ -157,7 +198,7 @@
 #   # now clear all the remember tables used so that the next calculation
 #   # can start afresh (with a different Xspace).
 #   # (In this list, we have given each procedure a number, and following that
-#   #  in parentheses, the numbers of these precedures that get called by it:
+#   #  in parentheses, the numbers of these procedures that get called by it:
 #   #  this is useful for debugging).
 #
 #   forget(RepRadial):               # 1.
@@ -176,9 +217,65 @@
 #
 #   Rmat;
 # end:
-#
-#
-#
+def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> Matrix:
+    print('Not implemented.')
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    if L_max is None:
+        L_max = L
+    require_nonnegint_range('L', L, L_max)
+
+    n: int = len(x_oplc)
+    Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
+    Rmat: Matrix
+    if n == 0:
+        Rmat = zeros(dimXspace(nu_min, nu_max, v_min, v_max, L, L_max))
+    else:
+        coeff, prod = x_oplc[0]
+        Rmat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+        if coeff.is_constant():
+            Rmat = coeff.evalf() * Rmat
+        else:
+            Rmat = Rmat * diag(*[coeff.subs({NUMBER: nu,
+                                             SENIORITY: v,
+                                             ALFA: a,
+                                             ANGMOM: L}).evalf()
+                                 for (nu, v, a, L) in Xlabels])
+
+        for coeff, prod in x_oplc[1:]:
+            if coeff.is_constant():
+                Rmat = Rmat + coeff.evalf() * \
+                       RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+            else:
+                Pmat: Matrix = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+                Pmat = Pmat * diag(*[coeff.subs({NUMBER: nu,
+                                                 SENIORITY: v,
+                                                 ALFA: a,
+                                                 ANGMOM: L}).evalf()
+                                     for (nu, v, a, L) in Xlabels])
+                Rmat = Rmat + Pmat
+
+    RepRadial.cache_clear()
+    RepRadial_param.cache_clear()
+    Matrix_sqrt.cache_clear()
+    Matrix_sqrtInv.cache_clear()
+    RepRadial_bS_DS.cache_clear()
+    RepRadialshfs_Prod.cache_clear()
+    RepRadial_Prod_rem.cache_clear()
+    RepRadial_LC_rem.cache_clear()
+    RepXspace_Pi.cache_clear()
+    RepXspace_PiPi.cache_clear()
+    RepXspace_PiqPi.cache_clear()
+    RepSO5_Y_rem.cache_clear()
+    RepSO5r3_Prod_rem.cache_clear()
+
+    return Rmat
+
+
 # # MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 #
 # # The procedure RepXspace_Prod below returns the (alternative SO(3)-reduced)
@@ -255,7 +352,7 @@
 #       elif this_op=Xspace_Pi then   # For operator  [pi]_{v=1,L=2};
 #           xsp_Mat:=RepXspace_Pi(_passed[2..-1]):
 #
-#       # could put other Xpsace operators here!
+#       # could put other Xspace operators here!
 #
 #       else
 #         error "OperatorSum %1 undefined", this_op:
@@ -292,8 +389,17 @@
 #   run_Mat:
 #
 # end:
-#
-#
+def RepXspace_Prod(x_ops: list[Symbol],
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L_min: nonnegint, L_max: nonnegint
+                   ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # # The following procedure RepXspace_Twin does much of the work
 # # for RepXspace_Prod above, and has similar arguments, except
 # # that it takes two lists of operators, rad_ops and sph_ops.
@@ -406,8 +512,16 @@
 #
 #   direct_Mat;
 # end:
-#
-#
+def RepXspace_Twin(rad_ops: list, sph_ops: list,
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint
+                   ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # # The following procedure RepXpsace_Pi returns the Matrix representation
 # # of the pi/(-i\hbar) operator on the truncated Hilbert space
 # # determined by the arguments as above.
@@ -519,8 +633,17 @@
 #
 #   direct_Mat:
 # end:
-#
-#
+@cache
+def RepXspace_Pi(anorm: Expr, lambda_base: Expr,
+                 nu_min: nonnegint, nu_max: nonnegint,
+                 v_min: nonnegint, v_max: nonnegint,
+                 L_min: nonnegint, L_max: nonnegint
+                 ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # # The following procedure RepXpsace_PiPi returns Matrix representations
 # # of the operators
 # #            [pi x pi]_(v=2,L=2)          [pi x pi]_(v=2,L=4)
@@ -662,9 +785,19 @@
 #
 #   direct_Mat:
 # end:
-#
-#
-# # The following procedure RepXpsace_Pi returns the Matrix representation
+@cache
+def RepXspace_PiPi(PiPi_L: nonnegint,
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L_min: nonnegint, L_max: nonnegint
+                   ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
+# # The following procedure RepXspace_PiqPi returns the Matrix representation
 # # of the operator
 # #                         [pi x q x pi]_(v=3,L=0)
 # #                         -----------------------
@@ -829,8 +962,17 @@
 #
 #   direct_Mat:
 # end:
-#
-#
+@cache
+def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
+                    nu_min: nonnegint, nu_max: nonnegint,
+                    v_min: nonnegint, v_max: nonnegint,
+                    L_min: nonnegint, L_max: nonnegint
+                    ) -> Matrix:
+    print('Not implemented.')
+
+    return Matrix()
+
+
 # # The following procedure QixQxQred returns the genuine SO(5) reduced
 # # matrix elements
 # #          <v_f ||| [[Q^+ x Q x Q]]^3 ||| v_i>,             (**)
@@ -872,8 +1014,12 @@
 #     /CG_SO5r3(v_i,1,L_i,3,1,0,v_f,1,L_i)/sqrt(5*dimSO3(L_i)):
 #
 # end;
-#
-#
+def QixQxQred(v_i: nonnegint, v_f: nonnegint, v_int: nonnegint) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # # The four cases are also implemented separately by the following
 # # procedures (we don't use these procedures, but they are instructive!)
 # # The correspondence is
@@ -908,7 +1054,12 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v+1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QpxQxQred_p1(v: nonnegint) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # QmxQxQred_p1:=proc(v::nonnegint)
 #   local mediates,L1;
 #
@@ -930,7 +1081,12 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v+1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QmxQxQred_p1(v: nonnegint) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # QpxQxQred_m1:=proc(v::posint)
 #   local mediates,L1;
 #
@@ -950,7 +1106,12 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v-1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QpxQxQred_m1(v: posint) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero
+
+
 # QmxQxQred_m1:=proc(v::posint)
 #   local mediates,L1;
 #
@@ -972,5 +1133,7 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v-1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
-#
+def QmxQxQred_m1(v: posint) -> Expr:
+    print('Not implemented.')
+
+    return S.Zero

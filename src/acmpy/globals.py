@@ -25,6 +25,7 @@ from acmpy.compat import nonnegint, require_nonnegint, irem, is_odd, posint, req
 """The version should be implemented as a Python string, not a float."""
 ACM_version: str = '1.4'
 
+
 # # The following procedure definitions determine functions used for displaying
 # # the transition rates and amplitudes (the particular procedures in force at
 # # a given time are stored in the global variables glb_rat_fun & glb_amp_fun).
@@ -41,52 +42,45 @@ ACM_version: str = '1.4'
 #   global glb_rat_TRopAM;
 #   Mel*CG_SO3(Li,Li,glb_rat_TRopAM,Lf-Li,Lf,Lf)
 # end;
-
-
 def quad_amp_fun(Li, Lf, Mel):
     global glb_rat_TRopAM
     # TODO: determine the correct type hint for angular momentum
     return Mel * CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf)
 
+
 # mel_amp_fun:=proc(Li,Lf,Mel)
 #   Mel*sqrt(2*Lf+1)
 # end;
-
-
 def mel_amp_fun(Li, Lf, Mel) -> Expr:
     return Mel * sqrt(2 * Lf + 1)
+
 
 # unit_amp_fun:=proc(Li,Lf,Mel)
 #   Mel
 # end;
-
-
 def unit_amp_fun(Li, Lf, Mel) -> Expr:
     return Mel
+
 
 # quad_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)/dimSO3(Li)
 # end;
-
-
 def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
     return Mel ** 2 * dimSO3(Lf) / dimSO3(Li)
 
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;
-
-
 def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
     return Mel ** 2 * dimSO3(Lf)
+
 
 # unit_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2
 # end;
-
-
 def unit_rat_fun(Li, Lf, Mel) -> Expr:
     return Mel**2
+
 
 # # The following was described in a previous version
 #
@@ -94,26 +88,24 @@ def unit_rat_fun(Li, Lf, Mel) -> Expr:
 #   global glb_rat_TRopAM;
 #   Mel*gen_amp_mul(Li,Lf,glb_rat_TRopAM)
 # end;
-
-
 def mix_amp_fun(Li, Lf, Mel) -> Expr:
     global glb_rat_TRopAM
 
     return Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM)
+
 
 # gen_amp_mul:=proc(Li,Lf,Lt,$)
 #   if Li=Lf then CG_SO3(Lf,Lf,Lt,0,Lf,Lf)
 #   else sqrt(2*Lf+1)
 #   fi:
 # end;
-
-
 def gen_amp_mul(Li, Lf, Lt) -> Expr:
     # TODO: determine the correct type hint for angular momentum
     if Li == Lf:
         return CG_SO3(Lf, Lf, Lt, 0, Lf, Lf)
 
     return sqrt(2 * Lf + 1)
+
 
 # # The following procedure definitions determine functions used for
 # # determining lambda as a function of seniority v
@@ -129,32 +121,29 @@ def gen_amp_mul(Li, Lf, Lt) -> Expr:
 # lambda_fix_fun:=proc(v::nonnegint)   # for fixed lambda
 #   0
 # end;
-
-
 def lambda_fix_fun(v: nonnegint) -> nonnegint:
     require_nonnegint('v', v)
 
     return 0
 
+
 # lambda_sho_fun:=proc(v::nonnegint)   # for SHO lambda variation
 #   v
 # end;
-
-
 def lambda_sho_fun(v: nonnegint) -> nonnegint:
     require_nonnegint('v', v)
 
     return v
 
+
 # lambda_acm_fun:=proc(v::nonnegint)   # for lambda varying with parity of v
 #   irem(v,2)
 # end;
-
-
 def lambda_acm_fun(v: nonnegint) -> nonnegint:
     require_nonnegint('v', v)
 
     return irem(v, 2)
+
 
 # lambda_jig_fun:=proc(v::nonnegint)   # A little mixture, used for testing
 #   if v=0 then
@@ -163,12 +152,11 @@ def lambda_acm_fun(v: nonnegint) -> nonnegint:
 #     2-irem(v,2)
 #   fi
 # end;
-
-
 def lambda_jig_fun(v: nonnegint) -> nonnegint:
     require_nonnegint('v', v)
 
     return 0 if v == 0 else 2 - irem(v, 2)
+
 
 # # Further procedures of a similar nature may be obtained using the
 # # following procedure, which returns the name of a procedure that
@@ -192,8 +180,6 @@ def lambda_jig_fun(v: nonnegint) -> nonnegint:
 #
 #    difffun:
 # end:
-
-
 def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
     def difffun(v: nonnegint) -> int:
         require_nonnegint('v', v)
@@ -204,6 +190,7 @@ def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
 
     return difffun
 
+
 # # We supply our own version of the square root that has `procedure` type.
 # # It is necessary to use such a procedure to pass as an argument
 # # when the type is being tested, because sqrt itself is not a `procedure`!
@@ -212,10 +199,9 @@ def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
 # sqrt_fun:=proc(sft)
 #   sqrt(evalf(sft)):
 # end;
-
-
 def sqrt_fun(sft: Expr) -> Expr:
     return sqrt(sft.evalf())
+
 
 # # The SO(5)>SO(3) CG coefficients are initially obtained from external files.
 # # The value of the Maple variable SO5CG_directory determines the directory
@@ -240,9 +226,8 @@ def sqrt_fun(sft: Expr) -> Expr:
 # # CG_coeffs[v1,v2,a2,L2,v3][a1,L1,a3,L3].
 #
 # CG_coeffs:=table():
-
-
 CG_coeffs: dict[SO5Quintet, dict[SO5Quartet, float]] = {}
+
 
 # # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
 # #   indices(CG_coeffs);
@@ -256,11 +241,11 @@ CG_coeffs: dict[SO5Quintet, dict[SO5Quartet, float]] = {}
 # def_rat_format:="  B(E2: %s) = %s":
 # def_amp_desg:="transition amplitudes":
 # def_amp_format:="  Amp( %s ) = %s":
-
 def_rat_desg: str = "transition rates"
 def_rat_format: str = "  B(E2: {}) = {}"
 def_amp_desg: str = "transition amplitudes"
 def_amp_format: str = "  Amp( {} ) = {}"
+
 
 # # If the Show_Mels procedure is used directly (Show_Rats and
 # # Show_Amps call Show_Mels), the following two values can be used
@@ -270,9 +255,9 @@ def_amp_format: str = "  Amp( {} ) = {}"
 #
 # def_mel_desg:="matrix elements":
 # def_mel_format:="  ME( %s ) = %s":
-
 def_mel_desg: str = "matrix elements"
 def_mel_format: str = "  ME( %{0!s} ) = {1!s}"
+
 
 # # The data that is produced by the main procedures is displayed
 # # according to the values of various global parameters.
@@ -294,10 +279,10 @@ def_mel_format: str = "  ME( %{0!s} ) = {1!s}"
 # glb_eig_sft:=1.0:
 # glb_rat_sft:=1.0:
 # glb_amp_sft:=1.0:
-
 glb_eig_sft: float = 1.0
 glb_rat_sft: float = 1.0
 glb_amp_sft: float = 1.0
+
 
 # # The following store the precision for floating point values that
 # # are displayed by the procedures Show_Eigs(), Show_Rats() and
@@ -307,10 +292,10 @@ glb_amp_sft: float = 1.0
 # glb_rel_pre:=2:
 # glb_rel_wid:=7:
 # glb_low_pre:=4:
-
 glb_rel_pre: int = 2
 glb_rel_wid: int = 7
 glb_low_pre: int = 4
+
 
 # # The following store the maximal number of entries for horizontal
 # # lists of eigenvalues, transition rates and amplitudes that are
@@ -321,10 +306,10 @@ glb_low_pre: int = 4
 # glb_eig_num:=4:
 # glb_rat_num:=4:
 # glb_amp_num:=4:
-
 glb_eig_num: int = 4
 glb_rat_num: int = 4
 glb_amp_num: int = 4
+
 
 # # The following specify how ACM_Adapt() determines the scale factor
 # # glb_eig_sft. This factor is determined such that the energy of
@@ -333,10 +318,10 @@ glb_amp_num: int = 4
 # glb_eig_fit:=6.0:
 # glb_eig_L:=2:
 # glb_eig_idx:=1:
-
 glb_eig_fit: float = 6.0
 glb_eig_L: int = 2
 glb_eig_idx: int = 1
+
 
 # # The following specify how ACM_Adapt() determines the scale factor
 # # glb_rat_sft. This factor is determined such that the transition rate
@@ -348,19 +333,19 @@ glb_eig_idx: int = 1
 # glb_rat_L2:=0:
 # glb_rat_1dx:=1:
 # glb_rat_2dx:=1:
-
 glb_rat_fit: float = 100.0
 glb_rat_L1: int = 2
 glb_rat_L2: int = 0
 glb_rat_1dx: int = 1
 glb_rat_2dx: int = 1
 
+
 # # The following specifies a procedure which determines the basis type.
 # # This is a function which gives the value of lambda_v-lambda_0.
 #
 # glb_lam_fun:=lambda_acm_fun:
-
 glb_lam_fun: Callable[[nonnegint], nonnegint] = lambda_acm_fun
+
 
 # # The following store the current transition operator and its
 # # angular momentum.
@@ -375,9 +360,9 @@ glb_lam_fun: Callable[[nonnegint], nonnegint] = lambda_acm_fun
 #
 # glb_rat_TRop:=quad_op:
 # glb_rat_TRopAM:=2:
-
 glb_rat_TRop: OperatorSum = quad_op
 glb_rat_TRopAM: int = 2
+
 
 # # The following determine how "transition rates" are displayed in the
 # # procedure Show_Rats (which is called by ACM_Scale and ACM_Adapt).
@@ -388,10 +373,10 @@ glb_rat_TRopAM: int = 2
 # glb_rat_fun:=quad_rat_fun:
 # glb_rat_format:=def_rat_format:
 # glb_rat_desg:=def_rat_desg:
-
 glb_rat_fun: Callable = quad_rat_fun
 glb_rat_format: str = def_rat_format
 glb_rat_desg: str = def_rat_desg
+
 
 # # The following determine how "transition rates" are displayed in the
 # # procedure Show_Amps (which is called by ACM_Scale and ACM_Adapt).
@@ -402,45 +387,44 @@ glb_rat_desg: str = def_rat_desg
 # glb_amp_fun:=quad_amp_fun:
 # glb_amp_format:=def_amp_format:
 # glb_amp_desg:=def_amp_desg:
-
 glb_amp_fun: Callable = quad_amp_fun
 glb_amp_format: str = def_amp_format
 glb_amp_desg: str = def_amp_desg
+
 
 # # The following specifies the function by which the scaling factor
 # # for transition amplitudes (glb_amp_sft) is obtained from that
 # # (glb_rat_sft) for transition rates:
 #
 # glb_amp_sft_fun:=sqrt:
-
 glb_amp_sft_fun: Callable = sqrt
+
 
 # # The following determines how the matrix element labels are displayed:
 #
 # glb_tran_format:="%s(%s) -> %s(%s)":
 # glb_tran_fill:="#":
-
 glb_tran_format: str = '{}({}) -> {}({})'
 glb_tran_fill: str = '#'
+
 
 # # The following store the lists of transition rate and transition amplitude
 # # designators (each initially empty):
 #
 # glb_rat_lst:=[]:
 # glb_amp_lst:=[]:
-
 Designators = tuple[tuple[int, ...], ...]
-
 glb_rat_lst: Designators = ()
 glb_amp_lst: Designators = ()
+
 
 # # The following flag indicates whether, in ACM_Scale, ACM_Adapt
 # # and Show_Eigs, eigenvalues are displayed relative to their
 # # lowest value (true), or absolute (false).
 #
 # glb_eig_rel:=true:
-
 glb_eig_rel: bool = True
+
 
 # # The following parameter, if positive, specifies a temporary
 # # increase to the size of the radial space, to improve accuracy
@@ -449,8 +433,8 @@ glb_eig_rel: bool = True
 # # by RepXspace).
 #
 # glb_nu_lap:=0:
-
 glb_nu_lap: int = 0
+
 
 # ###########################################################################
 #
@@ -481,8 +465,6 @@ glb_nu_lap: int = 0
 #
 #   ACM_show_scales(show):
 # end;
-
-
 def ACM_set_scales(eig_sft: Optional[float] = None,
                    rat_sft: Optional[float] = None,
                    show: int = 1) -> None:
@@ -517,7 +499,6 @@ def ACM_set_scales(eig_sft: Optional[float] = None,
 #
 #   [glb_eig_sft,glb_rat_sft,glb_amp_sft]:
 # end;
-
 def ACM_show_scales(show: int) -> tuple[float, float, float]:
     if show > 0:
         print(f'Relative eigenenergies to be multiplied by {1 / glb_eig_sft};')
@@ -525,6 +506,7 @@ def ACM_show_scales(show: int) -> tuple[float, float, float]:
         print(f'"{glb_amp_desg}" to be multiplied by {1 / glb_amp_sft}.')
 
     return glb_eig_sft, glb_rat_sft, glb_amp_sft
+
 
 # # The following sets glb_amp_sft_fun, and returns NULL:
 #
@@ -543,8 +525,6 @@ def ACM_show_scales(show: int) -> tuple[float, float, float]:
 #
 #   glb_amp_sft_fun:
 # end;
-
-
 def ACM_set_sft_fun(amp_fun: Callable = glb_amp_sft_fun,
                     show: int = 1) -> Callable:
     global glb_amp_sft_fun
@@ -555,6 +535,7 @@ def ACM_set_sft_fun(amp_fun: Callable = glb_amp_sft_fun,
               f' using the procedure: {glb_amp_sft_fun.__name__}.')
 
     return glb_amp_sft_fun
+
 
 # # The following sets the values of glb_rel_pre, glb_rel_wid, and glb_low_pre
 #
@@ -581,8 +562,6 @@ def ACM_set_sft_fun(amp_fun: Callable = glb_amp_sft_fun,
 #
 #   [glb_rel_pre, glb_rel_wid, glb_low_pre]:
 # end;
-
-
 def ACM_set_output(rel_pre: Optional[nonnegint] = None,
                    rel_wid: Optional[nonnegint] = None,
                    low_pre: Optional[nonnegint] = None,
@@ -608,6 +587,7 @@ def ACM_set_output(rel_pre: Optional[nonnegint] = None,
 
     return glb_rel_pre, glb_rel_wid, glb_low_pre
 
+
 # # The following sets the values of glb_eig_num, glb_rat_num, and
 # # glb_amp_num. For simplicity, the latter two are set equal.
 #
@@ -630,8 +610,6 @@ def ACM_set_output(rel_pre: Optional[nonnegint] = None,
 #
 #   [glb_eig_num, glb_rat_num, glb_amp_num]:
 # end;
-
-
 def ACM_set_listln(eig_num: Optional[nonnegint] = None,
                    rat_num: Optional[nonnegint] = None,
                    show: int = 1) -> tuple[nonnegint, nonnegint, nonnegint]:
@@ -652,6 +630,7 @@ def ACM_set_listln(eig_num: Optional[nonnegint] = None,
 
     return glb_eig_num, glb_rat_num, glb_amp_num
 
+
 # # The following sets the boolean value of glb_eig_rel.
 #
 # ACM_set_datum:=proc(datflag::nonnegint:=1,
@@ -670,8 +649,6 @@ def ACM_set_listln(eig_num: Optional[nonnegint] = None,
 #
 #   glb_eig_rel:
 # end;
-
-
 def ACM_set_datum(datflag: nonnegint = 1,
                   show: int = 1) -> bool:
     global glb_eig_rel
@@ -686,6 +663,7 @@ def ACM_set_datum(datflag: nonnegint = 1,
             print('Absolute eigenvalues displayed.')
 
     return glb_eig_rel
+
 
 # # The following sets the values of glb_eig_fit, glb_eig_L, glb_eig_idx,
 # # which are used by ACM_Adapt to determine the factor glb_eig_sft.
@@ -707,8 +685,6 @@ def ACM_set_datum(datflag: nonnegint = 1,
 #
 #   [glb_eig_fit, glb_eig_L, glb_eig_idx]:
 # end;
-
-
 def ACM_set_eig_fit(eig_fit: float = glb_eig_fit,
                     eig_L: nonnegint = glb_eig_L,
                     eig_idx: posint = 1,
@@ -727,6 +703,7 @@ def ACM_set_eig_fit(eig_fit: float = glb_eig_fit,
               f'is chosen such that\nthat for the {glb_eig_L}({glb_eig_idx}) state is {glb_eig_fit:f}')
 
     return glb_eig_fit, glb_eig_L, glb_eig_idx
+
 
 # # Similarly, the following sets the values of
 # #      glb_rat_fit, glb_rat_L1, glb_rat_1dx, glb_rat_L2, glb_rat_2dx:
@@ -765,8 +742,6 @@ def ACM_set_eig_fit(eig_fit: float = glb_eig_fit,
 #
 #   [glb_rat_fit, glb_rat_L1, glb_rat_L2, glb_rat_1dx, glb_rat_2dx]:
 # end;
-
-
 def ACM_set_rat_fit(rat_fit: float = glb_rat_fit,
                     rat_L1: nonnegint = glb_rat_L1,
                     rat_L2: nonnegint = glb_rat_L2,
@@ -797,6 +772,7 @@ def ACM_set_rat_fit(rat_fit: float = glb_rat_fit,
 
     return glb_rat_fit, glb_rat_L1, glb_rat_L2, glb_rat_1dx, glb_rat_2dx
 
+
 # # The following three functions respectively set, augment or display the
 # # list rat_lst, which determines which transition rates are flagged
 # # for display. If no argument is given for the first two, an empty list
@@ -808,13 +784,12 @@ def ACM_set_rat_fit(rat_fit: float = glb_rat_fit,
 #   glb_rat_lst:=[];
 #   ACM_add_rat_lst(rat_lst):
 # end;
-
-
 def ACM_set_rat_lst(rat_lst: Designators = ()) -> int:
     global glb_rat_lst
 
     glb_rat_lst = ()
     return ACM_add_rat_lst(rat_lst)
+
 
 # ACM_add_rat_lst:=proc(rat_lst::list(list(integer)):=[],$)
 #     local rat_ent;
@@ -830,8 +805,6 @@ def ACM_set_rat_lst(rat_lst: Designators = ()) -> int:
 #
 #   return nops(glb_rat_lst);
 # end;
-
-
 def ACM_add_rat_lst(rat_lst: Designators) -> int:
     global glb_rat_lst
 
@@ -842,6 +815,7 @@ def ACM_add_rat_lst(rat_lst: Designators) -> int:
             glb_rat_lst = glb_rat_lst + (rat_ent,)
 
     return len(glb_rat_lst)
+
 
 # ACM_show_rat_lst:=proc(show::integer:=1,$)
 #       local rate_ent,rat_format4,rat_format5;
@@ -895,8 +869,6 @@ def ACM_add_rat_lst(rat_lst: Designators) -> int:
 #
 #   return glb_rat_lst;
 # end;
-
-
 def ACM_show_lst(lst: Designators, desg: str, show: int = 1) -> Designators:
     if show > 0:
 
@@ -937,6 +909,7 @@ def ACM_show_lst(lst: Designators, desg: str, show: int = 1) -> Designators:
 def ACM_show_rat_lst(show: int = 1) -> Designators:
     return ACM_show_lst(glb_rat_lst, glb_rat_desg, show)
 
+
 # # The following three functions respectively set, augment or display the
 # # list amp_lst, which determines which transition amplitudes are flagged
 # # for display. If no argument is given for the first two, an empty list
@@ -948,13 +921,12 @@ def ACM_show_rat_lst(show: int = 1) -> Designators:
 #   glb_amp_lst:=[];
 #   ACM_add_amp_lst(amp_lst):
 # end;
-
-
 def ACM_set_amp_lst(amp_list: Designators) -> int:
     global glb_amp_lst
 
     glb_amp_lst = ()
     return ACM_add_amp_lst(amp_list)
+
 
 # ACM_add_amp_lst:=proc(amp_lst::list(list(integer)):=[],$)
 #     local amp_ent;
@@ -970,8 +942,6 @@ def ACM_set_amp_lst(amp_list: Designators) -> int:
 #
 #   return nops(glb_amp_lst);
 # end;
-
-
 def ACM_add_amp_lst(amp_lst: Designators = ()) -> int:
     global glb_amp_lst
 
@@ -982,6 +952,7 @@ def ACM_add_amp_lst(amp_lst: Designators = ()) -> int:
             glb_amp_lst = glb_amp_lst + (amp_ent,)
 
     return len(glb_amp_lst)
+
 
 # ACM_show_amp_lst:=proc(show::integer:=1,$)
 #       local amp_ent,amp_format4,amp_format5;
@@ -1038,10 +1009,9 @@ def ACM_add_amp_lst(amp_lst: Designators = ()) -> int:
 #
 #   return glb_amp_lst;
 # end;
-
-
 def ACM_show_amp_lst(show: int = 1) -> Designators:
     return ACM_show_lst(glb_amp_lst, glb_amp_desg, show)
+
 
 # # The following specifies the transition rate operator glb_rat_TRop.
 # # It also attempts to determine its angular momentum glb_rat_TRopAM.
@@ -1071,8 +1041,7 @@ def ACM_show_amp_lst(show: int = 1) -> Designators:
 #
 #   [glb_rat_TRop,glb_rat_TRopAM]:
 # end;
-
-
+# TODO: correct warning for glb_rat_TRop
 def ACM_set_transition(TR_op: OperatorSum = glb_rat_TRop,
                        show: int = 1) -> tuple[OperatorSum, int]:
     global glb_rat_TRop, glb_rat_TRopAM
@@ -1092,6 +1061,7 @@ def ACM_set_transition(TR_op: OperatorSum = glb_rat_TRop,
             print(f'(This has indeterminate angular momentum: maximum {-rat_AM}).\n')
 
     return glb_rat_TRop, glb_rat_TRopAM
+
 
 # # The following sets glb_rat_fun, glb_rat_format, and glb_rat_desg
 # # which determine how "transition rates" are displayed in the
@@ -1125,8 +1095,6 @@ def ACM_set_transition(TR_op: OperatorSum = glb_rat_TRop,
 #
 #   [glb_rat_fun,glb_rat_format,glb_rat_desg]:
 # end;
-
-
 def ACM_set_rat_form(rat_fun: Callable = glb_rat_fun,
                      rat_format: str = glb_rat_format,
                      rat_desg: str = glb_rat_desg,
@@ -1146,6 +1114,7 @@ def ACM_set_rat_form(rat_fun: Callable = glb_rat_fun,
         print(glb_rat_format, tran_fmat1, '*')
 
     return glb_rat_fun, glb_rat_format, glb_rat_desg
+
 
 # # The following sets glb_amp_fun, glb_amp_format, and glb_amp_desg
 # # which determine how "transition amplitudes" are displayed in the
@@ -1179,8 +1148,6 @@ def ACM_set_rat_form(rat_fun: Callable = glb_rat_fun,
 #
 #   [glb_amp_fun,glb_amp_format,glb_amp_desg]:
 # end;
-
-
 def ACM_set_amp_form(amp_fun: Callable = glb_amp_fun,
                      amp_format: str = glb_amp_format,
                      amp_desg: str = glb_amp_desg,
@@ -1202,6 +1169,7 @@ def ACM_set_amp_form(amp_fun: Callable = glb_amp_fun,
 
     return glb_amp_fun, glb_amp_format, glb_amp_desg
 
+
 # # The following specifies the "basis type" procedure glb_lam_fun.
 # # (see also next procedure).
 #
@@ -1216,8 +1184,6 @@ def ACM_set_amp_form(amp_fun: Callable = glb_amp_fun,
 #
 #   glb_lam_fun:
 # end;
-
-
 def ACM_set_lambda_fun(lambda_fun: Callable, show: int = 1) -> Callable:
     global glb_lam_fun
 
@@ -1228,6 +1194,7 @@ def ACM_set_lambda_fun(lambda_fun: Callable, show: int = 1) -> Callable:
               f'procedure: "{glb_lam_fun}",')
 
     return glb_lam_fun
+
 
 # # The following uses the above procedure to set glb_lam_fun to one of
 # # four particular basis types, using procedures defined elsewhere.
@@ -1272,8 +1239,6 @@ def ACM_set_lambda_fun(lambda_fun: Callable, show: int = 1) -> Callable:
 #   fi:
 #
 # end;
-
-
 def ACM_set_basis_type(choice: nonnegint,
                        abeta0: float = 0.0,
                        show: int = 1) -> Callable:
@@ -1303,6 +1268,7 @@ def ACM_set_basis_type(choice: nonnegint,
 
     return glb_lam_fun
 
+
 # # For the currently defined basis stored in glb_lam_fun, the following
 # # returns lambda_v-lambda_0 for v=vmin...vmax.
 #
@@ -1310,13 +1276,12 @@ def ACM_set_basis_type(choice: nonnegint,
 #   global glb_lam_fun;
 #   [seq(glb_lam_fun(v),v=vmin..vmax)]:
 # end;
-
-
 def ACM_show_lambda_fun(vmin: nonnegint = 0, vmax: nonnegint = 10) -> tuple[int, ...]:
     require_nonnegint('vmin', vmin)
     require_nonnegint('vmax', vmax)
 
     return tuple(glb_lam_fun(v) for v in range(vmin, vmax + 1))
+
 
 # # Following tests that lambda only shifts by +/-1 as we change v,
 # # returning boolean true if so, false if not.
@@ -1337,8 +1302,6 @@ def ACM_show_lambda_fun(vmin: nonnegint = 0, vmax: nonnegint = 10) -> tuple[int,
 # #
 # #   true:
 # # end;
-
-
 def ACM_test_lambda_fun(vmin: nonnegint, vmax: nonnegint) -> bool:
     require_nonnegint('vmin', vmin)
     require_nonnegint('vmax', vmax)
@@ -1353,6 +1316,7 @@ def ACM_test_lambda_fun(vmin: nonnegint, vmax: nonnegint) -> bool:
             return False
 
     return True
+
 
 # # The following procedure calls the above procedures to set the
 # # default values for all of the global parameters described above.
@@ -1383,8 +1347,6 @@ def ACM_test_lambda_fun(vmin: nonnegint, vmax: nonnegint) -> bool:
 #   fi:
 #
 # end:
-
-
 def ACM_set_defaults(show: int = 1) -> None:
 
     ACM_set_output(2, 7, 4, show)

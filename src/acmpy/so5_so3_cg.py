@@ -22,14 +22,6 @@ from acmpy.spherical_space import dimSO5r3
 # # each a subdirectory of the directory specified in SO5CG_directory.
 # # There are no v2=0 files because the data is easily generated
 # # (and is done so in the procedure load_CG_table below).
-
-Seniority = nonnegint
-Alpha = posint
-AngularMomentum = nonnegint
-SO5SO3Label = tuple[Seniority, Alpha, AngularMomentum]
-SO5SO3Labels = list[SO5SO3Label]
-
-
 SO5Quintet = tuple[nonnegint, nonnegint, posint, nonnegint, nonnegint]
 """An SO5 quintet is a tuple (v1, v2, a2, L2, v3) of irrep label components."""
 
@@ -119,10 +111,8 @@ def SO5CG_filename(v1: nonnegint,
 #
 #   label_list:
 # end:
-
 SO5Quartet = tuple[posint, nonnegint, posint, nonnegint]
 """An SO5 quartet is a tuple (a1, L1, a3, L3) of irrep label components."""
-
 CGLabelList = list[SO5Quartet]
 
 

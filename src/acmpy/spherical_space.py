@@ -4,13 +4,17 @@ from typing import Optional
 
 from acmpy.compat import require_int, require_nonnegint, require_nonnegint_range,\
     iquo, irem, nonnegint, posint
-from acmpy.so5_so3_cg import Alpha, AngularMomentum, Seniority, SO5SO3Label, SO5SO3Labels
 
 
 # ###########################################################################
 # ####------------- Representations on the spherical space --------------####
 # ###########################################################################
-#
+Seniority = nonnegint
+Alpha = posint
+AngularMomentum = nonnegint
+SO5SO3Label = tuple[Seniority, Alpha, AngularMomentum]
+
+
 # # The following two give the dimensions of SO(3) and SO(5)
 # # irreducible representations (symmetric).
 #
@@ -146,7 +150,8 @@ def dimSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
 #     -> `if`(_npassed>3,dimSO5r3_rngVrngL(_passed),
 #                        dimSO5r3_rngV(_passed)):
 def dimSO5r3_rngVvarL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: Optional[nonnegint] = None) -> int:
+                      L_min: nonnegint, L_max: Optional[nonnegint] = None
+                      ) -> int:
     if L_max is not None:
         return dimSO5r3_rngVrngL(v_min, v_max, L_min, L_max)
 
@@ -192,7 +197,7 @@ def lbsSO5r3_allL(v: nonnegint) -> list[tuple[Alpha, AngularMomentum]]:
 #                                                       LL=0..2*v_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> SO5SO3Labels:
+def lbsSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> list[SO5SO3Label]:
     require_nonnegint_range('v', v_min, v_max)
 
     return [(u, a, LL)
@@ -211,7 +216,7 @@ def lbsSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> SO5SO3Labels:
 #     [seq(seq([v,a,LL],a=1..dimSO5r3(v,LL)),LL=L_min..L_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> SO5SO3Labels:
+def lbsSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> list[SO5SO3Label]:
     require_nonnegint('v', v)
     require_nonnegint_range('L', L_min, L_max)
 
@@ -230,7 +235,7 @@ def lbsSO5r3_rngL(v: nonnegint, L_min: nonnegint, L_max: nonnegint) -> SO5SO3Lab
 #     [seq(seq([u,a,L],a=1..dimSO5r3(u,L)),u=v_min..v_max)]:
 #   fi:
 # end:
-def lbsSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> SO5SO3Labels:
+def lbsSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> list[SO5SO3Label]:
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint('L', L)
 
@@ -252,7 +257,7 @@ def lbsSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> SO5SO3Lab
 #   fi:
 # end:
 def lbsSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
-                      L_min: nonnegint, L_max: nonnegint) -> SO5SO3Labels:
+                      L_min: nonnegint, L_max: nonnegint) -> list[SO5SO3Label]:
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
 
@@ -280,7 +285,7 @@ def lbsSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
 # end:
 def lbsSO5r3_rngVvarL(v_min: nonnegint, v_max: nonnegint,
                       L_min: nonnegint, L_max: Optional[nonnegint] = None
-                      ) -> SO5SO3Labels:
+                      ) -> list[SO5SO3Label]:
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint('L', L_min)
 

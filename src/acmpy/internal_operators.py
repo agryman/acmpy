@@ -7,8 +7,8 @@ from sympy import Symbol, pi, sqrt, Integer, Rational, sympify, Expr, \
     S, factorial, Matrix, diag, eye
 
 from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
-from acmpy.so5_so3_cg import CG_SO5r3, SO5SO3Label
-from acmpy.spherical_space import lbsSO5r3_rngVvarL, SO5SO3Labels, dimSO3, dimSO5r3_rngVvarL
+from acmpy.so5_so3_cg import CG_SO5r3
+from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label
 
 OperatorProduct = tuple[Expr, list[Symbol]]
 OperatorSum = list[OperatorProduct]
@@ -449,7 +449,7 @@ To forget the RepSO5_Y_rem cache call: RepSO5_Y_rem.cache_clear().
 def RepSO5_Y_rem(v: int, al: int, L: int,
                  v_min: int, v_max: int,
                  L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    states: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     return Matrix([[ME_SO5r3(*i, v, al, L, *j).evalf()
                     for j in states]
                    for i in states])
@@ -473,7 +473,7 @@ def RepSO5_Y_rem(v: int, al: int, L: int,
 def RepSO5_Y_alg(v: int, al: int, L: int,
                  v_min: int, v_max: int,
                  L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    states: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
     return Matrix([[ME_SO5r3(*i, v, al, L, *j)
                     for j in states]
@@ -494,7 +494,7 @@ def RepSO5_Y_alg(v: int, al: int, L: int,
 # end:
 def RepSO5_sqLdim(v_min: int, v_max: int,
                   L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    states: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
     return diag(*(((-1) ** L * sqrt(dimSO3(L))).evalf() for (_, _, L) in states))
 
@@ -513,7 +513,7 @@ def RepSO5_sqLdim(v_min: int, v_max: int,
 # end:
 def RepSO5_sqLdiv(v_min: int, v_max: int,
                   L_min: int, L_max: int) -> Matrix:
-    states: SO5SO3Labels = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    states: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
     return diag(*(((-1) ** L / sqrt(dimSO3(L))).evalf() for (_, _, L) in states))
 
@@ -981,18 +981,22 @@ def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
 #                                  SpHarm_310,SpHarm_310]] ]: fi:
 #   our_op:
 # end:
-def ACM_HamSH3(c0=0,
-               c1=0,
-               c2=0,
-               c3=0,
-               c4=0,
-               c5=0,
-               c6=0,
-               c7=0,
-               c8=0) -> OperatorSum:
-    print('Not implemented.')
+def ACM_HamSH3(c0: Expr = S.Zero,
+               c1: Expr = S.Zero,
+               c2: Expr = S.Zero,
+               c3: Expr = S.Zero,
+               c4: Expr = S.Zero,
+               c5: Expr = S.Zero,
+               c6: Expr = S.Zero,
+               c7: Expr = S.Zero,
+               c8: Expr = S.Zero) -> OperatorSum:
+    our_op: OperatorSum = [] if c0 == 0 else [(c0, [])]
 
-    return []
+    for n, c in zip(range(1,9), [c1, c2, c3, c4, c5, c6, c7, c8]):
+        if c != 0:
+            our_op.append((c * Convert_310 ** n, [SpHarm_310] * n))
+
+    return our_op
 
 
 # # The procedure ACM_HamSH6 below provides the ACM encoding for linear
@@ -1050,18 +1054,47 @@ def ACM_HamSH3(c0=0,
 #                           [SpHarm_610,SpHarm_610,SpHarm_610,SpHarm_610]] ]: fi:
 #   our_op:
 # end:
-def ACM_HamSH6(c0=0,
-               c1=0,
-               c2=0,
-               c3=0,
-               c4=0,
-               c5=0,
-               c6=0,
-               c7=0,
-               c8=0) -> OperatorSum:
-    print('Not implemented.')
+def ACM_HamSH6(c0: Expr = S.Zero,
+               c1: Expr = S.Zero,
+               c2: Expr = S.Zero,
+               c3: Expr = S.Zero,
+               c4: Expr = S.Zero,
+               c5: Expr = S.Zero,
+               c6: Expr = S.Zero,
+               c7: Expr = S.Zero,
+               c8: Expr = S.Zero) -> OperatorSum:
+    d0: Expr = c0 + c2 / 3 + c4 / 9 + c6 / 27 + c8 / 81
+    d1: Expr = c1 + c3 / 3 + c5 / 9 + c7 / 27
+    d2: Expr = c2 / 3 + c4 * 2 / 9 + c6 / 9 + c8 * 4 / 81
+    d3: Expr = c3 / 3 + c5 * 2 / 9 + c7 / 9
+    d4: Expr = c4 / 9 + c6 / 9 + c8 * 2 / 27
+    d5: Expr = c5 / 9 + c7 / 9
+    d6: Expr = c6 / 27 + c8 * 4 / 81
+    d7: Expr = c7 / 27
+    d8: Expr = c8 / 81
 
-    return []
+    our_op: OperatorSum = [] if d0 == 0 else [(d0, [])]
+
+    if d1 != 0:
+        our_op.append((d1 * Convert_310, [SpHarm_310]))
+    if d2 != 0:
+        our_op.append((d2 * Convert_610, [SpHarm_610]))
+    if d3 != 0:
+        our_op.append((d3 * Convert_610 * Convert_310, [SpHarm_610, SpHarm_310]))
+    if d4 != 0:
+        our_op.append((d4 * Convert_610 ** 2, [SpHarm_610, SpHarm_610]))
+    if d5 != 0:
+        our_op.append((d5 * Convert_610 ** 2 * Convert_310,
+                       [SpHarm_610] * 2 + [SpHarm_310]))
+    if d6 != 0:
+        our_op.append((d6 * Convert_610 ** 3, [SpHarm_610] * 3))
+    if d7 != 0:
+        our_op.append((d7 * Convert_610 ** 3 * Convert_310,
+                       [SpHarm_610] * 3 + [SpHarm_310]))
+    if d8 != 0:
+        our_op.append((d8 * Convert_610 ** 4, [SpHarm_610] * 4))
+
+    return our_op
 
 
 # # The following procedure Op_AM returns the SO(3) AM of an operator.
@@ -1160,9 +1193,27 @@ def Op_AM(WOp: OperatorSum) -> int:
 #     first:
 # end:
 def Op_Parity(WOp: OperatorSum) -> int:
-    print('Not implemented.')
+    if len(WOp) == 0:
+        return 0
 
-    return 0
+    first: int = 0
+    for i0, WOp_i in enumerate(WOp):
+        i: int = i0 + 1
+        Wterm: list[Symbol] = WOp_i[1]
+        parity: int = 0
+        for t in Wterm:
+            if t in [Radial_b, Radial_bm, Radial_Db, Xspace_Pi,
+                     SpHarm_112, SpHarm_310, SpHarm_313, SpHarm_314, SpHarm_316,
+                     SpHarm_512, SpHarm_514, SpHarm_515, SpHarm_516, SpHarm_517,
+                     SpHarm_518, SpHarm_51A]:
+                parity += 1
+
+        if i == 1:
+            first = parity % 2
+        elif (parity - first) % 2 == 1:
+            return -1
+
+    return first
 
 
 # # The following procedure Op_Tame determines whether an operator
@@ -1190,10 +1241,17 @@ def Op_Parity(WOp: OperatorSum) -> int:
 #
 #     true:
 # end:
-def Op_Tame(WOp: OperatorSum) -> int:
-    print('Not implemented.')
+def Op_Tame(WOp: OperatorSum) -> bool:
+    if len(WOp) == 0:
+        return True
 
-    return 0
+    for WOp_i in WOp:
+        Wterm: list[Symbol] = WOp_i[1]
+        for t in Wterm:
+            if t in [Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4]:
+                return False
+
+    return True
 
 
 # # The following three values specify particular (linear combinations of)

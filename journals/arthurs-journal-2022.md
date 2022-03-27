@@ -770,8 +770,6 @@ Implement functions in `internal_operators.py` - IN-PROGRESS
 
 Resolved bug: I was conflating two distinct lists, `SpHarm_Operators` and `Spherical_Operators`.
 
-`ACM_HamSH3` - TODO
-
 I am going to change the type of OperatorProduct and OperatorSum to
 use lists instead of tuples for repeated elements.
 Run `mypy` before this change: DONE
@@ -779,3 +777,57 @@ Make change: DONE
 Run `mypy` after this change: DONE
 
 break 9:42 pm
+
+## 2022-03-25
+
+### 2:22 pm
+
+`ACM_HamSH3` - DONE
+
+`ACM_HamSH6` - DONE
+
+`Op_Parity` - DONE
+
+`Op_Tame` - DONE
+
+There is a bug in the Maple source for `Op_Tame`.
+See https://github.com/agryman/acm16/issues/2
+
+Implement functions in `internal_operators.py` - DONE
+
+### 4:44 pm
+
+Modules:
+
+* `full_operators.py` - TODO
+* `full_space.py` - TODO
+* `globals.py` - DONE
+* `hamiltonian_data.py` - TODO
+* `internal_operators.py` - DONE
+* `radial_space.py` - TODO
+* `so5_so3_cg.py` - DONE
+* `spherical_space.py` - DONE
+
+### 5:21 pm
+
+`full_operators.py` - IN-PROGRESS
+
+Implemented up to `lbsXspace`.
+
+break 5:58 pm
+
+## 2022-03-26
+
+### 3:13 pm
+
+`full_operators.py` - IN-PROGRESS
+
+* `RepXspace` - IN-PROGRESS
+
+break 6:04 pm
+
+### 7:37 pm 
+
+* `RepXspace` - DONE
+
+commit changes 9:18 pm
