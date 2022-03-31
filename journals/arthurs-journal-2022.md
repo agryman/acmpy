@@ -831,3 +831,61 @@ break 6:04 pm
 * `RepXspace` - DONE
 
 commit changes 9:18 pm
+
+break 9:20 pm
+
+## 2022-03-27
+
+### 3:45 pm
+
+`full_operators.py` - IN-PROGRESS
+* `RepXspace_Prod` - DONE
+* `RepXspace_Twin` - IN-PROGRESS
+
+break 6:02 pm
+
+## 2022-03-28
+
+### 5:15 pm
+
+`full_operators.py` - IN-PROGRESS
+* `RepXspace_Twin` - IN-PROGRESS
+
+break 5:42 pm
+
+## 2022-03-29
+
+### 4:10 pm
+
+`full_operators.py` - IN-PROGRESS
+* `RepXspace_Twin` - DONE
+* `RepXspace_Pi` - IN-PROGRESS
+
+break 5:56 pm
+
+## 2022-03-30
+
+Create stubs for all functions. - TODO
+* `compat.py` - DONE
+* `full_operators.py` - DONE
+* `full_space.py` - DONE
+* `globals.py` - DONE
+* `hamiltonian_data.py` - DONE
+* `internal_operators.py` - DONE
+* `radial_space.py` - DONE
+* `so5_so3_cg.py` - DONE
+* `spherical_space.py` - DONE
+
+`full_operators.py` - IN-PROGRESS
+* `RepXspace_Pi` - IN-PROGRESS
+
+break 5:32 pm
+
+### 9:44 pm
+
+`full_operators.py` - IN-PROGRESS
+* `RepXspace_Pi` - DONE
+* `RepXspace_PiPi` - DONE
+* `RepXspace_PiqPi` - TODO
+
+break 10:36 pm

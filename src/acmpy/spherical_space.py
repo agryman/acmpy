@@ -78,7 +78,6 @@ def dimSO5r3_rngVallL(v_min: nonnegint, v_max: nonnegint) -> posint:
 #     d:
 #   fi:
 # end:
-#
 def dimSO5r3(v: int, L: int) -> int:
     require_int('v', v)
     require_int('L', L)

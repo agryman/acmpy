@@ -1,6 +1,8 @@
 """8. Procedures that aid the production of the data for the particular Hamiltonians considered in [RWC2009]."""
+
+
 # ###########################################################################
-# ####-------- Aiding calculations for Hamitlonians in [RWC2009] --------####
+# ####-------- Aiding calculations for Hamiltonians in [RWC2009] --------####
 # ###########################################################################
 #
 # # Here we provide procedures that may be used instead of
@@ -12,8 +14,10 @@
 #
 # RWC_Ham:=(B,c1,c2,chi,kappa)->
 #   ACM_Hamiltonian(-1/2/B,0,B*c1/2,B*c2/2,0,-chi,0,0,0,kappa);
-#
-#
+def RWC_Ham():
+    pass
+
+
 # # The following procedure RWC_expt gives the expectation value of the above
 # # Hamiltonian on the |(anorm,lambda0)0;0100> basis state, given by (B16).
 # # (Note that (76) of [RWC2009] contains typos.)
@@ -26,7 +30,10 @@
 #   aa*(4+9/(lambda0-1))/8/B + B*lambda0*c1/2/aa
 #               + B*lambda0*(lambda0+1)*c2/2/aa^2 + kappa/3:
 # end:
-#
+def RWC_expt():
+    pass
+
+
 # # The following procedure RWC_expt_link gives the same expectation value
 # # (B16) as that above, but lambda0 is assumed to depend on anorm through
 # # the function RWC_dav (see below).
@@ -35,22 +42,30 @@
 #                           anorm::constant,$)
 #   RWC_expt(_passed,evalf(RWC_dav(c1,c2,anorm))):
 # end:
-#
-#
+def RWC_expt_link():
+    pass
+
+
 # # The following procedure RWC_dav calculates lambda0 from anorm
 # # (and c1 and c2) using (B11) via (B15).
 #
 # RWC_dav:=proc(c1::constant,c2::constant,anorm::constant,v::nonnegint:=0,$)
 #   lam_dav(anorm,beta_dav(c1,c2),v)
 # end:
-#
+def RWC_dav():
+    pass
+
+
 # # The following calculates lambda_v using (B7) - or using
 # # B11 if the final argument is not given (it defaults to 0).
 #
 # lam_dav:=proc(a::constant,beta0::constant,v::nonnegint:=0,$)
 #     1+sqrt( (v+3/2)^2 + a^4*beta0^4 )
 # end:
-#
+def lam_dav():
+    pass
+
+
 # # The following calculates beta_0 using (B15)
 #
 # beta_dav:=proc(c1::constant,c2::constant,$)
@@ -60,7 +75,10 @@
 #     sqrt(-c1/c2/2)
 #   fi;
 # end:
-#
+def beta_dav():
+    pass
+
+
 # # The following procedure RWC_alam returns values of the ACM parameters
 # # (anorm,lambda), which are "optimal" in the cases of the RWC Hamiltonians.
 # # This seeks the minimal value of RWC_expt, given above, by solving
@@ -108,7 +126,10 @@
 #   fi:
 #
 # end:
-#
+def RWC_alam():
+    pass
+
+
 # # The following procedure RWC_alam36 is a simplified algorithm
 # # for obtaining "optimal" values of (anorm,lambda), obtained by
 # # matching second derivatives at the turning point of the potential.
@@ -128,7 +149,10 @@
 #   fi:
 #
 # end:
-#
+def RWC_alam36():
+    pass
+
+
 # # The following procedure RWC_alam_clam is another alternative that
 # # returns values of the ACM parameters (anorm,lambda), which are
 # # obtained from the minimal value of the expectation value of RWC_expt,
@@ -142,8 +166,10 @@
 #     return [sqrt(aa0),2.5]:
 #
 # end:
-#
-#
+def RWC_alam_clam():
+    pass
+
+
 # # The following procedure RWC_alam_fun returns a triple
 # #                 [anorm,lambda0,lambda_fun]
 # # where anorm and lambda0 are "optimal" values obtained as in
@@ -187,5 +213,5 @@
 #   fi:
 #
 # end:
-#
-#
+def RWC_alam_fun():
+    pass

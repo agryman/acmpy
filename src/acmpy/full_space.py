@@ -206,8 +206,10 @@ def DigXspace(ham_op: OperatorSum,
 #
 #   [ map2(op,1,real_eigens), Matrix([Column(eigenstuff[2],eigen_order)]) ];
 # end:
-#
-#
+def Eigenfiddle(Hmatrix: Matrix):
+    pass
+
+
 # # The following procedure pair_order compares two lists, by comparing
 # # their first elements: it returns true if the first element of the
 # # first argument is less than the first element of the second.
@@ -216,8 +218,10 @@ def DigXspace(ham_op: OperatorSum,
 # pair_order:=proc(eigenpair1::list(numeric),eigenpair2::list(numeric))
 #   evalb(eigenpair1[1]<eigenpair2[1]);
 # end:
-#
-#
+def pair_order():
+    pass
+
+
 # # The following procedure AmpXspeig represents the operator encoded
 # # in tran_op on the truncated Hilbert space specified by the elements
 # # of Xparams and Lvals, and then transforms it to the basis specified
@@ -280,8 +284,10 @@ def DigXspace(ham_op: OperatorSum,
 #   Matrix(L_count, (i,j)->eigen_invs[i].block_tran_mat[i,j].eigen_bases[j]);
 #
 # end;
-#
-#
+def AmpXspeig():
+    pass
+
+
 # ###########################################################################
 #
 # # The following procedure Show_Eigs displays in a convenient format
@@ -372,16 +378,24 @@ def DigXspace(ham_op: OperatorSum,
 #
 #   eigen_low;   # return smallest eigenvalue (in case it's needed!)
 # end;
-#
-#
+def Show_Eigs():
+    pass
+
+
 # # The following functions min_head and fsel are used to obtain,
 # # within a list of lists, the minimal value amongst the first elements.
 # # These procedures are only used within Show_Eigs above.
 #
 # min_head:=(alist)->min(op(map(fsel,alist)));
+def min_head():
+    pass
+
+
 # fsel:=(nlist)->`if`(nops(nlist)>0,nlist[1],NULL);
-#
-#
+def fsel():
+    pass
+
+
 # ###########################################################################
 #
 # # The procedure Show_Mels below is a very versatile procedure for
@@ -616,8 +630,10 @@ def DigXspace(ham_op: OperatorSum,
 #   od:
 #   NULL;
 # end;
-#
-#
+def Show_Mels():
+    pass
+
+
 # # The following procedure Show_Mels_Row is used by the above procedure
 # # Show_Mels to display, for the fixed values L1,L2,n2, the functions
 # # of the matrix elements calculated for [L1,L2,n1,n2].
@@ -660,8 +676,10 @@ def DigXspace(ham_op: OperatorSum,
 #   return 1:
 #
 # end:
-#
-#
+def Show_Mels_Row():
+    pass
+
+
 # # The procedures Show_Rats and Show_Amps below call Show_Mels
 # # above with its final four arguments (of eight) taking
 # # particular values specified by certain global variables.
@@ -705,7 +723,10 @@ def DigXspace(ham_op: OperatorSum,
 #                glb_rat_format,
 #                glb_rat_desg):
 # end:
-#
+def Show_Rats():
+    pass
+
+
 # Show_Amps:=proc(Melements::Matrix, Lvals::list,
 #                   amp_lst::list(list):=glb_amp_lst,
 #                   toshow::integer:=glb_amp_num,$)
@@ -720,8 +741,10 @@ def DigXspace(ham_op: OperatorSum,
 #                glb_amp_format,
 #                glb_amp_desg):
 # end:
-#
-#
+def Show_Amps():
+    pass
+
+
 # ###########################################################################
 #
 # # The following procedure ACM_ScaleOrAdapt combines many of those
@@ -918,8 +941,10 @@ def DigXspace(ham_op: OperatorSum,
 #   [eigen_quin[1],tran_mat,Lvals]:
 #
 # end;
-#
-#
+def ACM_ScaleOrAdapt():
+    pass
+
+
 # # The following procedure ACM_Scale invokes the procedure ACM_ScaleOrAdapt
 # # above with fit_eig=0 and fit_rat=0 so that the values of the scaling
 # # parameters glb_eig_sft, glb_rat_sft and glb_amp_sft are used unchanged

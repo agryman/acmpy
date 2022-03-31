@@ -7,12 +7,11 @@
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2022.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/arthurs-journal-2022.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/acm1_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/acm1_4.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/full_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_operators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/globals.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/globals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/internal_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/internal_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/radial_space.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/so5_so3_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/so5_so3_cg.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/spherical_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/spherical_space.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -167,6 +166,9 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -412,7 +414,13 @@
       <workItem from="1648069848462" duration="10781000" />
       <workItem from="1648152886855" duration="7310000" />
       <workItem from="1648232523037" duration="11343000" />
-      <workItem from="1648321916511" duration="15544000" />
+      <workItem from="1648321916511" duration="15609000" />
+      <workItem from="1648344028725" duration="58000" />
+      <workItem from="1648410322063" duration="7466000" />
+      <workItem from="1648501857821" duration="1704000" />
+      <workItem from="1648584588474" duration="6059000" />
+      <workItem from="1648672399391" duration="3611000" />
+      <workItem from="1648691062723" duration="3154000" />
     </task>
     <servers />
   </component>

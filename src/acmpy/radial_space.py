@@ -6,6 +6,7 @@ from functools import cache
 from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range
+from acmpy.internal_operators import OperatorSum
 
 Nu = nonnegint
 
@@ -232,7 +233,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_bDb():
+    pass
+
+
 # # The following gives matrix elements of beta for lambda'=lambda+1
 # # using (26).
 #
@@ -245,7 +249,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_b_pl():
+    pass
+
+
 # # The following gives matrix elements of 1/beta for lambda'=lambda+1
 # # using (28).
 #
@@ -261,7 +268,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #                            /(factorial(mu_i)*GAMMA(lambda+mu_f+1)) );
 #   fi:
 # end:
-#
+def ME_Radial_bm_pl():
+    pass
+
+
 # # The following gives matrix elements of d/d(beta) for lambda'=lambda+1
 # # using (30).
 #
@@ -282,7 +292,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #   fi:
 #   res:
 # end:
-#
+def ME_Radial_Db_pl():
+    pass
+
+
 # # The following gives matrix elements of beta for lambda'=lambda-1
 # # using (27).
 #
@@ -295,7 +308,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-#
+def ME_Radial_b_ml():
+    pass
+
+
 # # The following gives matrix elements of 1/beta for lambda'=lambda-1
 # # using (29).
 #
@@ -311,7 +327,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #                            /(factorial(mu_f)*GAMMA(lambda+mu_i)) );
 #   fi:
 # end:
-#
+def ME_Radial_bm_ml():
+    pass
+
+
 # # The following gives matrix elements of d/d(beta) for lambda'=lambda-1
 # # using (31).
 #
@@ -331,7 +350,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #   fi:
 #   res:
 # end:
-#
+def ME_Radial_Db_ml():
+    pass
+
+
 # # The following gives matrix elements of the identity operator
 # # for lambda'=lambda+2r, for nonnegative r, using (33).
 # # It makes use of MF_Radial_id_poly below.
@@ -350,7 +372,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0
 #   fi:
 # end:
-#
+def ME_Radial_id_pl():
+    pass
+
+
 # # The following gives matrix elements of the identity operator
 # # for lambda'=lambda-2r, for nonnegative r, using (33).
 # # It makes use of MF_Radial_id_poly below.
@@ -369,7 +394,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0
 #   fi:
 # end:
-#
+def ME_Radial_id_ml():
+    pass
+
+
 # # The following, used by the above two procedures, calculates (33)
 # # for all non-negative integer r. It returns a polynomial in lamvar.
 # # Note that this works for r=0 (giving delta_{mu,nu}, as required).
@@ -388,7 +416,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
-#
+def MF_Radial_id_poly():
+    pass
+
+
 # # Old version of above, which evaluates at the particular value
 # # of lambda.
 #
@@ -407,7 +438,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
-#
+def MF_Radial_id_pl():
+    pass
+
+
 # # Same result, but done in a different way.
 #
 # MF_Radial_id_pl2:=proc(lambda::algebraic,mu::nonnegint,nu::nonnegint,
@@ -429,8 +463,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
-#
-#
+def MF_Radial_id_pl2():
+    pass
+
+
 # # The following procedure returns a single matrix element
 # #     F^{(anorm)}_{lambda_var,mu_f}{lambda,mu_i}(Op),
 # # for Op one of the operators from Table I with symbolic name radial_op.
@@ -496,7 +532,10 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #   fi:
 #
 # end:
-#
+def ME_Radial():
+    pass
+
+
 # ###########################################################################
 #
 # # The following uses one of the above procedures
@@ -614,7 +653,7 @@ def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
 
     return Matrix()
 
-#
+
 # # The following is similar to the above to produce the inverse of
 # # the square root of a Matrix.
 #
@@ -939,8 +978,10 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm:Expr,
 #   fi:
 #
 # end:
-#
-#
+def Lambda_Splits():
+    pass
+
+
 # # The following returns, for a certain Op determined by rps_op,
 # # the explicit matrix of elements
 # #     F^{(anorm)}_{lambda+R,mu_f}{lambda,mu_i}(Op),
@@ -1022,8 +1063,8 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm:Expr,
 #
 # end;
 @cache
-def RepRadialshfs_Prod(rps_op: list, anorm: Expr,
-                       lambdaa: Expr, lambda_shfs: list,
+def RepRadialshfs_Prod(rps_op: tuple, anorm: Expr,
+                       lambdaa: Expr, lambda_shfs: tuple,
                        nu_min: nonnegint, nu_max: nonnegint
                        ) -> Matrix:
     print('Not implemented.')
@@ -1140,8 +1181,10 @@ def RepRadialshfs_Prod(rps_op: list, anorm: Expr,
 #     fi:
 #
 # end;
-#
-#
+def RepRadial_Prod():
+    pass
+
+
 # # As above, but continues to remember everything.
 #
 # RepRadial_Prod_rem:=proc(rbs_op::list, anorm::algebraic,
@@ -1196,7 +1239,7 @@ def RepRadialshfs_Prod(rps_op: list, anorm: Expr,
 #
 # end;
 @cache
-def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
+def RepRadial_Prod_rem(rbs_op: tuple, anorm: Expr,
                        lambdaa: Expr, lambda_var: int,
                        nu_min: nonnegint, nu_max: nonnegint,
                        nu_lap :nonnegint =0) -> Matrix:
@@ -1262,7 +1305,10 @@ def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
 #   POp_List:
 #
 # end:
-#
+def Parse_RadialOp_List():
+    pass
+
+
 # # Takes a list obtained from above, and assigns a lambda variation
 # # to each term, so that we get the correct overall lambda change.
 # # The elements of rsp_op are either integers (-1,0 or 1) or pairs [K,T].
@@ -1386,8 +1432,10 @@ def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
 #   fi:
 #
 # end:
-#
-#
+def Lambda_RadialOp_List():
+    pass
+
+
 # # The following procedure is similar to RepRadial_Prod above, but is able to
 # # represent linear combinations of products of the basic radial operators.
 # # The arguments anorm, lambda, lambda_var, nu_min, nu_max are same as above,
@@ -1447,7 +1495,10 @@ def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
 #
 #   Mat;
 # end:
-#
+def RepRadial_LC():
+    pass
+
+
 # # As above, but everything is remembered.
 #
 # RepRadial_LC_rem:=proc(rlc_op::list(list), anorm::algebraic,
@@ -1477,7 +1528,7 @@ def RepRadial_Prod_rem(rbs_op: list, anorm: Expr,
 #   Mat;
 # end:
 @cache
-def RepRadial_LC_rem(rlc_op: list[list], anorm: Expr,
+def RepRadial_LC_rem(rlc_op: OperatorSum, anorm: Expr,
                      lambdaa: Expr, lambda_var: int,
                      nu_min: nonnegint, nu_max: nonnegint,
                      nu_lap: nonnegint = 0) -> Matrix:

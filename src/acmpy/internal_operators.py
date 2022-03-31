@@ -10,8 +10,8 @@ from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
 from acmpy.so5_so3_cg import CG_SO5r3
 from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label
 
-OperatorProduct = tuple[Expr, list[Symbol]]
-OperatorSum = list[OperatorProduct]
+OperatorProduct = tuple[Expr, tuple[Symbol, ...]]
+OperatorSum = tuple[OperatorProduct, ...]
 
 # # The following is a list containing the symbolic names for ten operators
 # # that are the "basic" radial operators.
@@ -40,6 +40,9 @@ Radial_Db: Symbol = Symbol('Radial_Db', commutative=False)
 Radial_Operators is a Maple list.
 A Maple list is an immutable sequence of objects.
 It should be implemented in Python as a tuple.
+Note that in some cases the results of a function are cached in a dict
+so all the arguments must be immutable in which case tuples must be used
+instead of list.
 """
 Radial_Operators: tuple[Symbol, ...] = (
     Radial_Sm, Radial_S0, Radial_Sp,
@@ -241,8 +244,8 @@ Convert_red: Expr = 1 / FourPi
 # quad_op:=[ [Convert_112, [Radial_b,SpHarm_112]] ]:
 # quadRigid_op:=[ [Convert_112, [SpHarm_112]] ]:
 """Refer to: 7.3. Internal representation of Hamiltonians and other operators """
-quad_op: OperatorSum = [(Convert_112, [Radial_b, SpHarm_112])]
-quadRigid_op: OperatorSum = [(Convert_112, [SpHarm_112])]
+quad_op: OperatorSum = ((Convert_112, (Radial_b, SpHarm_112)),)
+quadRigid_op: OperatorSum = ((Convert_112, (SpHarm_112,)),)
 
 
 # ###########################################################################
@@ -564,7 +567,7 @@ def RepSO5_sqLdiv(v_min: int, v_max: int,
 def RepSO5r3_Prod(ys_op: list,
                   v_min: int, v_max: int,
                   L_min: int, L_max: int) -> Matrix:
-    rep: Matrix = RepSO5r3_Prod_wrk(ys_op, v_min, v_max, L_min, L_max)
+    rep: Matrix = RepSO5r3_Prod_wrk(tuple(ys_op), v_min, v_max, L_min, L_max)
 
     RepSO5_Y_rem.cache_clear()
     return rep
@@ -581,7 +584,7 @@ def RepSO5r3_Prod(ys_op: list,
 #   RepSO5r3_Prod_wrk(_passed):
 # end:
 @cache
-def RepSO5r3_Prod_rem(ys_op: list,
+def RepSO5r3_Prod_rem(ys_op: tuple,
                       v_min: int, v_max: int,
                       L_min: int, L_max: int) -> Matrix:
 
@@ -653,7 +656,7 @@ def RepSO5r3_Prod_rem(ys_op: list,
 #
 #    Mat_product;
 # end:
-def RepSO5r3_Prod_wrk(ys_op: list,
+def RepSO5r3_Prod_wrk(ys_op: tuple,
                       v_min: int, v_max: int,
                       L_min: int, L_max: int) -> Matrix:
     n: int = len(ys_op)
@@ -709,8 +712,7 @@ def RepSO5r3_Prod_wrk(ys_op: list,
 #
 #   ct;
 # end:
-def NumSO5r3_Prod(ys_op: list) -> int:
-    print('Not implemented.')
+def NumSO5r3_Prod(ys_op: tuple) -> int:
     ct: int = 0
 
     for ys_op_i in ys_op:
@@ -846,35 +848,35 @@ def ACM_Hamiltonian(c11: IntFloatExpr = 0,
     c43 = sympify(c43)
     c50 = sympify(c50)
 
-    our_op: OperatorSum = [] if c11 == 0 \
-        else [(c11, [Radial_D2b]),
-              (-c11 * (2 + SENIORITY * (SENIORITY + 3)), [Radial_bm2])]
+    our_op: OperatorSum = () if c11 == 0 \
+        else ((c11, (Radial_D2b,)),
+              (-c11 * (2 + SENIORITY * (SENIORITY + 3)), (Radial_bm2,)))
     if c20 != 0:
-        our_op.append((c20, []))
+        our_op += ((c20, ()),)
     if c21 != 0:
-        our_op.append((c21, [Radial_b2]))
+        our_op += ((c21, (Radial_b2,)),)
     if c22 != 0:
-        our_op.append((c22, [Radial_b2, Radial_b2]))
+        our_op += ((c22, (Radial_b2, Radial_b2)),)
     if c23 != 0:
-        our_op.append((c23, [Radial_bm2]))
+        our_op += ((c23, (Radial_bm2,)),)
     if c30 != 0:
-        our_op.append((c30 * Convert_310, [Radial_b, SpHarm_310]))
+        our_op += ((c30 * Convert_310, (Radial_b, SpHarm_310)),)
     if c31 != 0:
-        our_op.append((c31 * Convert_310, [Radial_b2, Radial_b, SpHarm_310]))
+        our_op += ((c31 * Convert_310, (Radial_b2, Radial_b, SpHarm_310)),)
     if c32 != 0:
-        our_op.append((c32 * Convert_310, [Radial_b2, Radial_b2, Radial_b, SpHarm_310]))
+        our_op += ((c32 * Convert_310, (Radial_b2, Radial_b2, Radial_b, SpHarm_310)),)
     if c33 != 0:
-        our_op.append((c33 * Convert_310, [Radial_bm, SpHarm_310]))
+        our_op += ((c33 * Convert_310, (Radial_bm, SpHarm_310)),)
     if c40 != 0:
-        our_op.append((c40 * Convert_310 ** 2, [SpHarm_310, SpHarm_310]))
+        our_op += ((c40 * Convert_310 ** 2, (SpHarm_310, SpHarm_310)),)
     if c41 != 0:
-        our_op.append((c41 * Convert_310 ** 2, [Radial_b2, SpHarm_310, SpHarm_310]))
+        our_op += ((c41 * Convert_310 ** 2, (Radial_b2, SpHarm_310, SpHarm_310)),)
     if c42 != 0:
-        our_op.append((c42 * Convert_310 ** 2, [Radial_b2, Radial_b2, SpHarm_310, SpHarm_310]))
+        our_op += ((c42 * Convert_310 ** 2, (Radial_b2, Radial_b2, SpHarm_310, SpHarm_310)),)
     if c43 != 0:
-        our_op.append((c43 * Convert_310 ** 2, [Radial_bm2, SpHarm_310, SpHarm_310]))
+        our_op += ((c43 * Convert_310 ** 2, (Radial_bm2, SpHarm_310, SpHarm_310)),)
     if c50 != 0:
-        our_op.append((c50, [Xspace_PiqPi]))
+        our_op += ((c50, (Xspace_PiqPi,)), )
 
     return our_op
 
@@ -929,11 +931,11 @@ def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
 
     cas = sympify(cas)
     if cas != 0:
-        cas_op: OperatorProduct = (cas * SENIORITY * (SENIORITY + 3), [])
+        cas_op: OperatorProduct = (cas * SENIORITY * (SENIORITY + 3), ())
         if len(our_op) > 0:
-            our_op = [cas_op] + our_op
+            our_op = (cas_op,) + our_op
         else:
-            our_op = [cas_op]
+            our_op = (cas_op,)
 
     return our_op
 
@@ -990,11 +992,11 @@ def ACM_HamSH3(c0: Expr = S.Zero,
                c6: Expr = S.Zero,
                c7: Expr = S.Zero,
                c8: Expr = S.Zero) -> OperatorSum:
-    our_op: OperatorSum = [] if c0 == 0 else [(c0, [])]
+    our_op: OperatorSum = () if c0 == 0 else ((c0, ()),)
 
     for n, c in zip(range(1,9), [c1, c2, c3, c4, c5, c6, c7, c8]):
         if c != 0:
-            our_op.append((c * Convert_310 ** n, [SpHarm_310] * n))
+            our_op += ((c * Convert_310 ** n, (SpHarm_310,) * n),)
 
     return our_op
 
@@ -1073,26 +1075,26 @@ def ACM_HamSH6(c0: Expr = S.Zero,
     d7: Expr = c7 / 27
     d8: Expr = c8 / 81
 
-    our_op: OperatorSum = [] if d0 == 0 else [(d0, [])]
+    our_op: OperatorSum = () if d0 == 0 else ((d0, ()),)
 
     if d1 != 0:
-        our_op.append((d1 * Convert_310, [SpHarm_310]))
+        our_op += ((d1 * Convert_310, (SpHarm_310,)),)
     if d2 != 0:
-        our_op.append((d2 * Convert_610, [SpHarm_610]))
+        our_op += ((d2 * Convert_610, (SpHarm_610,)),)
     if d3 != 0:
-        our_op.append((d3 * Convert_610 * Convert_310, [SpHarm_610, SpHarm_310]))
+        our_op += ((d3 * Convert_610 * Convert_310, (SpHarm_610, SpHarm_310)),)
     if d4 != 0:
-        our_op.append((d4 * Convert_610 ** 2, [SpHarm_610, SpHarm_610]))
+        our_op += ((d4 * Convert_610 ** 2, (SpHarm_610, SpHarm_610)),)
     if d5 != 0:
-        our_op.append((d5 * Convert_610 ** 2 * Convert_310,
-                       [SpHarm_610] * 2 + [SpHarm_310]))
+        our_op += ((d5 * Convert_610 ** 2 * Convert_310,
+                    (SpHarm_610,) * 2 + (SpHarm_310,)),)
     if d6 != 0:
-        our_op.append((d6 * Convert_610 ** 3, [SpHarm_610] * 3))
+        our_op += ((d6 * Convert_610 ** 3, (SpHarm_610,) * 3),)
     if d7 != 0:
-        our_op.append((d7 * Convert_610 ** 3 * Convert_310,
-                       [SpHarm_610] * 3 + [SpHarm_310]))
+        our_op += ((d7 * Convert_610 ** 3 * Convert_310,
+                    (SpHarm_610,) * 3 + (SpHarm_310,)),)
     if d8 != 0:
-        our_op.append((d8 * Convert_610 ** 4, [SpHarm_610] * 4))
+        our_op += ((d8 * Convert_610 ** 4, (SpHarm_610,) * 4),)
 
     return our_op
 
@@ -1199,13 +1201,13 @@ def Op_Parity(WOp: OperatorSum) -> int:
     first: int = 0
     for i0, WOp_i in enumerate(WOp):
         i: int = i0 + 1
-        Wterm: list[Symbol] = WOp_i[1]
+        Wterm: tuple[Symbol, ...] = WOp_i[1]
         parity: int = 0
         for t in Wterm:
-            if t in [Radial_b, Radial_bm, Radial_Db, Xspace_Pi,
+            if t in {Radial_b, Radial_bm, Radial_Db, Xspace_Pi,
                      SpHarm_112, SpHarm_310, SpHarm_313, SpHarm_314, SpHarm_316,
                      SpHarm_512, SpHarm_514, SpHarm_515, SpHarm_516, SpHarm_517,
-                     SpHarm_518, SpHarm_51A]:
+                     SpHarm_518, SpHarm_51A}:
                 parity += 1
 
         if i == 1:
@@ -1246,9 +1248,9 @@ def Op_Tame(WOp: OperatorSum) -> bool:
         return True
 
     for WOp_i in WOp:
-        Wterm: list[Symbol] = WOp_i[1]
+        Wterm: tuple[Symbol, ...] = WOp_i[1]
         for t in Wterm:
-            if t in [Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4]:
+            if t in {Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4}:
                 return False
 
     return True
@@ -1267,18 +1269,18 @@ def Op_Tame(WOp: OperatorSum) -> bool:
 #
 # laplacian_op:=[ [1,[Radial_D2b]],
 #                      [-(2+SENIORITY*(SENIORITY+3)),[Radial_bm2]] ]:
-laplacian_op: OperatorSum = [(S.One, [Radial_D2b]),
-                             (-(2 + SENIORITY * (SENIORITY + 3)), [Radial_bm2])]
+laplacian_op: OperatorSum = ((S.One, (Radial_D2b,)),
+                             (-(2 + SENIORITY * (SENIORITY + 3)), (Radial_bm2,)))
 
 # comm_su11_op:=[ [ 1,[Radial_Sm,Radial_Sp]],
 #                      [-1,[Radial_Sp,Radial_Sm]],
 #                      [-2,[Radial_S0]] ]:
-comm_su11_op: OperatorSum = [(S.One, [Radial_Sm, Radial_Sp]),
-                             (S.NegativeOne, [Radial_Sp, Radial_Sm]),
-                             (-S(2), [Radial_S0])]
+comm_su11_op: OperatorSum = ((S.One, (Radial_Sm, Radial_Sp)),
+                             (S.NegativeOne, (Radial_Sp, Radial_Sm)),
+                             (-S(2), (Radial_S0,)))
 # comm_bdb_op:=[ [-1,[Radial_b,Radial_Db]],
 #                     [1,[Radial_Db,Radial_b]],
 #                     [-1,[]] ]:
-comm_bdb_op: OperatorSum = [(S.NegativeOne, [Radial_b, Radial_Db]),
-                            (S.One, [Radial_Db, Radial_b]),
-                            (S.NegativeOne, [])]
+comm_bdb_op: OperatorSum = ((S.NegativeOne, (Radial_b, Radial_Db)),
+                            (S.One, (Radial_Db, Radial_b)),
+                            (S.NegativeOne, ()))
