@@ -1,7 +1,10 @@
 from pathlib import Path
 import pytest
+
+from sympy import Matrix
+
 from acmpy.compat import require_int, require_nonnegint, require_posint, \
-    parse_line_float, readdata_float
+    parse_line_float, readdata_float, Eigenvectors
 
 
 class TestRequireInt:
@@ -82,3 +85,21 @@ class TestReadDataFloat:
         assert data[0] == 1.0
         assert data[1] == 2.0
         assert data[2] == 3.0
+
+
+class TestEigenvectors:
+    """Test the Eigenvector function."""
+
+    def test_ok_4x4(self):
+        M: Matrix = Matrix([[3, -2, 4, -2],
+                            [5, 3, -3, -2],
+                            [5, -2, 2, -2],
+                            [5, -2, -3, 3]])
+        values: list[float]
+        P: Matrix
+        values, P = Eigenvectors(M)
+        assert values == [-2, 3, 5, 5]
+        assert P == Matrix([[0, 1, 1, 0],
+                            [1, 1, 1, -1],
+                            [1, 1, 1, 0],
+                            [1, 1, 0, 1]])

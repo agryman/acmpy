@@ -68,6 +68,7 @@ def unit_amp_fun(Li, Lf, Mel) -> Expr:
 def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
     return Mel ** 2 * dimSO3(Lf) / dimSO3(Li)
 
+
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;

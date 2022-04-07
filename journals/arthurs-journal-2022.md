@@ -889,3 +889,138 @@ break 5:32 pm
 * `RepXspace_PiqPi` - TODO
 
 break 10:36 pm
+
+## 2022-03-31
+
+### 1:38 pm
+
+`full_operators.py` - DONE
+* `RepXspace_PiqPi` - DONE
+* `QixQxQred` - DONE
+* `QpxQxQred_p1` - DONE
+* `QmxQxQred_p1` - DONE
+* `QpxQxQred_m1` - DONE
+* `QmxQxQred_m1` - DONE
+
+`full_space.py` - IN-PROGRESS
+* `DigXspace` - DONE
+* `Eigenfiddle` - IN-PROGRESS
+
+break 6:10 pm
+
+## 2022-04-02
+
+`full_space.py` - IN-PROGRESS
+* `Eigenfiddle` - IN-PROGRESS
+
+I need to understand the correspondence between the Maple and SymPy
+functions that compute eigenvectors.
+
+* Maple:
+```text
+#   eigenstuff:=Eigenvectors(Matrix(n,n,(i,j)->(Hmatrix[i,j]+Hmatrix[j,i])/2,
+#                                     scan=diagonal[upper],shape=symmetric));
+```
+
+According to the Maple Help docs, the scan option is only used when the matrix
+is initialized from a list.
+The shape option is used to allocate storage. Since the matrix is symmetric,
+only half the storage is needed.
+
+* SymPy: 
+
+## 2022-04-03
+
+### 6:25 pm
+
+Understand output of Maple `Eigenvectors` procedure.
+
+break 6:43 pm
+
+## 2022-04-04
+
+### 9:57 am
+
+Maple `Eigenvectors(M)` returns the list of eigenvalues as a column vector,
+and the list of eigenvectors as a matrix where the columns are the
+eigenvectors. Therefore, if we create a diagonal matrix D from the eigenvalues
+and let V be the matrix of eigenvectors, we should have MV = VD.
+
+break 10:30 am
+
+### 3:00 pm
+
+In SymPy:
+
+To find the eigenvectors of a matrix, use eigenvects. 
+eigenvects returns a list of tuples of the form (eigenvalue, algebraic_multiplicity, [eigenvectors]).
+
+```text
+M = Matrix([[3, -2,  4, -2], [5,  3, -3, -2], [5, -2,  2, -2], [5, -2, -3,  3]])
+>>> M
+⎡3  -2  4   -2⎤
+⎢             ⎥
+⎢5  3   -3  -2⎥
+⎢             ⎥
+⎢5  -2  2   -2⎥
+⎢             ⎥
+⎣5  -2  -3  3 ⎦
+>>> M.eigenvals()
+{-2: 1, 3: 1, 5: 2}
+
+```
+
+There is a fairly direct correspondence between Maple and SymPy.
+The main difference is that SymPy includes the multiplicity of the eigenvalues.
+
+* Create a Python equivalent to the Maple `Eigenvectors` procedure - DONE
+
+`full_space.py` - IN-PROGRESS
+* `Eigenfiddle` - DONE
+* `AmpXspeig` - IN-PROGRESS
+
+Note: `AmpXspeig` creates a Maple Matrix whose elements are themselves of type Matrix.
+SymPy handles this the construction the same way.
+This may make the use of NumPy less straight-forward.
+
+break 7:12 pm
+
+## 2022-04-05
+
+### 11:54 am
+
+`full_space.py` - IN-PROGRESS
+* `AmpXspeig` - DONE
+* `Show_Eigs` - DONE
+* `min_head` - DONE
+* `fsel` - DONE
+* `Show_Mels` - TODO
+
+break 2:19 pm
+
+## 4:44 pm
+
+`full_space.py` - IN-PROGRESS
+* `Show_Mels` - IN-PROGRESS
+
+break 7:59 pm
+
+## 2022-04-06
+
+### 8:48 am
+
+`full_space.py` - IN-PROGRESS
+* `Show_Mels` - IN-PROGRESS
+
+break 9:30 am
+
+## 3:23 pm
+
+`full_space.py` - IN-PROGRESS
+* `Show_Mels` - DONE
+* `Show_Mels_Row` - DONE
+* `Show_Rats` - DONE
+* `Show_Amps` - DONE
+* `ACM_ScaleOrAdapt` - IN-PROGRESS
+
+break 5:30 pm

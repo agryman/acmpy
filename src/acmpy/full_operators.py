@@ -3,17 +3,17 @@
 from typing import Optional
 from functools import cache
 
-from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye
+from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye, Rational, sqrt
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint
-from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, \
-    Alpha, AngularMomentum, Seniority, SO5SO3Label
+from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
+    Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3
 from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
     RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem
 from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
     Radial_Operators, Spherical_Operators, Xspace_PiqPi, Xspace_PiPi2, Xspace_PiPi4, Xspace_Pi, Convert_red, \
-    NumSO5r3_Prod, Radial_Db, Radial_bm, Qred_p1, Qred_m1, Radial_bm2, Radial_D2b, Radial_bDb, \
-    QxQred_p2, QxQred_m2, QxQred_0
+    NumSO5r3_Prod, Radial_Db, Radial_bm, Qred_p1, Qred_m1, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, \
+    QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, QxQxQred_m1, ME_SO5red
 from acmpy.so5_so3_cg import CG_SO5r3
 import acmpy.globals as globals
 from acmpy.globals import glb_lam_fun
@@ -796,7 +796,7 @@ def RepXspace_Pi(anorm: Expr, lambda_base: Expr,
             if v_chg == 1:
 
                 rad_Mat = RepRadial_LC_rem(((S.One, (Radial_Db,)),
-                                             (S(-v_init - 2), (Radial_bm,))),
+                                            (S(-v_init - 2), (Radial_bm,))),
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init, nu_min, nu_max)
                 rad_Mat = rad_Mat * (Qred_p1(v_init)).evalf()
@@ -1218,8 +1218,108 @@ def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
                     L_min: nonnegint, L_max: nonnegint
                     ) -> Matrix:
     print('Not implemented.')
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
 
-    return Matrix()
+    rad_dim: int = dimRadial(nu_min, nu_max)
+
+    sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+
+    for j2 in range(1, sph_dim + 1):
+        v_init, al_init, L_init = sph_labels[j2 - 1]
+        jdisp: int = (j2 - 1) * rad_dim
+        lambda_disp_init: int = glb_lam_fun(v_init)
+
+        for i2 in range(1, sph_dim + 1):
+            v_fin, al_fin, L_fin = sph_labels[i2 - 1]
+            if L_fin != L_init:
+                continue
+            v_chg: int = v_fin - v_init
+            idisp: int = (i2 - 1) * rad_dim
+            lambda_disp_fin = glb_lam_fun(v_fin)
+
+            op_sum: OperatorSum
+            op_sum2: OperatorSum
+            rad_Mat: Matrix
+            rad_Mat2: Matrix
+            c: float
+            c2: float
+            if v_chg == 3:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S((v_init + 2) * (v_init + 4)), (Radial_bm,)),
+                          (S(-2 * v_init - 5), (Radial_Db,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                c = QxQxQred_p3(v_init).evalf()
+                rad_Mat = rad_Mat * c
+
+            elif v_chg == -3:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S((v_init - 1) * (v_init + 1)), (Radial_bm,)),
+                          (S(2 * v_init + 1), (Radial_Db,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                c = QxQxQred_m3(v_init).evalf()
+                rad_Mat = rad_Mat * c
+
+            elif v_chg == 1:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S(-(v_init + 1) * (v_init + 2)), (Radial_bm,)))
+                op_sum2 = ((S.one, (Radial_Db,)),
+                           (S(-v_init - 2), (Radial_bm,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                rad_Mat2 = RepRadial_LC_rem(op_sum2,
+                                            anorm, lambda_base + lambda_disp_init,
+                                            lambda_disp_fin - lambda_disp_init,
+                                            nu_min, nu_max)
+                c = QmxQxQred_p1(v_init).evalf()
+                c2 = ((2 * v_init + 5) * QixQxQred(v_init, v_fin, v_fin + 1)).evalf()
+                rad_Mat = rad_Mat * c + rad_Mat2 * c2
+
+            elif v_chg == -1:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S(-(v_init + 1) * (v_init + 2)), (Radial_bm,)))
+                op_sum2 = ((S.One, (Radial_Db,)),
+                           (S(v_init + 1), (Radial_bm,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                rad_Mat2 = RepRadial_LC_rem(op_sum2,
+                                            anorm, lambda_base + lambda_disp_init,
+                                            lambda_disp_fin - lambda_disp_init,
+                                            nu_min, nu_max)
+                c = QxQxQred_m1(v_init).evalf()
+                c2 = -(2 * v_init) * QixQxQred(v_init, v_fin, v_fin - 1).evalf()
+                rad_Mat = rad_Mat * c + rad_Mat2 * c2
+
+            else:
+                continue
+
+            CG2: float = CG_SO5r3(v_init, al_init, L_init,
+                                  3, 1, 0,
+                                  v_fin, al_fin, L_fin)
+
+            for i1 in range(1, rad_dim + 1):
+                for j1 in range(1, rad_dim + 1):
+                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+
+    return direct_Mat
 
 
 # # The following procedure QixQxQred returns the genuine SO(5) reduced
@@ -1264,9 +1364,18 @@ def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
 #
 # end;
 def QixQxQred(v_i: nonnegint, v_f: nonnegint, v_int: nonnegint) -> Expr:
-    print('Not implemented.')
+    require_nonnegint('v_i', v_i)
+    require_nonnegint('v_f', v_f)
+    require_nonnegint('v_int', v_int)
 
-    return S.Zero
+    L_i: int = 2 * min(v_i, v_f)
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v_int, L_i - 2, L_i + 2)
+    return -ME_SO5red(v_f, 1, v_int) * ME_SO5red(v_int, 2, v_i) * sqrt(Rational(2, 7)) / 15 * \
+           sum(CG_SO5r3(v_int, a, L, 1, 1, 2, v_f, 1, L_i) *
+               CG_SO5r3(v_i, 1, L_i, 2, 1, 2, v_int, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v_i, 1, L_i, 3, 1, 0, v_f, 1, L_i) / sqrt(5 * dimSO3(L_i))
 
 
 # # The four cases are also implemented separately by the following
@@ -1304,9 +1413,17 @@ def QixQxQred(v_i: nonnegint, v_f: nonnegint, v_int: nonnegint) -> Expr:
 #
 # end;
 def QpxQxQred_p1(v: nonnegint) -> Expr:
-    print('Not implemented.')
+    require_nonnegint('v', v)
 
-    return S.Zero
+    L1: int = 2 * v
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1)
+
+    return Qred_p1(v) * QxQred_0(v) * \
+           sum(CG_SO5r3(v, a, L, 1, 1, 2, v + 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
 
 
 # QmxQxQred_p1:=proc(v::nonnegint)
@@ -1331,9 +1448,17 @@ def QpxQxQred_p1(v: nonnegint) -> Expr:
 #
 # end;
 def QmxQxQred_p1(v: nonnegint) -> Expr:
-    print('Not implemented.')
+    require_nonnegint('v', v)
 
-    return S.Zero
+    L1: int = 2 * v
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v + 2, L1 - 2, L1 + 2)
+
+    return Qred_m1(v + 2) * QxQred_p2(v) * \
+           sum(CG_SO5r3(v + 2, a, L, 1, 1, 2, v + 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v + 2, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
 
 
 # QpxQxQred_m1:=proc(v::posint)
@@ -1356,9 +1481,14 @@ def QmxQxQred_p1(v: nonnegint) -> Expr:
 #
 # end;
 def QpxQxQred_m1(v: posint) -> Expr:
-    print('Not implemented.')
+    require_posint('v', v)
 
-    return S.Zero
+    L1: int = 2 * v - 2
+
+    return Qred_p1(v - 2) * QxQred_m2(v) * \
+           CG_SO5r3(v - 2, 1, L1 - 2, 1, 1, 2, v - 1, 1, L1) * \
+           CG_SO5r3(v, 1, L1, 2, 1, 2, v - 2, 1, L1 - 2) * \
+           sqrt(dimSO3(L1 - 2))
 
 
 # QmxQxQred_m1:=proc(v::posint)
@@ -1383,6 +1513,15 @@ def QpxQxQred_m1(v: posint) -> Expr:
 #
 # end;
 def QmxQxQred_m1(v: posint) -> Expr:
-    print('Not implemented.')
+    require_posint('v', v)
 
-    return S.Zero
+    L1: int = 2 * v - 2
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1 + 2)
+
+    return Qred_m1(v) * QxQred_0(v) * \
+           sum(CG_SO5r3(v, a, L, 1, 1, 2, v - 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v - 1, 1, L1) / \
+           sqrt(5 * dimSO3(L1))
