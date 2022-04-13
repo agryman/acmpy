@@ -806,7 +806,7 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
             try:
                 L1_off = Lvals.index(L1)
                 L2_off = Lvals.index(L2)
-                TR_matrix: Matrix = Melements[L2_off, L1_off]
+                TR_matrix = Melements[L2_off, L1_off]
                 TR_rows, TR_cols = shape(TR_matrix)
 
                 n1 = rate_ent[2]
@@ -1248,7 +1248,7 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                      nu_min: nonnegint, nu_max: nonnegint,
                      v_min: nonnegint, v_max: nonnegint,
                      L_min: nonnegint, L_max: Optional[nonnegint] = None
-                     ) -> tuple[list[list[float]], Matrix, list[nonnegint]]:
+                     ) -> tuple[EigenValues, Matrix, LValues]:
     require_nonnegint('fit_eig', fit_eig)
     require_nonnegint('fit_rat', fit_rat)
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -1270,9 +1270,67 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
         if g.glb_rat_L2 < L_min or g.glb_rat_L2 > L_mx or \
                 g.glb_rat_2dx > dimXspace(nu_min, nu_max, v_min, v_max, g.glb_rat_L2):
             raise ValueError(f'Reference state {g.glb_rat_L2}({g.glb_rat_2dx}) not available')
-    # stopped here
 
-    return [], Matrix(0, 0), []
+    eigen_quin: tuple[EigenValues, EigenBases, XParams, LValues] = \
+        DigXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    eigen_vals: EigenValues = eigen_quin[0]
+    eigen_bases: EigenBases = eigen_quin[1]
+    Xparams: XParams = eigen_quin[2]
+    Lvals: LValues = eigen_quin[3]
+
+    if g.glb_eig_num > 0:
+
+        if fit_eig > 0:
+
+            eigen_low: float = min_head(eigen_vals) if g.glb_eig_rel else 0
+
+            try:
+                LL: int = Lvals.index(g.glb_eig_L)
+            except ValueError:
+                raise ValueError(f'glb_eig_L ({g.glb_eig_L}) is not in list of L values.')
+            g.glb_eig_sft = (eigen_vals[LL][g.glb_eig_idx - 1] - eigen_low) / g.glb_eig_fit
+
+            if g.glb_eig_sft == 0:
+                raise ValueError(f'Cannot scale: reference state {g.glb_eig_L}({g.glb_eig_idx}) has lowest energy')
+
+        Show_Eigs(eigen_vals, Lvals, g.glb_eig_num)
+
+    trans_mat: Matrix
+    if len(g.glb_rat_lst) > 0 or len(g.glb_amp_lst) > 0:
+
+        trans_mat = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
+
+        if fit_rat > 0:
+            L1: int = g.glb_rat_L1
+            L2: int = g.glb_rat_L2
+            i1: int = g.glb_rat_1dx
+            i2: int = g.glb_rat_2dx
+            try:
+                L1_off: int = Lvals.index(L1)
+            except ValueError:
+                raise ValueError(f'glb_rat_L1 ({L1}) is not in list of L values.')
+
+            try:
+                L2_off: int = Lvals.index(L2)
+            except ValueError:
+                raise ValueError(f'glb_rat_L2 ({L2}) is not in list of L values.')
+
+            mel: float = trans_mat[L2_off, L1_off][i2 - 1, i1 - 1]
+            g.glb_rat_sft = abs(g.glb_rat_fun(L1, L2, mel)) / g.glb_rat_fit
+
+            if g.glb_rat_sft == 0:
+                raise ValueError(f'Cannot scale zero transition rate B(E2: {L1}({i1}) -> {L2}({i2}))')
+
+            g.glb_amp_sft = g.glb_amp_sft_fun(g.glb_rat_sft)
+
+        Show_Rats(trans_mat, Lvals, g.glb_rat_lst, g.glb_rat_num)
+        Show_Amps(trans_mat, Lvals, g.glb_amp_lst, g.glb_amp_num)
+
+    else:
+
+        trans_mat = Matrix()
+
+    return eigen_vals, trans_mat, Lvals
 
 
 # # The following procedure ACM_Scale invokes the procedure ACM_ScaleOrAdapt
@@ -1292,8 +1350,14 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 # end;
 
 
-def ACM_Scale(*args):
-    return ACM_ScaleOrAdapt(0, 0, *args)
+def ACM_Scale(ham_op: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> tuple[EigenValues, Matrix, LValues]:
+    return ACM_ScaleOrAdapt(0, 0, ham_op, anorm, lambda_base,
+                            nu_min, nu_max, v_min, v_max, L_min, L_max)
 
 # # The following procedure ACM_Adapt invokes the procedure ACM_ScaleOrAdapt
 # # above with fit_eig=1 and fit_rat=1 so that the values of the scaling
@@ -1312,5 +1376,11 @@ def ACM_Scale(*args):
 # end;
 
 
-def ACM_Adapt(*args):
-    return ACM_ScaleOrAdapt(1, 1, *args)
+def ACM_Adapt(ham_op: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> tuple[EigenValues, Matrix, LValues]:
+    return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
+                            nu_min, nu_max, v_min, v_max, L_min, L_max)

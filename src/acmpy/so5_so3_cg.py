@@ -1,11 +1,15 @@
 """3. Procedures that access the SO(5)>SO(3) Clebsch-Gordon coefficients."""
 
 from typing import ClassVar, Optional
+
 from os.path import expanduser
+
 from sympy import S, Expr, Rational, simplify, sqrt, factorial
+
+import acmpy.globals as g
 from acmpy.compat import nonnegint, posint, require_nonnegint, require_posint, \
     is_odd, readdata_float
-from acmpy.spherical_space import dimSO5r3
+from acmpy.spherical_space import dimSO5r3, dimSO5, dimSO3
 
 
 # ###########################################################################
@@ -30,10 +34,14 @@ def require_SO5Quintet(v1: nonnegint,
                        v2: nonnegint, a2: posint, L2: nonnegint,
                        v3: nonnegint) -> None:
     require_nonnegint('v1', v1)
-    require_nonnegint('v2', v2)
-    require_posint('a2', a2)
-    require_nonnegint('L2', L2)
+    require_SO5Triple(v2, a2, L2)
     require_nonnegint('v3', v3)
+
+
+def require_SO5Triple(v: nonnegint, a: posint, L: nonnegint) -> None:
+    require_nonnegint('v', v)
+    require_posint('a', a)
+    require_nonnegint('L', L)
 
 
 class SO5CGConfig:
@@ -264,7 +272,18 @@ def load_CG_table(v1: nonnegint,
                   v2: nonnegint, a2: posint, L2: nonnegint,
                   v3: nonnegint) -> None:
     require_SO5Quintet(v1, v2, a2, L2, v3)
-    print('load_CG_table: Not implemented.')
+
+    if v1 > v3:
+        v1, v3 = v3, v1
+
+    key: SO5Quintet = (v1, v2, a2, L2, v3)
+    if key in g.CG_coeffs:
+        return
+
+    CG_list: CGLabelList = CG_labels(v1, L2, v3)
+    CG_data: list[float] = readdata_float(SO5CG_filename(*key)) if v2 > 0 else [1.0] * len(CG_list)
+
+    g.CG_coeffs[key] = {label: data for label, data in zip(CG_list, CG_data)}
 
 
 # # The following procedure CG_SO5r3 returns the SO(5)>SO(3) CG coefficient
@@ -299,8 +318,23 @@ def load_CG_table(v1: nonnegint,
 def CG_SO5r3(v1: nonnegint, a1: posint, L1: nonnegint,
              v2: nonnegint, a2: posint, L2: nonnegint,
              v3: nonnegint, a3: posint, L3: nonnegint) -> float:
-    print('CG_SO5r3: Not implemented.')
-    return 0.0
+    require_SO5Triple(v1, a1, L1)
+    require_SO5Triple(v2, a2, L2)
+    require_SO5Triple(v3, a3, L3)
+
+    if v1 + v2 < v3 or v1 + v3 < v2 or v2 + v3 < v1 or \
+            L1 + L2 < L3 or L1 + L3 < L2 or L2 + L3 < L1 or \
+            a1 > dimSO5r3(v1, L1) or a2 > dimSO5r3(v2, L2) or a3 > dimSO5r3(v3, L3) or \
+            is_odd(v1 + v2 + v3):
+        return 0.0
+    else:
+        load_CG_table(v1, v2, a2, L2, v3)
+        if v1 <= v3:
+            return g.CG_coeffs[(v1, v2, a2, L2, v3)][(a1, L1, a3, L3)]
+        else:
+            return g.CG_coeffs[(v3, v2, a2, L2, v1)][(a3, L3, a1, L1)] \
+                   * (-1) ** (L3 + L2 - L1) \
+                   * sqrt(dimSO5(v3) * dimSO3(L1) / dimSO5(v1) / dimSO3(L3))
 
 
 # ###########################################################################

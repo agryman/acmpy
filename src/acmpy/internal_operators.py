@@ -3,7 +3,7 @@
 from functools import cache
 from typing import Optional
 
-from sympy import Symbol, pi, sqrt, Integer, Rational, sympify, Expr, \
+from sympy import Symbol, pi, sqrt, Integer, Rational, Expr, \
     S, factorial, Matrix, diag, eye
 
 from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
@@ -91,6 +91,9 @@ Radial_zl: dict[Symbol, Symbol] = {
     Radial_bm: Radial_bm_zl,
     Radial_Db: Radial_Db_zl
 }
+
+"""Define a symbol for the radial identity operator."""
+Radial_id: Symbol = Symbol('Radial_id', commutative=True)
 
 # # The following indicates the SO(5) spherical harmonics for which
 # # SO(5)>SO(3) Clebsch-Gordon coefficients are available,
@@ -833,20 +836,20 @@ def ACM_Hamiltonian(c11: IntFloatExpr = 0,
                     c42: IntFloatExpr = 0,
                     c43: IntFloatExpr = 0,
                     c50: IntFloatExpr = 0) -> OperatorSum:
-    c11 = sympify(c11)
-    c20 = sympify(c20)
-    c21 = sympify(c21)
-    c22 = sympify(c22)
-    c23 = sympify(c23)
-    c30 = sympify(c30)
-    c31 = sympify(c31)
-    c32 = sympify(c32)
-    c33 = sympify(c33)
-    c40 = sympify(c40)
-    c41 = sympify(c41)
-    c42 = sympify(c42)
-    c43 = sympify(c43)
-    c50 = sympify(c50)
+    c11 = S(c11)
+    c20 = S(c20)
+    c21 = S(c21)
+    c22 = S(c22)
+    c23 = S(c23)
+    c30 = S(c30)
+    c31 = S(c31)
+    c32 = S(c32)
+    c33 = S(c33)
+    c40 = S(c40)
+    c41 = S(c41)
+    c42 = S(c42)
+    c43 = S(c43)
+    c50 = S(c50)
 
     our_op: OperatorSum = () if c11 == 0 \
         else ((c11, (Radial_D2b,)),
@@ -926,10 +929,10 @@ def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
     if flag not in {0, 1}:
         raise ValueError(f'Unrecognised flag: {flag}')
 
-    cs: list[Expr] = [sympify(c) for c in [con, c1, c2, c3, c4, c5, c6]]
+    cs: list[Expr] = [S(c) for c in [con, c1, c2, c3, c4, c5, c6]]
     our_op: OperatorSum = ACM_HamSH3(*cs) if flag == 0 else ACM_HamSH6(*cs)
 
-    cas = sympify(cas)
+    cas = S(cas)
     if cas != 0:
         cas_op: OperatorProduct = (cas * SENIORITY * (SENIORITY + 3), ())
         if len(our_op) > 0:
