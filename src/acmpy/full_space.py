@@ -6,13 +6,14 @@ diagonalising, basis transforming, and data displaying.
 from typing import Optional, Callable
 from sympy import Expr, Matrix, shape, S
 
-import acmpy.globals as g
-from acmpy.globals import Designators
-from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, Eigenvectors, iquo
+from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
 from acmpy.radial_space import dimRadial
+from acmpy.eigenvalues import Eigenfiddle
+from acmpy.globals import Designators
+import acmpy.globals as g
 
 # ###########################################################################
 # ####---------- Diagonalisation and Eigenbasis transformation ----------####
@@ -159,7 +160,7 @@ def DigXspace(ham_op: OperatorSum,
                 Lvals.append(LL)
 
                 L_matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, LL)
-                eigen_vals_result, eigen_bases_result  = Eigenfiddle(L_matrix)
+                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
 
                 eigen_vals.append(eigen_vals_result)
 
@@ -177,7 +178,7 @@ def DigXspace(ham_op: OperatorSum,
 
                 L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
 
-                eigen_vals_result, eigen_bases_result  = Eigenfiddle(L_matrix)
+                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
 
                 eigen_vals.append(eigen_vals_result)
 
@@ -185,86 +186,6 @@ def DigXspace(ham_op: OperatorSum,
                 Lstart = Lstop
 
     return eigen_vals, eigen_bases, Xparams, Lvals
-
-
-# # The following procedure Eigenfiddle diagonalises the Matrix which is
-# # passed to it, and returns a pair
-# #                          [eigs_list,basis_Mat].
-# # The first element of this pair is a list of the eigenvalues in
-# # ascending order, and the second element of the pair is the matrix P
-# # which transforms the original matrix H to the diagonal matrix P^{-1}HP
-# # whose diagonal elements are those given in the first element of the pair.
-# # Thus, its columns are the eigenvectors corresponding to those eigenvalues.
-#
-# # The matrix (H) that is passed to Eigenfiddle is diagonalised using
-# # Maple's Eigenvectors procedure.
-# # This matrix ought to be Hermitian but might not be because of truncation
-# # effects. Thus, before being diagonalised, it is averaged with its transpose
-# # to ensure that it is symmetric, and therefore yields real eigenvalues.
-#
-# # Note that Maple attempts to diagonalise retaining the datatype
-# # of the passed Matrix. If this datatype is not a float, then
-# # the procedure is very slow. For ACM calculations, we should
-# # therefore ensure that Hmatrix has float entries.
-#
-#
-# Eigenfiddle:=proc(Hmatrix::Matrix,$)
-#     local i,n,real_eigens,eigenstuff,eigen_order;
-#
-#   n:=RowDimension(Hmatrix);
-#
-#   # The Maple function Eigenvectors returns a pair, the first of
-#   # which is a list of eigenvalues, and the second is a matrix
-#   # whose columns are the corresponding eigenvectors.
-#   # We ensure that the Matrix being processed is diagonal by
-#   # averaging it with its transpose.
-#
-#   eigenstuff:=Eigenvectors(Matrix(n,n,(i,j)->(Hmatrix[i,j]+Hmatrix[j,i])/2,
-#                                     scan=diagonal[upper],shape=symmetric));
-#
-#   # The following list contains pairs [eig,i], where i is the index
-#   # in the list. The idea is to sort the eigenvalues into increasing
-#   # order, but keep track of their original i's, so that we can
-#   # then use the same order for the eigenvectors.
-#
-#   real_eigens:=[seq([eigenstuff[1][i],i],i=1..n)];
-#
-#   # Now sort these into increasing values of the eigenvalues using
-#   # the pair_order function defined below.
-#
-#   real_eigens:=sort(real_eigens,pair_order);
-#
-#   # Get the index order - to be applied to the eigenvectors below.
-#
-#   eigen_order:=map2(op,2,real_eigens);
-#
-#   # Return pair,
-#   #   element 1 lists all (real) e-values
-#   #   element 2 is a transformation matrix, with the
-#   #              columns e-vectors of above e-values.
-#
-#   [ map2(op,1,real_eigens), Matrix([Column(eigenstuff[2],eigen_order)]) ];
-# end:
-def Eigenfiddle(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
-
-    n, m = shape(Hmatrix)
-    if n != m:
-        raise ValueError(f'Matrix is not square: {n}, {m}')
-
-    H: Matrix = ((Hmatrix + Hmatrix.T) / 2).evalf()
-
-    eigen_values: list[float]
-    P: Matrix
-    eigen_values, P = Eigenvectors(H)
-
-    real_eigens: list[tuple[float, int]] = [(value, i) for i, value in enumerate(eigen_values)]
-    real_eigens.sort()
-
-    eigen_values = [p[0] for p in real_eigens]
-    eigen_order: list[int] = [p[1] for p in real_eigens]
-    eigen_vectors: Matrix = Matrix(n, n, lambda i, j: P[i, eigen_order[j]])
-
-    return eigen_values, eigen_vectors
 
 
 # # The following procedure AmpXspeig represents the operator encoded
@@ -450,37 +371,46 @@ L_MAX_DEFAULT: int = 1000000
 # end;
 def Show_Eigs(eigen_vals: list[list[float]], Lvals: list[nonnegint],
               toshow: nonnegint = g.glb_eig_num,
-              L_min: nonnegint = 0, L_max: nonnegint = L_MAX_DEFAULT
+              L_min: Optional[nonnegint] = None, L_max: Optional[nonnegint] = None
               ) -> Optional[float]:
     require_nonnegint('toshow', toshow)
-    require_nonnegint_range('L', L_min, L_max)
 
     if toshow == 0 or len(eigen_vals) == 0:
         return None
 
-    L_top: nonnegint = L_min if L_max == L_MAX_DEFAULT else L_max
+    L_top: nonnegint
+    if L_min is not None and L_max is None:
+        L_max = L_MAX_DEFAULT
+        L_top = L_min
+    else:
+        L_min = 0 if L_min is None else L_min
+        L_max = L_MAX_DEFAULT if L_max is None else L_max
+        L_top = L_max
+
+    require_nonnegint_range('L', L_min, L_max)
 
     if not any(L_min <= L <= L_top for L in Lvals):
         return None
 
-    pre: int = g.glb_low_pre
-    wid: int = g.glb_rel_wid
-    sft: float = g.glb_eig_sft
+    low_pre: int = g.glb_low_pre
+    rel_wid: int = g.glb_rel_wid
+    eig_sft: float = g.glb_eig_sft
 
     eigen_low: float
     if g.glb_eig_rel:
         eigen_low = min_head(eigen_vals)
-        print(f'Lowest eigenvalue is {eigen_low:.{pre}f}. Relative eigenvalues follow' +
-              f' (each divided by {sft:.{pre}f}):')
+        print(f'Lowest eigenvalue is {eigen_low:.{low_pre}f}. Relative eigenvalues follow' +
+              f' (each divided by {eig_sft:.{low_pre}f}):')
     else:
         eigen_low = 0
-        print(f'Scaled eigenvalues follow (each divided by {sft:.{pre}f}:')
+        print(f'Scaled eigenvalues follow (each divided by {eig_sft:.{low_pre}f}:')
 
+    rel_pre: int = g.glb_rel_pre
     for L, vals in zip(Lvals, eigen_vals):
-        if L_min <= L <= L_max:
+        if L_min <= L <= L_top:
             print(f'  At L={L:2d}: [' +
-                  ','.join([f'{((val - eigen_low) / sft):{wid}.{pre}f}'
-                            for val in vals]) +
+                  ','.join([f'{((val - eigen_low) / eig_sft):{rel_wid}.{rel_pre}f}'
+                            for val in vals[:toshow]]) +
                   ']')
 
     return eigen_low
@@ -803,7 +733,7 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
         if len(rate_ent) == 4:
             assert L1 >= 0 and L2 >= 0
 
-            try:
+            if L1 in Lvals and L2 in Lvals:
                 L1_off = Lvals.index(L1)
                 L2_off = Lvals.index(L2)
                 TR_matrix = Melements[L2_off, L1_off]
@@ -815,9 +745,6 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
                 if 0 < n1 <= TR_cols and 0 < n2 <= TR_rows:
                     mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
                     print(glb_mel_f1.format(L1, n1, L2, n2, mel))
-
-            except ValueError:
-                pass
 
         elif len(rate_ent) == 5:
             assert L1 >= 0 and L2 >= 0
@@ -841,17 +768,17 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
 
             while Lcount >= 0:
 
-                try:
+                if L1 in Lvals and L2 in Lvals:
                     L1_off = Lvals.index(L1)
                     L2_off = Lvals.index(L2)
+
                     TR_matrix = Melements[L2_off, L1_off]
                     TR_rows, TR_cols = shape(TR_matrix)
+
                     if n1 <= TR_cols and n2 <= TR_rows:
                         assert n1 > 0 and n2 > 0
                         mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
                         print(glb_mel_f1.format(L1, n1, L2, n2, mel))
-                except ValueError:
-                    pass
 
                 L1 += Lmod
                 L2 += Lmod
@@ -938,15 +865,12 @@ def Show_Mels_Row(Melements: Matrix, Lvals: list[nonnegint],
                   toshow: nonnegint,
                   mel_fun: Callable,
                   scale: Expr) -> int:
-    L1_off: int
-    L2_off: int
-    try:
-        L1_off = Lvals.index(L1)
-        L2_off = Lvals.index(L2)
-    except ValueError:
+
+    if L1 not in Lvals or L2 not in Lvals:
         return 0
 
-    assert L1_off >= 0 and L2_off >= 0
+    L1_off: int = Lvals.index(L1)
+    L2_off: int = Lvals.index(L2)
 
     TR_matrix: Matrix = Melements[L2_off - 1, L1_off - 1]
     TR_rows: int
@@ -1284,10 +1208,9 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
             eigen_low: float = min_head(eigen_vals) if g.glb_eig_rel else 0
 
-            try:
-                LL: int = Lvals.index(g.glb_eig_L)
-            except ValueError:
+            if g.glb_eig_L not in Lvals:
                 raise ValueError(f'glb_eig_L ({g.glb_eig_L}) is not in list of L values.')
+            LL: int = Lvals.index(g.glb_eig_L)
             g.glb_eig_sft = (eigen_vals[LL][g.glb_eig_idx - 1] - eigen_low) / g.glb_eig_fit
 
             if g.glb_eig_sft == 0:
@@ -1305,15 +1228,14 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
             L2: int = g.glb_rat_L2
             i1: int = g.glb_rat_1dx
             i2: int = g.glb_rat_2dx
-            try:
-                L1_off: int = Lvals.index(L1)
-            except ValueError:
-                raise ValueError(f'glb_rat_L1 ({L1}) is not in list of L values.')
 
-            try:
-                L2_off: int = Lvals.index(L2)
-            except ValueError:
+            if L1 not in Lvals:
+                raise ValueError(f'glb_rat_L1 ({L1}) is not in list of L values.')
+            L1_off: int = Lvals.index(L1)
+
+            if L2 not in Lvals:
                 raise ValueError(f'glb_rat_L2 ({L2}) is not in list of L values.')
+            L2_off: int = Lvals.index(L2)
 
             mel: float = trans_mat[L2_off, L1_off][i2 - 1, i1 - 1]
             g.glb_rat_sft = abs(g.glb_rat_fun(L1, L2, mel)) / g.glb_rat_fit

@@ -3,11 +3,11 @@
 import math
 from typing import Callable, Optional
 
-from sympy import sqrt, Expr
+from sympy import sqrt, Expr, S
 
 from acmpy.internal_operators import OperatorSum, Op_AM, quad_op
 from acmpy.spherical_space import dimSO3
-from acmpy.so5_so3_cg import CG_SO3, SO5Quintet, SO5Quartet
+from acmpy.so5_so3_cg import CG_SO3
 from acmpy.compat import nonnegint, require_nonnegint, irem, is_odd, posint, require_posint
 
 # ###########################################################################
@@ -218,18 +218,6 @@ def sqrt_fun(sft: Expr) -> Expr:
 # # (it is used by the procedure show_CG_file), and, somewhat, the data
 # # therein (it should return two values: 0.522,0.431).
 #
-# # The following defines a table wherein the SO(5)>SO(3) Clebsch-Gordon
-# # coefficients will be stored in memory. This table is initially empty.
-# # The table is loaded from external files, as required.
-# # For a particular (v1,v2,a2,L2,v3), this is done by calling
-# # load_CG_table(v1,v2,a2,L2,v3).
-# # When present, the SO(5)>SO(3) CG coefficient is given by
-# # CG_coeffs[v1,v2,a2,L2,v3][a1,L1,a3,L3].
-#
-# CG_coeffs:=table():
-CG_coeffs: dict[SO5Quintet, dict[SO5Quartet, float]] = {}
-
-
 # # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
 # #   indices(CG_coeffs);
 # # Initially, of course, this table will be empty.
@@ -477,7 +465,7 @@ def ACM_set_scales(eig_sft: Optional[float] = None,
     if rat_sft is not None:
         glb_rat_sft = rat_sft
 
-    glb_amp_sft = glb_amp_sft_fun(glb_rat_sft)  # default is square root
+    glb_amp_sft = glb_amp_sft_fun(S(glb_rat_sft))  # default is square root
 
     ACM_show_scales(show)
 

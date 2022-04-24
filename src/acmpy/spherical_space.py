@@ -1,20 +1,133 @@
-""""4. Procedures that pertain only to the spherical (gamma,Omega) space."""
+"""4. Procedures that pertain only to the spherical (gamma,Omega) space."""
 
 from typing import Optional
+
+from sympy import Symbol
 
 from acmpy.compat import require_int, require_nonnegint, require_nonnegint_range,\
     iquo, irem, nonnegint, posint
 
 
-# ###########################################################################
-# ####------------- Representations on the spherical space --------------####
-# ###########################################################################
 Seniority = nonnegint
 Alpha = posint
 AngularMomentum = nonnegint
 SO5SO3Label = tuple[Seniority, Alpha, AngularMomentum]
 
 
+# # The following indicates the SO(5) spherical harmonics for which
+# # SO(5)>SO(3) Clebsch-Gordon coefficients are available,
+# # and enables the v,alpha,L quantum numbers to be readily
+# # obtained from the symbolic names.
+#
+# SpHarm_Table:=table([
+#   SpHarm_010=[0,1,0],
+#   SpHarm_112=[1,1,2],
+#   SpHarm_212=[2,1,2], SpHarm_214=[2,1,4],
+#   SpHarm_310=[3,1,0], SpHarm_313=[3,1,3], SpHarm_314=[3,1,4],
+#   SpHarm_316=[3,1,6],
+#   SpHarm_412=[4,1,2], SpHarm_414=[4,1,4], SpHarm_415=[4,1,5],
+#   SpHarm_416=[4,1,6], SpHarm_418=[4,1,8],
+#   SpHarm_512=[5,1,2], SpHarm_514=[5,1,4], SpHarm_515=[5,1,5],
+#   SpHarm_516=[5,1,6], SpHarm_517=[5,1,7], SpHarm_518=[5,1,8],
+#   SpHarm_51A=[5,1,10],
+#   SpHarm_610=[6,1,0], SpHarm_613=[6,1,3], SpHarm_614=[6,1,4],
+#   SpHarm_616=[6,1,6], SpHarm_626=[6,2,6], SpHarm_617=[6,1,7],
+#   SpHarm_618=[6,1,8], SpHarm_619=[6,1,9], SpHarm_61A=[6,1,10],
+#   SpHarm_61C=[6,1,12]
+# ]):
+"""
+Implement SpHarm_Table as a Python dictionary whose keys are symbols
+and whose values are (v, alpha, L) integer tuples.
+"""
+SpHarm_010: Symbol = Symbol('SpHarm_010', commutative=False)
+SpHarm_112: Symbol = Symbol('SpHarm_112', commutative=False)
+SpHarm_212: Symbol = Symbol('SpHarm_212', commutative=False)
+SpHarm_214: Symbol = Symbol('SpHarm_214', commutative=False)
+SpHarm_310: Symbol = Symbol('SpHarm_310', commutative=False)
+SpHarm_313: Symbol = Symbol('SpHarm_313', commutative=False)
+SpHarm_314: Symbol = Symbol('SpHarm_314', commutative=False)
+SpHarm_316: Symbol = Symbol('SpHarm_316', commutative=False)
+SpHarm_412: Symbol = Symbol('SpHarm_412', commutative=False)
+SpHarm_414: Symbol = Symbol('SpHarm_414', commutative=False)
+SpHarm_415: Symbol = Symbol('SpHarm_415', commutative=False)
+SpHarm_416: Symbol = Symbol('SpHarm_416', commutative=False)
+SpHarm_418: Symbol = Symbol('SpHarm_418', commutative=False)
+SpHarm_512: Symbol = Symbol('SpHarm_512', commutative=False)
+SpHarm_514: Symbol = Symbol('SpHarm_514', commutative=False)
+SpHarm_515: Symbol = Symbol('SpHarm_515', commutative=False)
+SpHarm_516: Symbol = Symbol('SpHarm_516', commutative=False)
+SpHarm_517: Symbol = Symbol('SpHarm_517', commutative=False)
+SpHarm_518: Symbol = Symbol('SpHarm_518', commutative=False)
+SpHarm_51A: Symbol = Symbol('SpHarm_51A', commutative=False)
+SpHarm_610: Symbol = Symbol('SpHarm_610', commutative=False)
+SpHarm_613: Symbol = Symbol('SpHarm_613', commutative=False)
+SpHarm_614: Symbol = Symbol('SpHarm_614', commutative=False)
+SpHarm_616: Symbol = Symbol('SpHarm_616', commutative=False)
+SpHarm_626: Symbol = Symbol('SpHarm_626', commutative=False)
+SpHarm_617: Symbol = Symbol('SpHarm_617', commutative=False)
+SpHarm_618: Symbol = Symbol('SpHarm_618', commutative=False)
+SpHarm_619: Symbol = Symbol('SpHarm_619', commutative=False)
+SpHarm_61A: Symbol = Symbol('SpHarm_61A', commutative=False)
+SpHarm_61C: Symbol = Symbol('SpHarm_61C', commutative=False)
+
+SpHarm_Table: dict[Symbol, SO5SO3Label] = {
+    SpHarm_010: (0, 1, 0),
+    SpHarm_112: (1, 1, 2),
+    SpHarm_212: (2, 1, 2),
+    SpHarm_214: (2, 1, 4),
+    SpHarm_310: (3, 1, 0),
+    SpHarm_313: (3, 1, 3),
+    SpHarm_314: (3, 1, 4),
+    SpHarm_316: (3, 1, 6),
+    SpHarm_412: (4, 1, 2),
+    SpHarm_414: (4, 1, 4),
+    SpHarm_415: (4, 1, 5),
+    SpHarm_416: (4, 1, 6),
+    SpHarm_418: (4, 1, 8),
+    SpHarm_512: (5, 1, 2),
+    SpHarm_514: (5, 1, 4),
+    SpHarm_515: (5, 1, 5),
+    SpHarm_516: (5, 1, 6),
+    SpHarm_517: (5, 1, 7),
+    SpHarm_518: (5, 1, 8),
+    SpHarm_51A: (5, 1, 10),
+    SpHarm_610: (6, 1, 0),
+    SpHarm_613: (6, 1, 3),
+    SpHarm_614: (6, 1, 4),
+    SpHarm_616: (6, 1, 6),
+    SpHarm_626: (6, 2, 6),
+    SpHarm_617: (6, 1, 7),
+    SpHarm_618: (6, 1, 8),
+    SpHarm_619: (6, 1, 9),
+    SpHarm_61A: (6, 1, 10),
+    SpHarm_61C: (6, 1, 12)
+}
+
+# # Form a list of the available operator symbols in this table.
+#
+# SpHarm_Operators:=map(op,[indices(SpHarm_Table)]):
+"""
+The indices of a Maple table is a sequence of lists of keys.
+The key value is the operand of the list constructor so the op function must be applied to it.
+In Python, we can simply turn the dictionary keys into a list of keys.
+"""
+SpHarm_Operators: tuple[Symbol, ...] = tuple(SpHarm_Table.keys())
+
+# # We also make use of SpDiag_sqLdim and SpDiag_sqLdiv which
+# # denote operators represented by diagonal matrices with entries
+# #     (-1)^{L_i}*sqrt(2L_i+1)
+# # and (-1)^{L_i}/sqrt(2L_i+1) respectively.
+#
+# Spherical_Operators:=[op(SpHarm_Operators),SpDiag_sqLdim,SpDiag_sqLdiv]:
+"""Implement SpDiag_sqLdim and SpDiag_sqLdiv as noncommutative symbols."""
+SpDiag_sqLdim: Symbol = Symbol('SpDiag_sqLdim', commutative=False)
+SpDiag_sqLdiv: Symbol = Symbol('SpDiag_sqLdiv', commutative=False)
+Spherical_Operators = SpHarm_Operators + (SpDiag_sqLdim, SpDiag_sqLdiv)
+
+
+# ###########################################################################
+# ####------------- Representations on the spherical space --------------####
+# ###########################################################################
 # # The following two give the dimensions of SO(3) and SO(5)
 # # irreducible representations (symmetric).
 #

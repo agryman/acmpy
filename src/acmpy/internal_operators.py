@@ -8,202 +8,19 @@ from sympy import Symbol, pi, sqrt, Integer, Rational, Expr, \
 
 from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
 from acmpy.so5_so3_cg import CG_SO5r3
-from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label
+from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label, \
+    SpHarm_Table, SpHarm_Operators, \
+    SpHarm_112, \
+    SpHarm_310, SpHarm_313, SpHarm_314, SpHarm_316, \
+    SpHarm_512, SpHarm_514, SpHarm_515, SpHarm_516, SpHarm_517, SpHarm_518, SpHarm_51A, \
+    SpHarm_610, \
+    SpDiag_sqLdiv, SpDiag_sqLdim
+from acmpy.radial_space import Radial_b, Radial_b2, Radial_bm, Radial_bm2, \
+    Radial_Db, Radial_D2b, \
+    Radial_Sm, Radial_S0, Radial_Sp
 
 OperatorProduct = tuple[Expr, tuple[Symbol, ...]]
 OperatorSum = tuple[OperatorProduct, ...]
-
-# # The following is a list containing the symbolic names for ten operators
-# # that are the "basic" radial operators.
-# # The way that they alter lambda is not fixed, but is determined
-# # automatically.
-#
-# Radial_Operators:=[Radial_Sm, Radial_S0, Radial_Sp,
-#                    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-#                    Radial_b, Radial_bm, Radial_Db]:
-"""
-Implement all Maple symbols as SymPy symbols.
-These symbols are operators, so their multiplication should be noncommutative.
-"""
-Radial_Sm: Symbol = Symbol('Radial_Sm', commutative=False)
-Radial_S0: Symbol = Symbol('Radial_S0', commutative=False)
-Radial_Sp: Symbol = Symbol('Radial_Sp', commutative=False)
-Radial_b2: Symbol = Symbol('Radial_b2', commutative=False)
-Radial_bm2: Symbol = Symbol('Radial_bm2', commutative=False)
-Radial_D2b: Symbol = Symbol('Radial_D2b', commutative=False)
-Radial_bDb: Symbol = Symbol('Radial_bDb', commutative=False)
-Radial_b: Symbol = Symbol('Radial_b', commutative=False)
-Radial_bm: Symbol = Symbol('Radial_bm', commutative=False)
-Radial_Db: Symbol = Symbol('Radial_Db', commutative=False)
-
-"""
-Radial_Operators is a Maple list.
-A Maple list is an immutable sequence of objects.
-It should be implemented in Python as a tuple.
-Note that in some cases the results of a function are cached in a dict
-so all the arguments must be immutable in which case tuples must be used
-instead of list.
-"""
-Radial_Operators: tuple[Symbol, ...] = (
-    Radial_Sm, Radial_S0, Radial_Sp,
-    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-    Radial_b, Radial_bm, Radial_Db
-)
-
-# # They will eventually be exchanged for operators in which the shift
-# # is specific. The first seven keep their names (for zero shift),
-# # but each instance of the final three will be exchanged for a
-# # symbolic name that indicates a shift by a shift of -1,0 or +1.
-# # The following lists will be used to achieve that.
-"""
-Radial_pl, Radial_ml, and Radial_zl are Maple tables.
-A Maple table should be implemented as a Python dictionary.
-"""
-# Radial_pl:=[Radial_b=Radial_b_pl,Radial_bm=Radial_bm_pl,
-#             Radial_Db=Radial_Db_pl]:
-Radial_b_pl: Symbol = Symbol('Radial_b_pl', commutative=False)
-Radial_bm_pl: Symbol = Symbol('Radial_bm_pl', commutative=False)
-Radial_Db_pl: Symbol = Symbol('Radial_Db_pl', commutative=False)
-Radial_pl: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_pl,
-    Radial_bm: Radial_bm_pl,
-    Radial_Db: Radial_Db_pl
-}
-
-# Radial_ml:=[Radial_b=Radial_b_ml,Radial_bm=Radial_bm_ml,
-#             Radial_Db=Radial_Db_ml]:
-Radial_b_ml: Symbol = Symbol('Radial_b_ml', commutative=False)
-Radial_bm_ml: Symbol = Symbol('Radial_bm_ml', commutative=False)
-Radial_Db_ml: Symbol = Symbol('Radial_Db_ml', commutative=False)
-Radial_ml: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_ml,
-    Radial_bm: Radial_bm_ml,
-    Radial_Db: Radial_Db_ml
-}
-
-# Radial_zl:=[Radial_b=Radial_b_zl,Radial_bm=Radial_bm_zl,
-#             Radial_Db=Radial_Db_zl]:
-Radial_b_zl: Symbol = Symbol('Radial_b_zl', commutative=False)
-Radial_bm_zl: Symbol = Symbol('Radial_bm_zl', commutative=False)
-Radial_Db_zl: Symbol = Symbol('Radial_Db_zl', commutative=False)
-Radial_zl: dict[Symbol, Symbol] = {
-    Radial_b: Radial_b_zl,
-    Radial_bm: Radial_bm_zl,
-    Radial_Db: Radial_Db_zl
-}
-
-"""Define a symbol for the radial identity operator."""
-Radial_id: Symbol = Symbol('Radial_id', commutative=True)
-
-# # The following indicates the SO(5) spherical harmonics for which
-# # SO(5)>SO(3) Clebsch-Gordon coefficients are available,
-# # and enables the v,alpha,L quantum numbers to be readily
-# # obtained from the symbolic names.
-#
-# SpHarm_Table:=table([
-#   SpHarm_010=[0,1,0],
-#   SpHarm_112=[1,1,2],
-#   SpHarm_212=[2,1,2], SpHarm_214=[2,1,4],
-#   SpHarm_310=[3,1,0], SpHarm_313=[3,1,3], SpHarm_314=[3,1,4],
-#   SpHarm_316=[3,1,6],
-#   SpHarm_412=[4,1,2], SpHarm_414=[4,1,4], SpHarm_415=[4,1,5],
-#   SpHarm_416=[4,1,6], SpHarm_418=[4,1,8],
-#   SpHarm_512=[5,1,2], SpHarm_514=[5,1,4], SpHarm_515=[5,1,5],
-#   SpHarm_516=[5,1,6], SpHarm_517=[5,1,7], SpHarm_518=[5,1,8],
-#   SpHarm_51A=[5,1,10],
-#   SpHarm_610=[6,1,0], SpHarm_613=[6,1,3], SpHarm_614=[6,1,4],
-#   SpHarm_616=[6,1,6], SpHarm_626=[6,2,6], SpHarm_617=[6,1,7],
-#   SpHarm_618=[6,1,8], SpHarm_619=[6,1,9], SpHarm_61A=[6,1,10],
-#   SpHarm_61C=[6,1,12]
-# ]):
-"""
-Implement SpHarm_Table as a Python dictionary whose keys are symbols
-and whose values are (v, alpha, L) integer tuples.
-"""
-SpHarm_010: Symbol = Symbol('SpHarm_010', commutative=False)
-SpHarm_112: Symbol = Symbol('SpHarm_112', commutative=False)
-SpHarm_212: Symbol = Symbol('SpHarm_212', commutative=False)
-SpHarm_214: Symbol = Symbol('SpHarm_214', commutative=False)
-SpHarm_310: Symbol = Symbol('SpHarm_310', commutative=False)
-SpHarm_313: Symbol = Symbol('SpHarm_313', commutative=False)
-SpHarm_314: Symbol = Symbol('SpHarm_314', commutative=False)
-SpHarm_316: Symbol = Symbol('SpHarm_316', commutative=False)
-SpHarm_412: Symbol = Symbol('SpHarm_412', commutative=False)
-SpHarm_414: Symbol = Symbol('SpHarm_414', commutative=False)
-SpHarm_415: Symbol = Symbol('SpHarm_415', commutative=False)
-SpHarm_416: Symbol = Symbol('SpHarm_416', commutative=False)
-SpHarm_418: Symbol = Symbol('SpHarm_418', commutative=False)
-SpHarm_512: Symbol = Symbol('SpHarm_512', commutative=False)
-SpHarm_514: Symbol = Symbol('SpHarm_514', commutative=False)
-SpHarm_515: Symbol = Symbol('SpHarm_515', commutative=False)
-SpHarm_516: Symbol = Symbol('SpHarm_516', commutative=False)
-SpHarm_517: Symbol = Symbol('SpHarm_517', commutative=False)
-SpHarm_518: Symbol = Symbol('SpHarm_518', commutative=False)
-SpHarm_51A: Symbol = Symbol('SpHarm_51A', commutative=False)
-SpHarm_610: Symbol = Symbol('SpHarm_610', commutative=False)
-SpHarm_613: Symbol = Symbol('SpHarm_613', commutative=False)
-SpHarm_614: Symbol = Symbol('SpHarm_614', commutative=False)
-SpHarm_616: Symbol = Symbol('SpHarm_616', commutative=False)
-SpHarm_626: Symbol = Symbol('SpHarm_626', commutative=False)
-SpHarm_617: Symbol = Symbol('SpHarm_617', commutative=False)
-SpHarm_618: Symbol = Symbol('SpHarm_618', commutative=False)
-SpHarm_619: Symbol = Symbol('SpHarm_619', commutative=False)
-SpHarm_61A: Symbol = Symbol('SpHarm_61A', commutative=False)
-SpHarm_61C: Symbol = Symbol('SpHarm_61C', commutative=False)
-
-SpHarm_Table: dict[Symbol, SO5SO3Label] = {
-    SpHarm_010: (0, 1, 0),
-    SpHarm_112: (1, 1, 2),
-    SpHarm_212: (2, 1, 2),
-    SpHarm_214: (2, 1, 4),
-    SpHarm_310: (3, 1, 0),
-    SpHarm_313: (3, 1, 3),
-    SpHarm_314: (3, 1, 4),
-    SpHarm_316: (3, 1, 6),
-    SpHarm_412: (4, 1, 2),
-    SpHarm_414: (4, 1, 4),
-    SpHarm_415: (4, 1, 5),
-    SpHarm_416: (4, 1, 6),
-    SpHarm_418: (4, 1, 8),
-    SpHarm_512: (5, 1, 2),
-    SpHarm_514: (5, 1, 4),
-    SpHarm_515: (5, 1, 5),
-    SpHarm_516: (5, 1, 6),
-    SpHarm_517: (5, 1, 7),
-    SpHarm_518: (5, 1, 8),
-    SpHarm_51A: (5, 1, 10),
-    SpHarm_610: (6, 1, 0),
-    SpHarm_613: (6, 1, 3),
-    SpHarm_614: (6, 1, 4),
-    SpHarm_616: (6, 1, 6),
-    SpHarm_626: (6, 2, 6),
-    SpHarm_617: (6, 1, 7),
-    SpHarm_618: (6, 1, 8),
-    SpHarm_619: (6, 1, 9),
-    SpHarm_61A: (6, 1, 10),
-    SpHarm_61C: (6, 1, 12)
-}
-
-# # Form a list of the available operator symbols in this table.
-#
-# SpHarm_Operators:=map(op,[indices(SpHarm_Table)]):
-"""
-The indices of a Maple table is a sequence of lists of keys.
-The key value is the operand of the list constructor so the op function must be applied to it.
-In Python, we can simply turn the dictionary keys into a list of keys.
-"""
-SpHarm_Operators: tuple[Symbol, ...] = tuple(SpHarm_Table.keys())
-
-# # We also make use of SpDiag_sqLdim and SpDiag_sqLdiv which
-# # denote operators represented by diagonal matrices with entries
-# #     (-1)^{L_i}*sqrt(2L_i+1)
-# # and (-1)^{L_i}/sqrt(2L_i+1) respectively.
-#
-# Spherical_Operators:=[op(SpHarm_Operators),SpDiag_sqLdim,SpDiag_sqLdiv]:
-"""Implement SpDiag_sqLdim and SpDiag_sqLdiv as noncommutative symbols."""
-SpDiag_sqLdim: Symbol = Symbol('SpDiag_sqLdim', commutative=False)
-SpDiag_sqLdiv: Symbol = Symbol('SpDiag_sqLdiv', commutative=False)
-Spherical_Operators = SpHarm_Operators + (SpDiag_sqLdim, SpDiag_sqLdiv)
 
 # # The four operators
 # #       pi, [pi x pi]_{v=2,L=2}, [pi x pi]_{v=2,L=L}, [q x pi x pi]_{v=3,L=0}
@@ -215,6 +32,7 @@ Xspace_PiPi2: Symbol = Symbol('Xspace_PiPi2', commutative=False)
 Xspace_PiPi4: Symbol = Symbol('Xspace_PiPi4', commutative=False)
 Xspace_PiqPi: Symbol = Symbol('Xspace_PiqPi', commutative=False)
 Xspace_Operators: tuple[Symbol, ...] = (Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi)
+
 
 # # The following provide useful conversion factors from the SO(5)
 # # spherical harmonics to more physically relevant operators;
@@ -590,7 +408,6 @@ def RepSO5r3_Prod(ys_op: list,
 def RepSO5r3_Prod_rem(ys_op: tuple,
                       v_min: int, v_max: int,
                       L_min: int, L_max: int) -> Matrix:
-
     return RepSO5r3_Prod_wrk(ys_op, v_min, v_max, L_min, L_max)
 
 
@@ -669,7 +486,7 @@ def RepSO5r3_Prod_wrk(ys_op: tuple,
 
     Mat_product: Optional[Matrix] = None
     for ys_op_i in ys_op:
-        M: Optional[Matrix] = None
+        M: Matrix
 
         if isinstance(ys_op_i, tuple) and len(ys_op_i) == 3:
             M = RepSO5_Y_rem(*ys_op_i, v_min, v_max, L_min, L_max)
@@ -879,7 +696,7 @@ def ACM_Hamiltonian(c11: IntFloatExpr = 0,
     if c43 != 0:
         our_op += ((c43 * Convert_310 ** 2, (Radial_bm2, SpHarm_310, SpHarm_310)),)
     if c50 != 0:
-        our_op += ((c50, (Xspace_PiqPi,)), )
+        our_op += ((c50, (Xspace_PiqPi,)),)
 
     return our_op
 
@@ -997,7 +814,7 @@ def ACM_HamSH3(c0: Expr = S.Zero,
                c8: Expr = S.Zero) -> OperatorSum:
     our_op: OperatorSum = () if c0 == 0 else ((c0, ()),)
 
-    for n, c in zip(range(1,9), [c1, c2, c3, c4, c5, c6, c7, c8]):
+    for n, c in zip(range(1, 9), [c1, c2, c3, c4, c5, c6, c7, c8]):
         if c != 0:
             our_op += ((c * Convert_310 ** n, (SpHarm_310,) * n),)
 

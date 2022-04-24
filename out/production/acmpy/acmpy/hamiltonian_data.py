@@ -1,6 +1,16 @@
 """8. Procedures that aid the production of the data for the particular Hamiltonians considered in [RWC2009]."""
+
+from typing import Callable
+
+from sympy import S, Expr, sqrt, Rational, Symbol, symbols, solveset
+
+from acmpy.compat import IntFloatExpr, nonnegint, require_nonnegint
+from acmpy.internal_operators import ACM_Hamiltonian, OperatorSum
+from acmpy.globals import lambda_davi_fun, lambda_sho_fun
+
+
 # ###########################################################################
-# ####-------- Aiding calculations for Hamitlonians in [RWC2009] --------####
+# ####-------- Aiding calculations for Hamiltonians in [RWC2009] --------####
 # ###########################################################################
 #
 # # Here we provide procedures that may be used instead of
@@ -12,8 +22,17 @@
 #
 # RWC_Ham:=(B,c1,c2,chi,kappa)->
 #   ACM_Hamiltonian(-1/2/B,0,B*c1/2,B*c2/2,0,-chi,0,0,0,kappa);
-#
-#
+def RWC_Ham(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, chi: IntFloatExpr, kappa: IntFloatExpr
+            ) -> OperatorSum:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+    chi = S(chi)
+    kappa = S(kappa)
+
+    return ACM_Hamiltonian(-1 / (2 * B), 0, B * c1 / 2, B * c2 / 2, 0, -chi, 0, 0, 0, kappa)
+
+
 # # The following procedure RWC_expt gives the expectation value of the above
 # # Hamiltonian on the |(anorm,lambda0)0;0100> basis state, given by (B16).
 # # (Note that (76) of [RWC2009] contains typos.)
@@ -26,7 +45,21 @@
 #   aa*(4+9/(lambda0-1))/8/B + B*lambda0*c1/2/aa
 #               + B*lambda0*(lambda0+1)*c2/2/aa^2 + kappa/3:
 # end:
-#
+def RWC_expt(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr,
+             anorm: IntFloatExpr, lambda0: IntFloatExpr
+             ) -> Expr:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+    kappa = S(kappa)
+    anorm = S(anorm)
+    lambda0 = S(lambda0)
+
+    aa: Expr = anorm ** 2
+    return aa * (4 + 9 / (lambda0 - 1)) / 8 / B + B * lambda0 * c1 / 2 / aa \
+           + B * lambda0 * (lambda0 + 1) * c2 / 2 / aa ** 2 + kappa / 3
+
+
 # # The following procedure RWC_expt_link gives the same expectation value
 # # (B16) as that above, but lambda0 is assumed to depend on anorm through
 # # the function RWC_dav (see below).
@@ -35,22 +68,36 @@
 #                           anorm::constant,$)
 #   RWC_expt(_passed,evalf(RWC_dav(c1,c2,anorm))):
 # end:
-#
-#
+def RWC_expt_link(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr, anorm: IntFloatExpr
+                  ) -> Expr:
+    return RWC_expt(B, c1, c2, kappa, anorm, RWC_dav(c1, c2, anorm).evalf())
+
+
 # # The following procedure RWC_dav calculates lambda0 from anorm
 # # (and c1 and c2) using (B11) via (B15).
 #
 # RWC_dav:=proc(c1::constant,c2::constant,anorm::constant,v::nonnegint:=0,$)
 #   lam_dav(anorm,beta_dav(c1,c2),v)
 # end:
-#
+def RWC_dav(c1: IntFloatExpr, c2: IntFloatExpr, anorm: IntFloatExpr, v: nonnegint = 0
+            ) -> Expr:
+    return lam_dav(anorm, beta_dav(c1, c2), v)
+
+
 # # The following calculates lambda_v using (B7) - or using
 # # B11 if the final argument is not given (it defaults to 0).
 #
 # lam_dav:=proc(a::constant,beta0::constant,v::nonnegint:=0,$)
 #     1+sqrt( (v+3/2)^2 + a^4*beta0^4 )
 # end:
-#
+def lam_dav(a: IntFloatExpr, beta0: IntFloatExpr, v: nonnegint = 0
+            ) -> Expr:
+    a = S(a)
+    beta0 = S(beta0)
+
+    return 1 + sqrt((v + Rational(3, 2)) ** 2 + a ** 4 * beta0 ** 4)
+
+
 # # The following calculates beta_0 using (B15)
 #
 # beta_dav:=proc(c1::constant,c2::constant,$)
@@ -60,7 +107,14 @@
 #     sqrt(-c1/c2/2)
 #   fi;
 # end:
-#
+def beta_dav(c1: IntFloatExpr, c2: IntFloatExpr
+             ) -> Expr:
+    c1 = S(c1)
+    c2 = S(c2)
+
+    return S.Zero if c1.evalf() >= 0 else sqrt(-c1 / c2 / 2)
+
+
 # # The following procedure RWC_alam returns values of the ACM parameters
 # # (anorm,lambda), which are "optimal" in the cases of the RWC Hamiltonians.
 # # This seeks the minimal value of RWC_expt, given above, by solving
@@ -108,7 +162,40 @@
 #   fi:
 #
 # end:
-#
+def RWC_alam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, v: nonnegint = 0
+             ) -> tuple[float, float]:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+    require_nonnegint('v', v)
+
+    vshft: int = (2 * v + 3) ** 2
+
+    A: Symbol = symbols('A', real=True)
+    aa0: float
+    if c1.evalf() < 0:
+
+        def muf(aa: Expr) -> Expr:
+            return sqrt(vshft + (aa * c1 / c2) ** 2)
+
+        def RWC2(aa: Expr, mu: Expr) -> Expr:
+            return (c1 / c2) ** 2 * (-vshft * aa ** 5 / mu ** 2
+                                     + aa ** 3 * B ** 2 * c2 * (mu + 3)) \
+                   + aa ** 3 * (2 * mu + vshft) \
+                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
+
+        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
+        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf()
+
+    else:
+
+        def RWC1(aa: Expr) -> Expr:
+            return aa ** 3 - B ** 2 * c1 * aa - (2 * v + 7) * B ** 2 * c2
+
+        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
+        return sqrt(aa0).evalf(), 2.5
+
+
 # # The following procedure RWC_alam36 is a simplified algorithm
 # # for obtaining "optimal" values of (anorm,lambda), obtained by
 # # matching second derivatives at the turning point of the potential.
@@ -128,7 +215,21 @@
 #   fi:
 #
 # end:
-#
+def RWC_alam36(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+               ) -> tuple[float, float]:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+
+    if c1.evalf() < 0:
+
+        return sqrt(sqrt(-B ** 2 * c2 / 2)).evalf(), (1 + sqrt(36 + B ** 2 * c1 ** 4 / c2 ** 2) / 4).evalf()
+
+    else:
+
+        return sqrt(sqrt(B * c1 / 4)).evalf(), 2.5
+
+
 # # The following procedure RWC_alam_clam is another alternative that
 # # returns values of the ACM parameters (anorm,lambda), which are
 # # obtained from the minimal value of the expectation value of RWC_expt,
@@ -142,8 +243,21 @@
 #     return [sqrt(aa0),2.5]:
 #
 # end:
-#
-#
+def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+                  ) -> tuple[float, float]:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+
+    def RWC1(aa: Expr) -> Expr:
+        return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
+
+    A: Symbol = symbols('A', real=True)
+    aa0: float = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
+
+    return sqrt(aa0).evalf(), 2.5
+
+
 # # The following procedure RWC_alam_fun returns a triple
 # #                 [anorm,lambda0,lambda_fun]
 # # where anorm and lambda0 are "optimal" values obtained as in
@@ -187,5 +301,32 @@
 #   fi:
 #
 # end:
-#
-#
+def RWC_alam_fun(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+                 ) -> tuple[float, float, Callable]:
+    B = S(B)
+    c1 = S(c1)
+    c2 = S(c2)
+
+    A: Symbol = symbols('A', real=True)
+    aa0: float
+    if c1.evalf() < 0:
+
+        def muf(aa: Expr) -> Expr:
+            return sqrt(9 + (aa * c1 / c2) ** 2)
+
+        def RWC2(aa: Expr, mu: Expr) -> Expr:
+            return (c1 / c2) ** 2 * (-9 * aa ** 5 / mu ** 2
+                                     + aa ** 3 * B ** 2 * c1 + aa ** 2 * B ** 2 * c2 * (mu + 3)) \
+                   + aa ** 3 * (2 * mu + 9) \
+                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
+
+        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
+        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf(), lambda_davi_fun(((aa0 * c1 / c2 / 2) ** 2).evalf())
+
+    else:
+
+        def RWC1(aa: Expr) -> Expr:
+            return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
+
+        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
+        return sqrt(aa0).evalf(), 2.5, lambda_sho_fun

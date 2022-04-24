@@ -5,14 +5,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/journals/arthurs-journal-2022-04.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/acm1.4a-examples.mw-results.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/acm1.4a-examples.mw-sceenshot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/debug/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/debug/debug_acm_scale.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/debug/debug_parse_radialop_list.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/debug/debug_show_eigs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/eigenvalues.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/ex_1_0_preliminaries.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/ex_1_1_essentials.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/ex_1_2_setting_the_default_output_format.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/ex_2_1_specification_of_hamiltonian.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/examples/ex_2_2_diagonalization_of_hamiltonian.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/performance/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/acmpy/tests/test_eigenvalues.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2022.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/arthurs-journal-2022-03.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2019.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2019-12-08 Arthur's Journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2020.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2020-01-08 Arthur's Journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2022-03.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-03-04 Arthur's Journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/journals/arthurs-journal-2022-04.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-04-02 Arthurs Journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-01-preliminaries.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-01-preliminaries.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/acm1_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/acm1_4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/full_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/full_operators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/full_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/gamma.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/globals.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/globals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/hamiltonian_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/hamiltonian_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/hello_world.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/internal_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/internal_operators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/radial_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/simple.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/so5_so3_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/so5_so3_cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/so5cg.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/spherical_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/acmpy/acmpy/spherical_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/tests/test_types.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/acmpy/acmpy/types.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/acm1_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/acm1_4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/debug_full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/debug/deug_full_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/full_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_space.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/globals.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/globals.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/internal_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/internal_operators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/radial_space.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/so5_so3_cg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/so5_so3_cg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/spherical_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/spherical_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/tests/test_compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/tests/test_internal_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_radial_space.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,36 +118,14 @@
       <recent name="$PROJECT_DIR$/doc" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/acmpy/debug" />
+      <recent name="$PROJECT_DIR$/src/acmpy" />
+      <recent name="$PROJECT_DIR$/src/acmpy/dev" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/notebooks" />
-      <recent name="$PROJECT_DIR$/articles" />
-      <recent name="$PROJECT_DIR$/journals" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.console">
-    <configuration name="compat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/compat.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.debug_acm_scale">
     <configuration name="console" type="PythonConfigurationType" factoryName="Python">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -126,7 +148,26 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="debug_full_space" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="debug_acm_scale" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="acmpy" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/debug" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/debug/debug_acm_scale.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="debug_parse_radialop_list" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -134,12 +175,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/debug" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/debug_full_space.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/debug/debug_parse_radialop_list.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -148,22 +189,44 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="full_space" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="deug_full_space" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/debug" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/full_space.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/debug/deug_full_space.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ex_2_2_diagonalization_of_hamiltonian" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="acmpy" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/examples/ex_2_2_diagonalization_of_hamiltonian.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -214,7 +277,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_compat.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in test_radial_space.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -225,25 +288,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/acmpy/tests/test_compat.py&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/acmpy/tests/test_radial_space.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_full_space.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/acmpy/tests/test_full_space.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
+    <list>
+      <item itemvalue="Python.console" />
+      <item itemvalue="Python.hello_world" />
+      <item itemvalue="Python.so5cg" />
+      <item itemvalue="Python.debug_parse_radialop_list" />
+      <item itemvalue="Python.deug_full_space" />
+      <item itemvalue="Python.debug_acm_scale" />
+      <item itemvalue="Python.ex_2_2_diagonalization_of_hamiltonian" />
+      <item itemvalue="Python tests.Python tests in test_radial_space.py" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.debug_acm_scale" />
+        <item itemvalue="Python.ex_2_2_diagonalization_of_hamiltonian" />
+        <item itemvalue="Python tests.Python tests in test_radial_space.py" />
+        <item itemvalue="Python.debug_parse_radialop_list" />
+        <item itemvalue="Python.deug_full_space" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="StructureViewFactory">
@@ -404,6 +471,14 @@
       <workItem from="1649785874732" duration="8500000" />
       <workItem from="1649797957034" duration="884000" />
       <workItem from="1649808133697" duration="1917000" />
+      <workItem from="1649872229347" duration="1677000" />
+      <workItem from="1649888037473" duration="14101000" />
+      <workItem from="1650316230405" duration="7846000" />
+      <workItem from="1650332046373" duration="2929000" />
+      <workItem from="1650396474191" duration="13596000" />
+      <workItem from="1650492149589" duration="839000" />
+      <workItem from="1650555850008" duration="29581000" />
+      <workItem from="1650730446483" duration="4560000" />
     </task>
     <servers />
   </component>
@@ -424,6 +499,64 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1797</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1815</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1641</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1528</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1550</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/acmpy/radial_space.py</url>
+          <line>1242</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/acmpy$ex_1_2_setting_the_default_output_format.coverage" NAME="ex-1-2-setting-the-default-output-format Coverage Results" MODIFIED="1650398235188" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$acm_scale.coverage" NAME="debug_acm_scale Coverage Results" MODIFIED="1650730111761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
+    <SUITE FILE_PATH="coverage/acmpy$debug_acm_scale.coverage" NAME="debug_acm_scale Coverage Results" MODIFIED="1650811752786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
+    <SUITE FILE_PATH="coverage/acmpy$acm1_4.coverage" NAME="acm1_4 Coverage Results" MODIFIED="1650398353257" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy" />
+    <SUITE FILE_PATH="coverage/acmpy$ex_1_preliminaries.coverage" NAME="ex_1_preliminaries Coverage Results" MODIFIED="1650574183992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$deug_full_space.coverage" NAME="deug_full_space Coverage Results" MODIFIED="1650652991919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
+    <SUITE FILE_PATH="coverage/acmpy$ex_1_1_essentials.coverage" NAME="ex-1-1-essentials Coverage Results" MODIFIED="1650397306882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$debug_full_space.coverage" NAME="debug_full_space Coverage Results" MODIFIED="1650405787356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
+    <SUITE FILE_PATH="coverage/acmpy$ex_2_2_diagonalization_of_hamiltonian.coverage" NAME="ex_2_2_diagonalization_of_hamiltonian Coverage Results" MODIFIED="1650660438896" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$.coverage" NAME=" Coverage Results" MODIFIED="1650660071462" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/tests" />
+    <SUITE FILE_PATH="coverage/acmpy$debug_show_eigs.coverage" NAME="debug_show_eigs Coverage Results" MODIFIED="1650652746171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
+    <SUITE FILE_PATH="coverage/acmpy$ex_2_1_specification_of_hamiltonian.coverage" NAME="ex-2-1-specification-of-hamiltonian Coverage Results" MODIFIED="1650399090498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$debug_parse_radialop_list.coverage" NAME="debug_parse_radialop_list Coverage Results" MODIFIED="1650659583888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">

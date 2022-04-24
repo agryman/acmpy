@@ -1,6 +1,14 @@
 """1. Specification of global constants, and procedures that can be used to set their values."""
 
-from sympy import Symbol, pi, sqrt, Integer, Rational
+import math
+from typing import Callable, Optional
+
+from sympy import sqrt, Expr
+
+from acmpy.internal_operators import OperatorSum, Op_AM, quad_op
+from acmpy.spherical_space import dimSO3
+from acmpy.so5_so3_cg import CG_SO3
+from acmpy.compat import nonnegint, require_nonnegint, irem, is_odd, posint, require_posint
 
 # ###########################################################################
 # ####----------------------- Global Constants --------------------------####
@@ -14,271 +22,16 @@ from sympy import Symbol, pi, sqrt, Integer, Rational
 #
 # ACM_version:=1.4:
 
-# the version should be mapped to a Python string, not a float
-ACM_version = '1.4'
+"""The version should be implemented as a Python string, not a float."""
+ACM_version: str = '1.4'
 
-#
-# # The following is a list containing the symbolic names for ten operators
-# # that are the "basic" radial operators.
-# # The way that they alter lambda is not fixed, but is determined
-# # automatically.
-#
-# Radial_Operators:=[Radial_Sm, Radial_S0, Radial_Sp,
-#                    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-#                    Radial_b, Radial_bm, Radial_Db]:
 
-# map all Maple symbols to SymPy symbols
-# these are operators, so their multiplication should be assumed to be noncommutative
-
-Radial_Sm = Symbol('Radial_Sm', commutative=False)
-Radial_S0 = Symbol('Radial_S0', commutative=False)
-Radial_Sp = Symbol('Radial_Sp', commutative=False)
-Radial_b2 = Symbol('Radial_b2', commutative=False)
-Radial_bm2 = Symbol('Radial_bm2', commutative=False)
-Radial_D2b = Symbol('Radial_D2b', commutative=False)
-Radial_bDb = Symbol('Radial_bDb', commutative=False)
-Radial_b = Symbol('Radial_b', commutative=False)
-Radial_bm = Symbol('Radial_bm', commutative=False)
-Radial_Db = Symbol('Radial_Db', commutative=False)
-
-# Radial_Operators is a Maple list.
-# A Maple list is an ordered sequence of objects.
-# It maps naturally to either a Python list (mutable) or tuple (immutable).
-# Map Radial_Operators to a Python tuple since I assume it is immutable.
-Radial_Operators = (Radial_Sm, Radial_S0, Radial_Sp,
-                    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
-                    Radial_b, Radial_bm, Radial_Db)
-
-#
-# # They will eventually be exchanged for operators in which the shift
-# # is specific. The first seven keep their names (for zero shift),
-# # but each instance of the final three will be exchanged for a
-# # symbolic name that indicates a shift by a shift of -1,0 or +1.
-# # The following lists will be used to achieve that.
-#
-# Radial_pl:=[Radial_b=Radial_b_pl,Radial_bm=Radial_bm_pl,
-#             Radial_Db=Radial_Db_pl]:
-# Radial_ml:=[Radial_b=Radial_b_ml,Radial_bm=Radial_bm_ml,
-#             Radial_Db=Radial_Db_ml]:
-# Radial_zl:=[Radial_b=Radial_b_zl,Radial_bm=Radial_bm_zl,
-#             Radial_Db=Radial_Db_zl]:
-
-# Radial_pl, Radial_ml, and Radial_zl are Maple tables.
-# A Maple table maps naturally to a Python dictionary.
-
-Radial_b_pl = Symbol('Radial_b_pl', commutative=False)
-Radial_bm_pl = Symbol('Radial_bm_pl', commutative=False)
-Radial_Db_pl = Symbol('Radial_Db_pl', commutative=False)
-Radial_pl = {
-    Radial_b: Radial_b_pl,
-    Radial_bm: Radial_bm_pl,
-    Radial_Db: Radial_Db_pl
-}
-
-Radial_b_ml = Symbol('Radial_b_ml', commutative=False)
-Radial_bm_ml = Symbol('Radial_bm_ml', commutative=False)
-Radial_Db_ml = Symbol('Radial_Db_ml', commutative=False)
-Radial_ml = {
-    Radial_b: Radial_b_ml,
-    Radial_bm: Radial_bm_ml,
-    Radial_Db: Radial_Db_ml
-}
-
-Radial_b_zl = Symbol('Radial_b_zl', commutative=False)
-Radial_bm_zl = Symbol('Radial_bm_zl', commutative=False)
-Radial_Db_zl = Symbol('Radial_Db_zl', commutative=False)
-Radial_zl = {
-    Radial_b: Radial_b_zl,
-    Radial_bm: Radial_bm_zl,
-    Radial_Db: Radial_Db_zl
-}
-
-#
-#
-# # The following indicates the SO(5) spherical harmonics for which
-# # SO(5)>SO(3) Clebsch-Gordon coefficients are available,
-# # and enables the v,alpha,L quantum numbers to be readily
-# # obtained from the symbolic names.
-#
-# SpHarm_Table:=table([
-#   SpHarm_010=[0,1,0],
-#   SpHarm_112=[1,1,2],
-#   SpHarm_212=[2,1,2], SpHarm_214=[2,1,4],
-#   SpHarm_310=[3,1,0], SpHarm_313=[3,1,3], SpHarm_314=[3,1,4],
-#   SpHarm_316=[3,1,6],
-#   SpHarm_412=[4,1,2], SpHarm_414=[4,1,4], SpHarm_415=[4,1,5],
-#   SpHarm_416=[4,1,6], SpHarm_418=[4,1,8],
-#   SpHarm_512=[5,1,2], SpHarm_514=[5,1,4], SpHarm_515=[5,1,5],
-#   SpHarm_516=[5,1,6], SpHarm_517=[5,1,7], SpHarm_518=[5,1,8],
-#   SpHarm_51A=[5,1,10],
-#   SpHarm_610=[6,1,0], SpHarm_613=[6,1,3], SpHarm_614=[6,1,4],
-#   SpHarm_616=[6,1,6], SpHarm_626=[6,2,6], SpHarm_617=[6,1,7],
-#   SpHarm_618=[6,1,8], SpHarm_619=[6,1,9], SpHarm_61A=[6,1,10],
-#   SpHarm_61C=[6,1,12]
-# ]):
-
-# Map SpHarm_Table to a Python dictionary whose keys are symbols
-# and whose values are (v, alpha, L) integer tuples
-
-SpHarm_010 = Symbol('SpHarm_010', commutative=False)
-SpHarm_112 = Symbol('SpHarm_112', commutative=False)
-SpHarm_212 = Symbol('SpHarm_212', commutative=False)
-SpHarm_214 = Symbol('SpHarm_214', commutative=False)
-SpHarm_310 = Symbol('SpHarm_310', commutative=False)
-SpHarm_313 = Symbol('SpHarm_313', commutative=False)
-SpHarm_314 = Symbol('SpHarm_314', commutative=False)
-SpHarm_316 = Symbol('SpHarm_316', commutative=False)
-SpHarm_412 = Symbol('SpHarm_412', commutative=False)
-SpHarm_414 = Symbol('SpHarm_414', commutative=False)
-SpHarm_415 = Symbol('SpHarm_415', commutative=False)
-SpHarm_416 = Symbol('SpHarm_416', commutative=False)
-SpHarm_418 = Symbol('SpHarm_418', commutative=False)
-SpHarm_512 = Symbol('SpHarm_512', commutative=False)
-SpHarm_514 = Symbol('SpHarm_514', commutative=False)
-SpHarm_515 = Symbol('SpHarm_515', commutative=False)
-SpHarm_516 = Symbol('SpHarm_516', commutative=False)
-SpHarm_517 = Symbol('SpHarm_517', commutative=False)
-SpHarm_518 = Symbol('SpHarm_518', commutative=False)
-SpHarm_51A = Symbol('SpHarm_51A', commutative=False)
-SpHarm_610 = Symbol('SpHarm_610', commutative=False)
-SpHarm_613 = Symbol('SpHarm_613', commutative=False)
-SpHarm_614 = Symbol('SpHarm_614', commutative=False)
-SpHarm_616 = Symbol('SpHarm_616', commutative=False)
-SpHarm_626 = Symbol('SpHarm_626', commutative=False)
-SpHarm_617 = Symbol('SpHarm_617', commutative=False)
-SpHarm_618 = Symbol('SpHarm_618', commutative=False)
-SpHarm_619 = Symbol('SpHarm_619', commutative=False)
-SpHarm_61A = Symbol('SpHarm_61A', commutative=False)
-SpHarm_61C = Symbol('SpHarm_61C', commutative=False)
-
-SpHarm_Table = {
-    SpHarm_010: (0,1,0),
-    SpHarm_112: (1,1,2),
-    SpHarm_212: (2,1,2),
-    SpHarm_214: (2,1,4),
-    SpHarm_310: (3,1,0),
-    SpHarm_313: (3,1,3),
-    SpHarm_314: (3,1,4),
-    SpHarm_316: (3,1,6),
-    SpHarm_412: (4,1,2),
-    SpHarm_414: (4,1,4),
-    SpHarm_415: (4,1,5),
-    SpHarm_416: (4,1,6),
-    SpHarm_418: (4,1,8),
-    SpHarm_512: (5,1,2),
-    SpHarm_514: (5,1,4),
-    SpHarm_515: (5,1,5),
-    SpHarm_516: (5,1,6),
-    SpHarm_517: (5,1,7),
-    SpHarm_518: (5,1,8),
-    SpHarm_51A: (5,1,10),
-    SpHarm_610: (6,1,0),
-    SpHarm_613: (6,1,3),
-    SpHarm_614: (6,1,4),
-    SpHarm_616: (6,1,6),
-    SpHarm_626: (6,2,6),
-    SpHarm_617: (6,1,7),
-    SpHarm_618: (6,1,8),
-    SpHarm_619: (6,1,9),
-    SpHarm_61A: (6,1,10),
-    SpHarm_61C: (6,1,12)
-}
-
-#
-# # Form a list of the available operator symbols in this table.
-#
-# SpHarm_Operators:=map(op,[indices(SpHarm_Table)]):
-
-# The indices of a Maple table is a sequence of lists of keys.
-# The key value is the operand of the list constructor so the op function must be applied to it.
-# In Python we can simply turn the dictionary keys into a list of keys.
-SpHarm_Operators = list(SpHarm_Table.keys())
-
-#
-# # We also make use of SpDiag_sqLdim and SpDiag_sqLdiv which
-# # denote operators represented by diagonal matrices with entries
-# #     (-1)^{L_i}*sqrt(2L_i+1)
-# # and (-1)^{L_i}/sqrt(2L_i+1) respectively.
-#
-# Spherical_Operators:=[op(SpHarm_Operators),SpDiag_sqLdim,SpDiag_sqLdiv]:
-
-# Map SpDiag_sqLdim and SpDiag_sqLdiv to noncommutative symbols.
-SpDiag_sqLdim = Symbol('SpDiag_sqLdim', commutative=False)
-SpDiag_sqLdiv = Symbol('SpDiag_sqLdiv', commutative=False)
-Spherical_Operators = SpHarm_Operators + [SpDiag_sqLdim, SpDiag_sqLdiv]
-
-#
-# # The four operators
-# #       pi, [pi x pi]_{v=2,L=2}, [pi x pi]_{v=2,L=L}, [q x pi x pi]_{v=3,L=0}
-# # intrinsically affect the whole product space:
-#
-# Xspace_Operators:=[ Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi ]:
-
-Xspace_Pi = Symbol('Xspace_Pi', commutative=False)
-Xspace_PiPi2 = Symbol('Xspace_PiPi2', commutative=False)
-Xspace_PiPi4 = Symbol('Xspace_PiPi4', commutative=False)
-Xspace_PiqPi = Symbol('Xspace_PiqPi', commutative=False)
-Xspace_Operators = [Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi]
-
-#
-#
-# # The following quad_op specifies, in internal format, the quadrupole
-# # operator. quadRigid_op is more appropriate for rigid-beta models.
-#
-# quad_op:=[ [Convert_112, [Radial_b,SpHarm_112]] ]:
-# quadRigid_op:=[ [Convert_112, [SpHarm_112]] ]:
-
-Convert_112 = Symbol('Convert_112', commutative=False)
-quad_op = [[Convert_112, [Radial_b,SpHarm_112]]]
-quadRigid_op =[[Convert_112, [SpHarm_112]]]
-
-#
-#
-#
-# # The following provide useful conversion factors from the SO(5)
-# # spherical harmonics to more physically relevant operators;
-# # see Table IV.
-# # (Note that often (e.g. by RepSO5_Y_rem), the operator will be represented
-# # with the 4*Pi already incorporated - and the FourPi should be cancelled).
-# # Note that evalf will need to be used somewhere further down the line
-# # to convert from these symbolic values to actual floating point values.
-#
-# FourPi:=4*Pi;
-# Convert_112:=FourPi/sqrt(15);       # multiplies Y112 to get Q
-# Convert_212:=-FourPi*sqrt(2/105);   # multiplies Y212 to get [QxQ]_(L=4)
-# Convert_310:=FourPi/3;              # multiplies Y310 to get cos(3*gamma)
-# Convert_316:=FourPi/3*sqrt(2/35);   # multiplies Y316 to get [QxQxQ]_(L=6)
-# Convert_610:=2*FourPi/sqrt(15);     # multiplies Y610 to get [3*cos(3*gamma)+1]
-# Convert_red:=1/FourPi;         # converts ME_SO5red to <v3|||v2|||v1>
-
-# Maple Pi maps to SymPy pi
-FourPi = 4 * pi
-
-# I am not sure about the semantic difference between Maple and SymPy with respect to
-# changing the value of a symbol after it has been used.
-# In this case, Convert_112 was defined above to be a Symbol but is
-# now being redefined to be a numeric expression.
-# I believe Maple and SymPy are similar in that the new value of the Symbol is
-# not immediately substituted in any expression that references it.
-# Not that any Python numeric expression must be wrapped in SymPy constructors
-# such as Integer and Rational is order to preserve exact precision.
-Convert_112 = FourPi / sqrt(Integer(15))
-Convert_212 = -FourPi * sqrt(Rational(2, 105))
-Convert_310 = FourPi / 3
-Convert_316 = FourPi / 3 * sqrt(Rational(2, 35))
-Convert_610 = 2 * FourPi / sqrt(Integer(15))
-Convert_red = 1 / FourPi
-
-#
-# ###########################################################################
-#
-#
 # # The following procedure definitions determine functions used for displaying
 # # the transition rates and amplitudes (the particular procedures in force at
 # # a given time are stored in the global variables glb_rat_fun & glb_amp_fun).
 # # These are as listed in Table V.
 # # In addition to the matrix element Mel, they make use of the angular
-# # momenta of the intitial state Li, and final state Lf.
+# # momenta of the initial state Li, and final state Lf.
 # # (Maple doesn't allow me to specify a delimiting fourth argument $ here!)
 #
 # # In the first of these procedures, the value of glb_rat_TRopAM (default 2),
@@ -289,40 +42,72 @@ Convert_red = 1 / FourPi
 #   global glb_rat_TRopAM;
 #   Mel*CG_SO3(Li,Li,glb_rat_TRopAM,Lf-Li,Lf,Lf)
 # end;
-#
+def quad_amp_fun(Li, Lf, Mel):
+    global glb_rat_TRopAM
+    # TODO: determine the correct type hint for angular momentum
+    return Mel * CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf)
+
+
 # mel_amp_fun:=proc(Li,Lf,Mel)
 #   Mel*sqrt(2*Lf+1)
 # end;
-#
+def mel_amp_fun(Li, Lf, Mel) -> Expr:
+    return Mel * sqrt(2 * Lf + 1)
+
+
 # unit_amp_fun:=proc(Li,Lf,Mel)
 #   Mel
 # end;
-#
+def unit_amp_fun(Li, Lf, Mel) -> Expr:
+    return Mel
+
+
 # quad_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)/dimSO3(Li)
 # end;
-#
+def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
+    return Mel ** 2 * dimSO3(Lf) / dimSO3(Li)
+
+
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;
-#
+def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
+    return Mel ** 2 * dimSO3(Lf)
+
+
 # unit_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2
 # end;
-#
+def unit_rat_fun(Li, Lf, Mel) -> Expr:
+    return Mel**2
+
+
 # # The following was described in a previous version
 #
 # mix_amp_fun:=proc(Li,Lf,Mel)
 #   global glb_rat_TRopAM;
 #   Mel*gen_amp_mul(Li,Lf,glb_rat_TRopAM)
 # end;
-#
+def mix_amp_fun(Li, Lf, Mel) -> Expr:
+    global glb_rat_TRopAM
+
+    return Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM)
+
+
 # gen_amp_mul:=proc(Li,Lf,Lt,$)
 #   if Li=Lf then CG_SO3(Lf,Lf,Lt,0,Lf,Lf)
 #   else sqrt(2*Lf+1)
 #   fi:
 # end;
-#
+def gen_amp_mul(Li, Lf, Lt) -> Expr:
+    # TODO: determine the correct type hint for angular momentum
+    if Li == Lf:
+        return CG_SO3(Lf, Lf, Lt, 0, Lf, Lf)
+
+    return sqrt(2 * Lf + 1)
+
+
 # # The following procedure definitions determine functions used for
 # # determining lambda as a function of seniority v
 # # (the particular procedure in force at a given time is stored
@@ -337,15 +122,30 @@ Convert_red = 1 / FourPi
 # lambda_fix_fun:=proc(v::nonnegint)   # for fixed lambda
 #   0
 # end;
-#
+def lambda_fix_fun(v: nonnegint) -> nonnegint:
+    require_nonnegint('v', v)
+
+    return 0
+
+
 # lambda_sho_fun:=proc(v::nonnegint)   # for SHO lambda variation
 #   v
 # end;
-#
+def lambda_sho_fun(v: nonnegint) -> nonnegint:
+    require_nonnegint('v', v)
+
+    return v
+
+
 # lambda_acm_fun:=proc(v::nonnegint)   # for lambda varying with parity of v
 #   irem(v,2)
 # end;
-#
+def lambda_acm_fun(v: nonnegint) -> nonnegint:
+    require_nonnegint('v', v)
+
+    return irem(v, 2)
+
+
 # lambda_jig_fun:=proc(v::nonnegint)   # A little mixture, used for testing
 #   if v=0 then
 #     0
@@ -353,12 +153,17 @@ Convert_red = 1 / FourPi
 #     2-irem(v,2)
 #   fi
 # end;
-#
+def lambda_jig_fun(v: nonnegint) -> nonnegint:
+    require_nonnegint('v', v)
+
+    return 0 if v == 0 else 2 - irem(v, 2)
+
+
 # # Further procedures of a similar nature may be obtained using the
 # # following procedure, which returns the name of a procedure that
 # # itself returns the nearest integer to
 # #    sqrt( (v+3/2)^2 + C ) - sqrt( 9/4 + C )
-# # of the same partity as v.
+# # of the same parity as v.
 # # This is described in Appendix B.3.
 #
 # lambda_davi_fun:=proc(C::constant)
@@ -376,8 +181,17 @@ Convert_red = 1 / FourPi
 #
 #    difffun:
 # end:
-#
-#
+def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
+    def difffun(v: nonnegint) -> int:
+        require_nonnegint('v', v)
+
+        diffint: int = math.floor(math.sqrt((v + 1) ** 2 + C) - math.sqrt(2.25 + C))
+
+        return diffint + (1 if is_odd(diffint - v) else 0)
+
+    return difffun
+
+
 # # We supply our own version of the square root that has `procedure` type.
 # # It is necessary to use such a procedure to pass as an argument
 # # when the type is being tested, because sqrt itself is not a `procedure`!
@@ -386,10 +200,10 @@ Convert_red = 1 / FourPi
 # sqrt_fun:=proc(sft)
 #   sqrt(evalf(sft)):
 # end;
-#
-#
-# ###########################################################################
-#
+def sqrt_fun(sft: Expr) -> Expr:
+    return sqrt(sft.evalf())
+
+
 # # The SO(5)>SO(3) CG coefficients are initially obtained from external files.
 # # The value of the Maple variable SO5CG_directory determines the directory
 # # below which are to be found files containing SO(5)>SO(3) CG coefficients.
@@ -404,22 +218,10 @@ Convert_red = 1 / FourPi
 # # (it is used by the procedure show_CG_file), and, somewhat, the data
 # # therein (it should return two values: 0.522,0.431).
 #
-# # The following defines a table wherein the SO(5)>SO(3) Clebsch-Gordon
-# # coefficients will be stored in memory. This table is intially empty.
-# # The table is loaded from external files, as required.
-# # For a particular (v1,v2,a2,L2,v3), this is done by calling
-# # load_CG_table(v1,v2,a2,L2,v3).
-# # When present, the SO(5)>SO(3) CG coefficient is given by
-# # CG_coeffs[v1,v2,a2,L2,v3][a1,L1,a3,L3].
-#
-# CG_coeffs:=table():
-#
 # # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
 # #   indices(CG_coeffs);
 # # Initially, of course, this table will be empty.
-#
-# ###########################################################################
-#
+
 # # The following determine values used to set the defaults for how the
 # # transition rates and amplitudes of the quadrupole operator are
 # # displayed by the procedures Show_Rats and Show_Amps.
@@ -428,7 +230,12 @@ Convert_red = 1 / FourPi
 # def_rat_format:="  B(E2: %s) = %s":
 # def_amp_desg:="transition amplitudes":
 # def_amp_format:="  Amp( %s ) = %s":
-#
+def_rat_desg: str = "transition rates"
+def_rat_format: str = "  B(E2: {}) = {}"
+def_amp_desg: str = "transition amplitudes"
+def_amp_format: str = "  Amp( {} ) = {}"
+
+
 # # If the Show_Mels procedure is used directly (Show_Rats and
 # # Show_Amps call Show_Mels), the following two values can be used
 # # (in fact, they are used by default).
@@ -437,9 +244,10 @@ Convert_red = 1 / FourPi
 #
 # def_mel_desg:="matrix elements":
 # def_mel_format:="  ME( %s ) = %s":
-#
-# ###########################################################################
-#
+def_mel_desg: str = "matrix elements"
+def_mel_format: str = "  ME( %{0!s} ) = {1!s}"
+
+
 # # The data that is produced by the main procedures is displayed
 # # according to the values of various global parameters.
 # # These are listed here, along with some initial values.
@@ -460,7 +268,11 @@ Convert_red = 1 / FourPi
 # glb_eig_sft:=1.0:
 # glb_rat_sft:=1.0:
 # glb_amp_sft:=1.0:
-#
+glb_eig_sft: float = 1.0
+glb_rat_sft: float = 1.0
+glb_amp_sft: float = 1.0
+
+
 # # The following store the precision for floating point values that
 # # are displayed by the procedures Show_Eigs(), Show_Rats() and
 # # Show_Amps(); and via these, by the procedures ACM_Scale()
@@ -469,7 +281,11 @@ Convert_red = 1 / FourPi
 # glb_rel_pre:=2:
 # glb_rel_wid:=7:
 # glb_low_pre:=4:
-#
+glb_rel_pre: int = 2
+glb_rel_wid: int = 7
+glb_low_pre: int = 4
+
+
 # # The following store the maximal number of entries for horizontal
 # # lists of eigenvalues, transition rates and amplitudes that are
 # # respectively displayed by the procedures Show_Eigs(), Show_Rats()
@@ -479,7 +295,11 @@ Convert_red = 1 / FourPi
 # glb_eig_num:=4:
 # glb_rat_num:=4:
 # glb_amp_num:=4:
-#
+glb_eig_num: int = 4
+glb_rat_num: int = 4
+glb_amp_num: int = 4
+
+
 # # The following specify how ACM_Adapt() determines the scale factor
 # # glb_eig_sft. This factor is determined such that the energy of
 # # the (glb_eig_idx)th state of AM glb_eig_L comes out to be glb_eig_fit.
@@ -487,7 +307,11 @@ Convert_red = 1 / FourPi
 # glb_eig_fit:=6.0:
 # glb_eig_L:=2:
 # glb_eig_idx:=1:
-#
+glb_eig_fit: float = 6.0
+glb_eig_L: int = 2
+glb_eig_idx: int = 1
+
+
 # # The following specify how ACM_Adapt() determines the scale factor
 # # glb_rat_sft. This factor is determined such that the transition rate
 # # from the (glb_rat_1dx)th state of AM glb_eig_L1 to the
@@ -498,12 +322,20 @@ Convert_red = 1 / FourPi
 # glb_rat_L2:=0:
 # glb_rat_1dx:=1:
 # glb_rat_2dx:=1:
-#
+glb_rat_fit: float = 100.0
+glb_rat_L1: int = 2
+glb_rat_L2: int = 0
+glb_rat_1dx: int = 1
+glb_rat_2dx: int = 1
+
+
 # # The following specifies a procedure which determines the basis type.
 # # This is a function which gives the value of lambda_v-lambda_0.
 #
 # glb_lam_fun:=lambda_acm_fun:
-#
+glb_lam_fun: Callable[[nonnegint], nonnegint] = lambda_acm_fun
+
+
 # # The following store the current transition operator and its
 # # angular momentum.
 # # The former is the operator for which transition rates and
@@ -517,7 +349,10 @@ Convert_red = 1 / FourPi
 #
 # glb_rat_TRop:=quad_op:
 # glb_rat_TRopAM:=2:
-#
+glb_rat_TRop: OperatorSum = quad_op
+glb_rat_TRopAM: int = 2
+
+
 # # The following determine how "transition rates" are displayed in the
 # # procedure Show_Rats (which is called by ACM_Scale and ACM_Adapt).
 # # The first specifies the formula used, the second the format used to
@@ -527,7 +362,11 @@ Convert_red = 1 / FourPi
 # glb_rat_fun:=quad_rat_fun:
 # glb_rat_format:=def_rat_format:
 # glb_rat_desg:=def_rat_desg:
-#
+glb_rat_fun: Callable = quad_rat_fun
+glb_rat_format: str = def_rat_format
+glb_rat_desg: str = def_rat_desg
+
+
 # # The following determine how "transition rates" are displayed in the
 # # procedure Show_Amps (which is called by ACM_Scale and ACM_Adapt).
 # # The first specifies the formula used, the second the format used to
@@ -537,31 +376,45 @@ Convert_red = 1 / FourPi
 # glb_amp_fun:=quad_amp_fun:
 # glb_amp_format:=def_amp_format:
 # glb_amp_desg:=def_amp_desg:
-#
+glb_amp_fun: Callable = quad_amp_fun
+glb_amp_format: str = def_amp_format
+glb_amp_desg: str = def_amp_desg
+
+
 # # The following specifies the function by which the scaling factor
 # # for transition amplitudes (glb_amp_sft) is obtained from that
 # # (glb_rat_sft) for transition rates:
 #
 # glb_amp_sft_fun:=sqrt:
-#
+glb_amp_sft_fun: Callable = sqrt
+
+
 # # The following determines how the matrix element labels are displayed:
 #
 # glb_tran_format:="%s(%s) -> %s(%s)":
 # glb_tran_fill:="#":
-#
+glb_tran_format: str = '{}({}) -> {}({})'
+glb_tran_fill: str = '#'
+
+
 # # The following store the lists of transition rate and transition amplitude
 # # designators (each initially empty):
 #
 # glb_rat_lst:=[]:
 # glb_amp_lst:=[]:
-#
+Designators = tuple[tuple[int, ...], ...]
+glb_rat_lst: Designators = ()
+glb_amp_lst: Designators = ()
+
+
 # # The following flag indicates whether, in ACM_Scale, ACM_Adapt
 # # and Show_Eigs, eigenvalues are displayed relative to their
 # # lowest value (true), or absolute (false).
 #
 # glb_eig_rel:=true:
-#
-#
+glb_eig_rel: bool = True
+
+
 # # The following parameter, if positive, specifies a temporary
 # # increase to the size of the radial space, to improve accuracy
 # # of radial reps.
@@ -569,7 +422,9 @@ Convert_red = 1 / FourPi
 # # by RepXspace).
 #
 # glb_nu_lap:=0:
-#
+glb_nu_lap: int = 0
+
+
 # ###########################################################################
 #
 # # We now give a set of procedures that specify values of the above
@@ -599,7 +454,22 @@ Convert_red = 1 / FourPi
 #
 #   ACM_show_scales(show):
 # end;
-#
+def ACM_set_scales(eig_sft: Optional[float] = None,
+                   rat_sft: Optional[float] = None,
+                   show: int = 1) -> None:
+    global glb_eig_sft, glb_rat_sft, glb_amp_sft
+
+    if eig_sft is not None:
+        glb_eig_sft = eig_sft
+
+    if rat_sft is not None:
+        glb_rat_sft = rat_sft
+
+    glb_amp_sft = glb_amp_sft_fun(glb_rat_sft)  # default is square root
+
+    ACM_show_scales(show)
+
+
 # # The following displays and returns the values of the scaling factors
 # # glb_eig_sft, glb_rat_sft, glb_amp_sft.
 #
@@ -618,7 +488,15 @@ Convert_red = 1 / FourPi
 #
 #   [glb_eig_sft,glb_rat_sft,glb_amp_sft]:
 # end;
-#
+def ACM_show_scales(show: int) -> tuple[float, float, float]:
+    if show > 0:
+        print(f'Relative eigenenergies to be multiplied by {1 / glb_eig_sft};')
+        print(f'"{glb_rat_desg}" to be multiplied by {1 / glb_rat_sft};')
+        print(f'"{glb_amp_desg}" to be multiplied by {1 / glb_amp_sft}.')
+
+    return glb_eig_sft, glb_rat_sft, glb_amp_sft
+
+
 # # The following sets glb_amp_sft_fun, and returns NULL:
 #
 # ACM_set_sft_fun:=proc(amp_fun::procedure:=glb_amp_sft_fun,
@@ -636,7 +514,18 @@ Convert_red = 1 / FourPi
 #
 #   glb_amp_sft_fun:
 # end;
-#
+def ACM_set_sft_fun(amp_fun: Callable = glb_amp_sft_fun,
+                    show: int = 1) -> Callable:
+    global glb_amp_sft_fun
+
+    glb_amp_sft_fun = amp_fun
+    if show > 0:
+        print(f'"{glb_amp_desg}" scaling factor calculated' +
+              f' using the procedure: {glb_amp_sft_fun.__name__}.')
+
+    return glb_amp_sft_fun
+
+
 # # The following sets the values of glb_rel_pre, glb_rel_wid, and glb_low_pre
 #
 # ACM_set_output:=proc(rel_pre::nonnegint,rel_wid::nonnegint,low_pre::nonnegint,
@@ -662,7 +551,32 @@ Convert_red = 1 / FourPi
 #
 #   [glb_rel_pre, glb_rel_wid, glb_low_pre]:
 # end;
-#
+def ACM_set_output(rel_pre: Optional[nonnegint] = None,
+                   rel_wid: Optional[nonnegint] = None,
+                   low_pre: Optional[nonnegint] = None,
+                   show: int = 1) -> tuple[nonnegint, nonnegint, nonnegint]:
+    global glb_low_pre, glb_rel_wid, glb_rel_pre
+
+    if rel_pre is not None:
+        require_nonnegint('rel_pre', rel_pre)
+        glb_rel_pre = rel_pre
+
+    if rel_wid is not None:
+        require_nonnegint('rel_wid', rel_wid)
+        glb_rel_wid = rel_wid
+
+    if low_pre is not None:
+        require_nonnegint('low_pre', low_pre)
+        glb_low_pre = low_pre
+
+    if show > 0:
+        print(f'{glb_rel_pre} decimal places for each displayed value,')
+        print(f'{glb_rel_wid} total digits for each displayed value,')
+        print(f'except {glb_low_pre} decimal places for lowest (absolute) eigenvalue.')
+
+    return glb_rel_pre, glb_rel_wid, glb_low_pre
+
+
 # # The following sets the values of glb_eig_num, glb_rat_num, and
 # # glb_amp_num. For simplicity, the latter two are set equal.
 #
@@ -685,7 +599,27 @@ Convert_red = 1 / FourPi
 #
 #   [glb_eig_num, glb_rat_num, glb_amp_num]:
 # end;
-#
+def ACM_set_listln(eig_num: Optional[nonnegint] = None,
+                   rat_num: Optional[nonnegint] = None,
+                   show: int = 1) -> tuple[nonnegint, nonnegint, nonnegint]:
+    global glb_eig_num, glb_rat_num, glb_amp_num
+
+    if eig_num is not None:
+        require_nonnegint('eig_num', eig_num)
+        glb_eig_num = eig_num
+
+    if rat_num is not None:
+        require_nonnegint('rat_num', rat_num)
+        glb_rat_num = rat_num
+        glb_amp_num = rat_num
+
+    if show > 0:
+        print(f'Display lowest {glb_eig_num} eigenvalue(s) at each L.')
+        print(f'Display lowest {glb_rat_num} rate/amplitude(s) in each list.')
+
+    return glb_eig_num, glb_rat_num, glb_amp_num
+
+
 # # The following sets the boolean value of glb_eig_rel.
 #
 # ACM_set_datum:=proc(datflag::nonnegint:=1,
@@ -704,7 +638,22 @@ Convert_red = 1 / FourPi
 #
 #   glb_eig_rel:
 # end;
-#
+def ACM_set_datum(datflag: nonnegint = 1,
+                  show: int = 1) -> bool:
+    global glb_eig_rel
+
+    require_nonnegint('datflag', datflag)
+    glb_eig_rel = datflag > 0
+
+    if show > 0:
+        if glb_eig_rel:
+            print('Eigenvalues displayed relative to minimal value.')
+        else:
+            print('Absolute eigenvalues displayed.')
+
+    return glb_eig_rel
+
+
 # # The following sets the values of glb_eig_fit, glb_eig_L, glb_eig_idx,
 # # which are used by ACM_Adapt to determine the factor glb_eig_sft.
 #
@@ -725,7 +674,26 @@ Convert_red = 1 / FourPi
 #
 #   [glb_eig_fit, glb_eig_L, glb_eig_idx]:
 # end;
-#
+def ACM_set_eig_fit(eig_fit: float = glb_eig_fit,
+                    eig_L: nonnegint = glb_eig_L,
+                    eig_idx: posint = 1,
+                    show: int = 1) -> tuple[float, nonnegint, posint]:
+    global glb_eig_fit, glb_eig_L, glb_eig_idx
+
+    require_nonnegint('eig_L', eig_L)
+    require_posint('eig_idx', eig_idx)
+
+    glb_eig_fit = eig_fit
+    glb_eig_L = eig_L
+    glb_eig_idx = eig_idx
+
+    if show > 0:
+        print('In ACM_Adapt, the scaling factor for relative eigenvalues ' +
+              f'is chosen such that\nthat for the {glb_eig_L}({glb_eig_idx}) state is {glb_eig_fit:f}')
+
+    return glb_eig_fit, glb_eig_L, glb_eig_idx
+
+
 # # Similarly, the following sets the values of
 # #      glb_rat_fit, glb_rat_L1, glb_rat_1dx, glb_rat_L2, glb_rat_2dx:
 # # which are used by ACM_Adapt to scale the transition rates output.
@@ -763,8 +731,37 @@ Convert_red = 1 / FourPi
 #
 #   [glb_rat_fit, glb_rat_L1, glb_rat_L2, glb_rat_1dx, glb_rat_2dx]:
 # end;
-#
-#
+def ACM_set_rat_fit(rat_fit: float = glb_rat_fit,
+                    rat_L1: nonnegint = glb_rat_L1,
+                    rat_L2: nonnegint = glb_rat_L2,
+                    rat_1dx: posint = 1,
+                    rat_2dx: posint = 1,
+                    show: int = 1) -> tuple[float, nonnegint, nonnegint, posint, posint]:
+    global glb_rat_fit, glb_rat_L1, glb_rat_L2, glb_rat_1dx, glb_rat_2dx
+
+    require_nonnegint('rat_L1', rat_L1)
+    require_nonnegint('rat_L2', rat_L2)
+    require_posint('rat_1dx', rat_1dx)
+    require_posint('rat_2dx', rat_2dx)
+
+    glb_rat_fit = rat_fit
+    glb_rat_L1 = rat_L1
+    glb_rat_L2 = rat_L2
+    glb_rat_1dx = rat_1dx
+    glb_rat_2dx = rat_2dx
+
+    if show > 0:
+        tran_fmat: str = glb_tran_format.format('{:d}', '{:d}', '{:d}', '{:d}')
+        rat_fmt: str = glb_rat_format.format(tran_fmat, '{:f}')
+        rat_this: str = rat_fmt.format(glb_rat_L1, glb_rat_1dx,
+                                       glb_rat_L2, glb_rat_2dx, glb_rat_fit)
+
+        print(f'In ACM_Adapt, the scaling factor for "{glb_rat_desg}" ' +
+              f'is chosen such that\n{rat_this}')
+
+    return glb_rat_fit, glb_rat_L1, glb_rat_L2, glb_rat_1dx, glb_rat_2dx
+
+
 # # The following three functions respectively set, augment or display the
 # # list rat_lst, which determines which transition rates are flagged
 # # for display. If no argument is given for the first two, an empty list
@@ -776,9 +773,13 @@ Convert_red = 1 / FourPi
 #   glb_rat_lst:=[];
 #   ACM_add_rat_lst(rat_lst):
 # end;
-#
-# #
-#
+def ACM_set_rat_lst(rat_lst: Designators = ()) -> int:
+    global glb_rat_lst
+
+    glb_rat_lst = ()
+    return ACM_add_rat_lst(rat_lst)
+
+
 # ACM_add_rat_lst:=proc(rat_lst::list(list(integer)):=[],$)
 #     local rat_ent;
 #     global glb_rat_lst;
@@ -793,9 +794,18 @@ Convert_red = 1 / FourPi
 #
 #   return nops(glb_rat_lst);
 # end;
-#
-# #
-#
+def ACM_add_rat_lst(rat_lst: Designators) -> int:
+    global glb_rat_lst
+
+    for rat_ent in rat_lst:
+        if len(rat_ent) > 5:
+            print(f'  Bad transition rate specification: {rat_ent}')
+        else:
+            glb_rat_lst = glb_rat_lst + (rat_ent,)
+
+    return len(glb_rat_lst)
+
+
 # ACM_show_rat_lst:=proc(show::integer:=1,$)
 #       local rate_ent,rat_format4,rat_format5;
 #       global glb_rat_lst,glb_tran_format,glb_rat_desg;
@@ -848,7 +858,47 @@ Convert_red = 1 / FourPi
 #
 #   return glb_rat_lst;
 # end;
-#
+def ACM_show_lst(lst: Designators, desg: str, show: int = 1) -> Designators:
+    if show > 0:
+
+        if len(lst) > 0:
+            format5: str = glb_tran_format.format('{:d}{:+d}k', '{:d}', '{:d}{:+d}k', '{:d}')
+            format4: str = glb_tran_format.format('{:d}', '{:d}', '{:d}', '{:d}')
+            format3: str = glb_tran_format.format('{:d}', 'j_i', '{:d}', '{:d}')
+            format2: str = glb_tran_format.format('{:d}', 'j_i', '{:d}', 'j_f')
+            format1: str = glb_tran_format.format('L_i', 'j_i', '{:d}', 'j_f')
+            format0: str = glb_tran_format.format('L_i', 'j_i', 'L_f', 'j_f')
+
+            print(f'Following "{desg}" are set to be displayed:')
+            for ent in lst:
+                if len(ent) > 5:
+                    continue
+
+                print('  ', end='')
+                if len(ent) == 5 and ent[4] != 0:
+                    print(format5.format(ent[0], ent[4], ent[2], ent[1], ent[4], ent[3]))
+                elif len(ent) >= 4:
+                    print(format4.format(*ent[:4]))
+                elif len(ent) == 3:
+                    print(format3.format(*ent[:3]))
+                elif len(ent) == 2:
+                    print(format2.format(*ent[:2]))
+                elif len(ent) == 1:
+                    print(format1.format(ent[0]))
+                else:
+                    assert len(ent) == 0
+                    print(format0)
+
+        else:
+            print(f'Currently, no "{desg}" are set to be displayed.')
+
+    return lst
+
+
+def ACM_show_rat_lst(show: int = 1) -> Designators:
+    return ACM_show_lst(glb_rat_lst, glb_rat_desg, show)
+
+
 # # The following three functions respectively set, augment or display the
 # # list amp_lst, which determines which transition amplitudes are flagged
 # # for display. If no argument is given for the first two, an empty list
@@ -860,9 +910,13 @@ Convert_red = 1 / FourPi
 #   glb_amp_lst:=[];
 #   ACM_add_amp_lst(amp_lst):
 # end;
-#
-# #
-#
+def ACM_set_amp_lst(amp_list: Designators) -> int:
+    global glb_amp_lst
+
+    glb_amp_lst = ()
+    return ACM_add_amp_lst(amp_list)
+
+
 # ACM_add_amp_lst:=proc(amp_lst::list(list(integer)):=[],$)
 #     local amp_ent;
 #     global glb_amp_lst;
@@ -877,9 +931,18 @@ Convert_red = 1 / FourPi
 #
 #   return nops(glb_amp_lst);
 # end;
-#
-# #
-#
+def ACM_add_amp_lst(amp_lst: Designators = ()) -> int:
+    global glb_amp_lst
+
+    for amp_ent in amp_lst:
+        if len(amp_ent) > 5:
+            print(f'  Bad amplitude specification: {amp_ent}')
+        else:
+            glb_amp_lst = glb_amp_lst + (amp_ent,)
+
+    return len(glb_amp_lst)
+
+
 # ACM_show_amp_lst:=proc(show::integer:=1,$)
 #       local amp_ent,amp_format4,amp_format5;
 #       global glb_amp_lst,glb_tran_format,glb_amp_desg;
@@ -935,8 +998,10 @@ Convert_red = 1 / FourPi
 #
 #   return glb_amp_lst;
 # end;
-#
-#
+def ACM_show_amp_lst(show: int = 1) -> Designators:
+    return ACM_show_lst(glb_amp_lst, glb_amp_desg, show)
+
+
 # # The following specifies the transition rate operator glb_rat_TRop.
 # # It also attempts to determine its angular momentum glb_rat_TRopAM.
 #
@@ -947,7 +1012,7 @@ Convert_red = 1 / FourPi
 #
 #   glb_rat_TRop:=TR_op;
 #   rat_AM:=Op_AM(TR_op):
-#   glb_rat_TRopAM:=abs(rat_AM):   # this is largest value of AM, if LC.
+#   glb_rat_TRopAM:=abs(rat_AM):   # this is the largest value of AM, if LC.
 #
 #   if show>0 then
 # #      printf("In ACM_Scale and ACM_Adapt, \"%s\" "
@@ -965,8 +1030,28 @@ Convert_red = 1 / FourPi
 #
 #   [glb_rat_TRop,glb_rat_TRopAM]:
 # end;
-#
-#
+# TODO: correct warning for glb_rat_TRop
+def ACM_set_transition(TR_op: OperatorSum = glb_rat_TRop,
+                       show: int = 1) -> tuple[OperatorSum, int]:
+    global glb_rat_TRop, glb_rat_TRopAM
+
+    glb_rat_TRop = TR_op
+    rat_AM: int = Op_AM(TR_op)
+    glb_rat_TRopAM = abs(rat_AM)
+
+    if show > 0:
+        print('In ACM_Scale and ACM_Adapt, transition matrix elements ' +
+              'now calculated for the operator:\n' + glb_rat_desg, end='')
+        print(glb_rat_TRop)
+
+        if rat_AM >= 0:
+            print(f'(This has angular momentum {rat_AM}).\n')
+        else:
+            print(f'(This has indeterminate angular momentum: maximum {-rat_AM}).\n')
+
+    return glb_rat_TRop, glb_rat_TRopAM
+
+
 # # The following sets glb_rat_fun, glb_rat_format, and glb_rat_desg
 # # which determine how "transition rates" are displayed in the
 # # procedure Show_Rats (which is called by ACM_Scale and ACM_Adapt).
@@ -999,8 +1084,27 @@ Convert_red = 1 / FourPi
 #
 #   [glb_rat_fun,glb_rat_format,glb_rat_desg]:
 # end;
-#
-#
+def ACM_set_rat_form(rat_fun: Callable = glb_rat_fun,
+                     rat_format: str = glb_rat_format,
+                     rat_desg: str = glb_rat_desg,
+                     show: int = 1) -> tuple[Callable, str, str]:
+    global glb_rat_fun, glb_rat_format, glb_rat_desg
+
+    glb_rat_fun = rat_fun
+    glb_rat_format = rat_format
+    glb_rat_desg = rat_desg
+
+    if show > 0:
+        print('These are calculated from the (alternative reduced) transition' +
+              f' matrix elements\nusing the procedure: "{glb_rat_fun}"')
+
+        tran_fmat1: str = glb_tran_format.format('L_i', 'j_i', 'L_f', 'j_f')
+        print('Each will be output using the format:\n  ', end='')
+        print(glb_rat_format, tran_fmat1, '*')
+
+    return glb_rat_fun, glb_rat_format, glb_rat_desg
+
+
 # # The following sets glb_amp_fun, glb_amp_format, and glb_amp_desg
 # # which determine how "transition amplitudes" are displayed in the
 # # procedure Show_Amps (which is called by ACM_Scale and ACM_Adapt).
@@ -1033,9 +1137,29 @@ Convert_red = 1 / FourPi
 #
 #   [glb_amp_fun,glb_amp_format,glb_amp_desg]:
 # end;
-#
-#
-# # The following specfies the "basis type" procedure glb_lam_fun.
+def ACM_set_amp_form(amp_fun: Callable = glb_amp_fun,
+                     amp_format: str = glb_amp_format,
+                     amp_desg: str = glb_amp_desg,
+                     show: int = 1) -> tuple[Callable, str, str]:
+    global glb_amp_fun, glb_amp_format, glb_amp_desg
+
+    glb_amp_fun = amp_fun
+    glb_amp_format = amp_format
+    glb_amp_desg = amp_desg
+
+    if show > 0:
+        print(f'ACM_Scale and ACM_Adapt now set to display "{glb_amp_desg}" second.')
+        print('These are calculated from the (alternative reduced) transition' +
+              f' matrix elements\nusing the procedure: "{glb_amp_fun}".')
+
+        tran_fmat1: str = glb_tran_format.format('L_i', 'j_i', 'L_f', 'j_f')
+        print('Each will be output using the format:\n  ', end='')
+        print(glb_amp_format, tran_fmat1, '*')
+
+    return glb_amp_fun, glb_amp_format, glb_amp_desg
+
+
+# # The following specifies the "basis type" procedure glb_lam_fun.
 # # (see also next procedure).
 #
 # ACM_set_lambda_fun:=proc(lambda_fun::procedure, show::integer:=1,$)
@@ -1049,7 +1173,18 @@ Convert_red = 1 / FourPi
 #
 #   glb_lam_fun:
 # end;
-#
+def ACM_set_lambda_fun(lambda_fun: Callable, show: int = 1) -> Callable:
+    global glb_lam_fun
+
+    glb_lam_fun = lambda_fun
+
+    if show > 0:
+        print('lambda values calculated from v using the ' +
+              f'procedure: "{glb_lam_fun}",')
+
+    return glb_lam_fun
+
+
 # # The following uses the above procedure to set glb_lam_fun to one of
 # # four particular basis types, using procedures defined elsewhere.
 # # These basis types are those specified in (63), (61), (62), (B17) resp.
@@ -1093,8 +1228,36 @@ Convert_red = 1 / FourPi
 #   fi:
 #
 # end;
-#
-#
+def ACM_set_basis_type(choice: nonnegint,
+                       abeta0: float = 0.0,
+                       show: int = 1) -> Callable:
+    require_nonnegint('choice', choice)
+
+    if choice == 0:
+        if show > 0:
+            print('Using the constant lambda basis.')
+        ACM_set_lambda_fun(lambda_fix_fun, 0)
+    elif choice == 1:
+        if show > 0:
+            print('Using the harmonic oscillator basis with ' +
+                  'lambda_v = lambda_0 + v.')
+        ACM_set_lambda_fun(lambda_sho_fun, 0)
+    elif choice == 2:
+        if show > 0:
+            print('Using the ACM parity basis.')
+        ACM_set_lambda_fun(lambda_acm_fun, 0)
+    elif choice == 3:
+        if show > 0:
+            print('Using integer Davidson basis for potential with ' +
+                  f'minimum at {abeta0} (dimensionless).')
+        new_fun: Callable = lambda_davi_fun(abeta0 ** 4)
+        ACM_set_lambda_fun(new_fun, 0)
+    else:
+        raise ValueError(f'There is no basis {choice} defined!')
+
+    return glb_lam_fun
+
+
 # # For the currently defined basis stored in glb_lam_fun, the following
 # # returns lambda_v-lambda_0 for v=vmin...vmax.
 #
@@ -1102,8 +1265,13 @@ Convert_red = 1 / FourPi
 #   global glb_lam_fun;
 #   [seq(glb_lam_fun(v),v=vmin..vmax)]:
 # end;
-#
-#
+def ACM_show_lambda_fun(vmin: nonnegint = 0, vmax: nonnegint = 10) -> tuple[int, ...]:
+    require_nonnegint('vmin', vmin)
+    require_nonnegint('vmax', vmax)
+
+    return tuple(glb_lam_fun(v) for v in range(vmin, vmax + 1))
+
+
 # # Following tests that lambda only shifts by +/-1 as we change v,
 # # returning boolean true if so, false if not.
 # # (This procedure is not used elsewhere.)
@@ -1123,8 +1291,22 @@ Convert_red = 1 / FourPi
 # #
 # #   true:
 # # end;
-#
-#
+def ACM_test_lambda_fun(vmin: nonnegint, vmax: nonnegint) -> bool:
+    require_nonnegint('vmin', vmin)
+    require_nonnegint('vmax', vmax)
+
+    global glb_lam_fun
+    lam: nonnegint = glb_lam_fun(vmin)
+    for v in range(vmin + 1, vmax + 1):
+        lamv: nonnegint = glb_lam_fun(v)
+        if lamv - lam == 1 or lamv - lam == -1:
+            lam = lamv
+        else:
+            return False
+
+    return True
+
+
 # # The following procedure calls the above procedures to set the
 # # default values for all of the global parameters described above.
 # # Note that the location of the SO(5)>SO(3) Clebsch-Gordon coefficients
@@ -1154,6 +1336,24 @@ Convert_red = 1 / FourPi
 #   fi:
 #
 # end:
-#
-#
-#
+def ACM_set_defaults(show: int = 1) -> None:
+
+    ACM_set_output(2, 7, 4, show)
+    ACM_set_listln(4, 4, show)
+    ACM_set_datum(1, show)
+    ACM_set_basis_type(2, 0.0, show)
+
+    ACM_set_transition(quad_op, show)
+    ACM_set_rat_form(quad_rat_fun, def_rat_format, def_rat_desg, show)
+    ACM_set_amp_form(quad_amp_fun, def_amp_format, def_amp_desg, show)
+    ACM_set_sft_fun(sqrt_fun, show)
+    ACM_set_eig_fit(6.0, 2, 1, show)
+    ACM_set_rat_fit(100.0, 2, 0, 1, 1, show)
+    ACM_set_rat_lst(())
+    ACM_set_amp_lst(())
+    ACM_show_rat_lst(show)
+    ACM_show_amp_lst(show)
+    ACM_set_scales(1.0, 1.0, show)
+
+    if show > 0:
+        print()

@@ -6,7 +6,6 @@ from os.path import expanduser
 
 from sympy import S, Expr, Rational, simplify, sqrt, factorial
 
-import acmpy.globals as g
 from acmpy.compat import nonnegint, posint, require_nonnegint, require_posint, \
     is_odd, readdata_float
 from acmpy.spherical_space import dimSO5r3, dimSO5, dimSO3
@@ -222,6 +221,18 @@ def show_CG_file(v1: nonnegint,
         print(label, coeff, sep=', ')
 
 
+# # The following defines a table wherein the SO(5)>SO(3) Clebsch-Gordon
+# # coefficients will be stored in memory. This table is initially empty.
+# # The table is loaded from external files, as required.
+# # For a particular (v1,v2,a2,L2,v3), this is done by calling
+# # load_CG_table(v1,v2,a2,L2,v3).
+# # When present, the SO(5)>SO(3) CG coefficient is given by
+# # CG_coeffs[v1,v2,a2,L2,v3][a1,L1,a3,L3].
+#
+# CG_coeffs:=table():
+CG_coeffs: dict[SO5Quintet, dict[SO5Quartet, float]] = {}
+
+
 # # The following procedure load_CG_table loads all the
 # # SO(5)>SO(3) CG coefficients for a particular (v1,v2,a2,L2,v3)
 # # from the data file SO5CG_v1_v2-a2-L2_v3 .
@@ -277,13 +288,13 @@ def load_CG_table(v1: nonnegint,
         v1, v3 = v3, v1
 
     key: SO5Quintet = (v1, v2, a2, L2, v3)
-    if key in g.CG_coeffs:
+    if key in CG_coeffs:
         return
 
     CG_list: CGLabelList = CG_labels(v1, L2, v3)
     CG_data: list[float] = readdata_float(SO5CG_filename(*key)) if v2 > 0 else [1.0] * len(CG_list)
 
-    g.CG_coeffs[key] = {label: data for label, data in zip(CG_list, CG_data)}
+    CG_coeffs[key] = {label: data for label, data in zip(CG_list, CG_data)}
 
 
 # # The following procedure CG_SO5r3 returns the SO(5)>SO(3) CG coefficient
@@ -330,9 +341,9 @@ def CG_SO5r3(v1: nonnegint, a1: posint, L1: nonnegint,
     else:
         load_CG_table(v1, v2, a2, L2, v3)
         if v1 <= v3:
-            return g.CG_coeffs[(v1, v2, a2, L2, v3)][(a1, L1, a3, L3)]
+            return CG_coeffs[(v1, v2, a2, L2, v3)][(a1, L1, a3, L3)]
         else:
-            return g.CG_coeffs[(v3, v2, a2, L2, v1)][(a3, L3, a1, L1)] \
+            return CG_coeffs[(v3, v2, a2, L2, v1)][(a3, L3, a1, L1)] \
                    * (-1) ** (L3 + L2 - L1) \
                    * sqrt(dimSO5(v3) * dimSO3(L1) / dimSO5(v1) / dimSO3(L3))
 

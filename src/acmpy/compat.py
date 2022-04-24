@@ -100,13 +100,3 @@ def readdata_float(filename: str) -> list[float]:
         data: list[float] = [parse_line_float(line) for line in f]
 
     return data
-
-
-def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
-    """Return the eigenvalues and eigenvectors as in Maple."""
-    P: Matrix
-    D: Matrix
-    P, D = M.diagonalize()
-    eigenvalues: list[float] = [D[i, i] for i in range(D.shape[0])]
-
-    return eigenvalues, P

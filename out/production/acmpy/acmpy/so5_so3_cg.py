@@ -1,8 +1,15 @@
 """3. Procedures that access the SO(5)>SO(3) Clebsch-Gordon coefficients."""
 
-from typing import ClassVar
+from typing import ClassVar, Optional
+
 from os.path import expanduser
-from acmpy.types import nonnegint, posint, require_int, require_nonnegint, require_posint
+
+from sympy import S, Expr, Rational, simplify, sqrt, factorial
+
+from acmpy.compat import nonnegint, posint, require_nonnegint, require_posint, \
+    is_odd, readdata_float
+from acmpy.spherical_space import dimSO5r3, dimSO5, dimSO3
+
 
 # ###########################################################################
 # #### SO(5) Clebsch-Gordon coefficients and reps of spherical harmonics ####
@@ -18,16 +25,31 @@ from acmpy.types import nonnegint, posint, require_int, require_nonnegint, requi
 # # each a subdirectory of the directory specified in SO5CG_directory.
 # # There are no v2=0 files because the data is easily generated
 # # (and is done so in the procedure load_CG_table below).
-#
+SO5Quintet = tuple[nonnegint, nonnegint, posint, nonnegint, nonnegint]
+"""An SO5 quintet is a tuple (v1, v2, a2, L2, v3) of irrep label components."""
+
+
+def require_SO5Quintet(v1: nonnegint,
+                       v2: nonnegint, a2: posint, L2: nonnegint,
+                       v3: nonnegint) -> None:
+    require_nonnegint('v1', v1)
+    require_SO5Triple(v2, a2, L2)
+    require_nonnegint('v3', v3)
+
+
+def require_SO5Triple(v: nonnegint, a: posint, L: nonnegint) -> None:
+    require_nonnegint('v', v)
+    require_posint('a', a)
+    require_nonnegint('L', L)
 
 
 class SO5CGConfig:
     """This class manages the configuration for the external SO5CG database."""
 
-    base_directory: ClassVar[str] = None
+    base_directory: ClassVar[Optional[str]] = None
     """The base directory of the SO5CG database."""
 
-    default_base_directory: ClassVar[str] = expanduser('~/so5cg-data/')
+    default_base_directory: ClassVar[str] = '~/so5cg-data/'
     """The default base directory to use when none is currently configured."""
 
     @staticmethod
@@ -40,7 +62,7 @@ class SO5CGConfig:
         """Return the current base directory if not None, else the default."""
         return SO5CGConfig.base_directory \
             if SO5CGConfig.base_directory is not None \
-            else SO5CGConfig.default_base_directory
+            else expanduser(SO5CGConfig.default_base_directory)
 
 
 # # The following procedure SO5CG_filename returns the full pathname of the
@@ -53,22 +75,15 @@ class SO5CGConfig:
 #     cat(SO5CG_directory,"v2=",v2,"/SO5CG_",v1,"_",v2,"_",v3,
 #     "/SO5CG_",v1,"_",v2,"-",a2,"-",L2,"_",v3);
 # end:
-#
-
-
 def SO5CG_filename(v1: nonnegint,
                    v2: nonnegint, a2: posint, L2: nonnegint,
                    v3: nonnegint) -> str:
-    require_nonnegint('v1', v1)
-    require_nonnegint('v2', v2)
-    require_posint('a2', a2)
-    require_nonnegint('L2', L2)
-    require_nonnegint('v3', v3)
+    require_SO5Quintet(v1, v2, a2, L2, v3)
 
     SO5CG_directory: str = SO5CGConfig.get_base_directory()
     return f'{SO5CG_directory}v2={v2}/SO5CG_{v1}_{v2}_{v3}/SO5CG_{v1}_{v2}-{a2}-{L2}_{v3}'
 
-#
+
 # # The following procedure CG_labels returns, for the given v1,L2,v3,
 # # a list of all quartets [a1,L1,a3,L3], where [v1,a1,L1] and [v3,a3,L3] are
 # # valid SO(5)>SO(3) state labels, and for which |L1-L2| <= L3 <= L1+L2.
@@ -103,19 +118,17 @@ def SO5CG_filename(v1: nonnegint,
 #
 #   label_list:
 # end:
-#
-
-
 SO5Quartet = tuple[posint, nonnegint, posint, nonnegint]
 """An SO5 quartet is a tuple (a1, L1, a3, L3) of irrep label components."""
+CGLabelList = list[SO5Quartet]
 
 
-def CG_labels(v1: nonnegint, L2: nonnegint, v3: nonnegint) -> list[SO5Quartet]:
+def CG_labels(v1: nonnegint, L2: nonnegint, v3: nonnegint) -> CGLabelList:
     require_nonnegint('v1', v1)
     require_nonnegint('L2', L2)
     require_nonnegint('v3', v3)
 
-    label_list: list[SO5Quartet] = []
+    label_list: CGLabelList = []
     for L1 in range(2 * v1 + 1):
         for a1 in range(1, dimSO5r3(v1, L1) + 1):
             for L3 in range(abs(L1 - L2), min(L1 + L2, 2 * v3) + 1):
@@ -148,13 +161,25 @@ def CG_labels(v1: nonnegint, L2: nonnegint, v3: nonnegint) -> list[SO5Quartet]:
 #   CG_list:=CG_labels(v1,L2,v3):
 #   [CG_data,CG_list]:
 # end:
-#
-
-
 def get_CG_file(v1: nonnegint,
                 v2: nonnegint, a2: posint, L2: nonnegint,
-                v3: nonnegint) -> None:
-    return None
+                v3: nonnegint) -> tuple[list[float], CGLabelList]:
+    require_SO5Quintet(v1, v2, a2, L2, v3)
+
+    CG_data: list[float]
+    CG_list: CGLabelList
+
+    if v1 > v2 + v3 or v2 > v3 + v1 or v3 > v1 + v2 \
+            or is_odd(v1 + v2 + v3) \
+            or v3 < v1 \
+            or a2 > dimSO5r3(v2, L2):
+        raise ValueError('No CG file for these parameters!')
+
+    filename: str = SO5CG_filename(v1, v2, a2, L2, v3)
+    CG_data = readdata_float(filename)
+    CG_list = CG_labels(v1, L2, v3)
+
+    return CG_data, CG_list
 
 
 # # The following procedure show_CG_file displays the
@@ -181,25 +206,39 @@ def get_CG_file(v1: nonnegint,
 #     print(cg_table[2][i],cg_table[1][i]):
 #   od:
 # end:
+def show_CG_file(v1: nonnegint,
+                 v2: nonnegint, a2: posint, L2: nonnegint,
+                 v3: nonnegint) -> None:
+    require_SO5Quintet(v1, v2, a2, L2, v3)
+    cg_table: tuple[list[float], CGLabelList] = get_CG_file(v1, v2, a2, L2, v3)
+    count: int = len(cg_table[0])
+    if count == 1:
+        print(f'This file contains {count} CG coefficient')
+    else:
+        print(f'This file contains {count} CG coefficients')
+
+    for coeff, label in zip(cg_table[0], cg_table[1]):
+        print(label, coeff, sep=', ')
+
+
+# # The following defines a table wherein the SO(5)>SO(3) Clebsch-Gordon
+# # coefficients will be stored in memory. This table is initially empty.
+# # The table is loaded from external files, as required.
+# # For a particular (v1,v2,a2,L2,v3), this is done by calling
+# # load_CG_table(v1,v2,a2,L2,v3).
+# # When present, the SO(5)>SO(3) CG coefficient is given by
+# # CG_coeffs[v1,v2,a2,L2,v3][a1,L1,a3,L3].
 #
+# CG_coeffs:=table():
+CG_coeffs: dict[SO5Quintet, dict[SO5Quartet, float]] = {}
 
 
-def show_CG_file(v1: nonnegint, v2: nonnegint, a2: posint, L2: nonnegint, v3: nonnegint) -> None:
-    # TODO: define get_CG_file() and determine its return type
-    cg_table = get_CG_file(v1, v2, a2, L2, v3)
-    print(
-        """This file contains 2 CG coefficients
-                    [1, 2, 1, 2], 0.5219013
-                    [1, 4, 1, 4], 0.4309458"""
-    )
-
-#
 # # The following procedure load_CG_table loads all the
 # # SO(5)>SO(3) CG coefficients for a particular (v1,v2,a2,L2,v3)
 # # from the data file SO5CG_v1_v2-a2-L2_v3 .
 # # They are loaded into the table CG_coeffs (which was initialised above),
 # # from where they can be readily accessed.
-# # Subsequent attemps to load the same data will be silently ignored.
+# # Subsequent attempts to load the same data will be silently ignored.
 # # Note that no checking is done here on the correct ranges of the
 # # arguments (this is left to the functions that call this).
 # # We should restrict to
@@ -240,7 +279,24 @@ def show_CG_file(v1: nonnegint, v2: nonnegint, a2: posint, L2: nonnegint, v3: no
 #   CG_coeffs[vt1,v2,a2,L2,vt3]:=table([seq( (op(CG_list[i]))=CG_data[i],
 #                                  i=1..nops(CG_list) )]);
 # end:
-#
+def load_CG_table(v1: nonnegint,
+                  v2: nonnegint, a2: posint, L2: nonnegint,
+                  v3: nonnegint) -> None:
+    require_SO5Quintet(v1, v2, a2, L2, v3)
+
+    if v1 > v3:
+        v1, v3 = v3, v1
+
+    key: SO5Quintet = (v1, v2, a2, L2, v3)
+    if key in CG_coeffs:
+        return
+
+    CG_list: CGLabelList = CG_labels(v1, L2, v3)
+    CG_data: list[float] = readdata_float(SO5CG_filename(*key)) if v2 > 0 else [1.0] * len(CG_list)
+
+    CG_coeffs[key] = {label: data for label, data in zip(CG_list, CG_data)}
+
+
 # # The following procedure CG_SO5r3 returns the SO(5)>SO(3) CG coefficient
 # # (v1,a1,L1;v2,a2,L2||v3,a3,L3)  [no renormalisation required].
 # # The return value is a float.
@@ -270,8 +326,28 @@ def show_CG_file(v1: nonnegint, v2: nonnegint, a2: posint, L2: nonnegint, v3: no
 #      fi:
 #   fi:
 # end:
-#
-#
+def CG_SO5r3(v1: nonnegint, a1: posint, L1: nonnegint,
+             v2: nonnegint, a2: posint, L2: nonnegint,
+             v3: nonnegint, a3: posint, L3: nonnegint) -> float:
+    require_SO5Triple(v1, a1, L1)
+    require_SO5Triple(v2, a2, L2)
+    require_SO5Triple(v3, a3, L3)
+
+    if v1 + v2 < v3 or v1 + v3 < v2 or v2 + v3 < v1 or \
+            L1 + L2 < L3 or L1 + L3 < L2 or L2 + L3 < L1 or \
+            a1 > dimSO5r3(v1, L1) or a2 > dimSO5r3(v2, L2) or a3 > dimSO5r3(v3, L3) or \
+            is_odd(v1 + v2 + v3):
+        return 0.0
+    else:
+        load_CG_table(v1, v2, a2, L2, v3)
+        if v1 <= v3:
+            return CG_coeffs[(v1, v2, a2, L2, v3)][(a1, L1, a3, L3)]
+        else:
+            return CG_coeffs[(v3, v2, a2, L2, v1)][(a3, L3, a1, L1)] \
+                   * (-1) ** (L3 + L2 - L1) \
+                   * sqrt(dimSO5(v3) * dimSO3(L1) / dimSO5(v1) / dimSO3(L3))
+
+
 # ###########################################################################
 #
 # # The following procedure CG_SO3 returns the usual SO(3) Clebsch-Gordon
@@ -299,8 +375,27 @@ def show_CG_file(v1: nonnegint, v2: nonnegint, a2: posint, L2: nonnegint, v3: no
 #   (-1)^(j1-j2+m3)*
 #       simplify(Wigner_3j(j1,j2,j3,m1,m2,-m3)*sqrt(2*j3+1),sqrt);
 # end:
-#
-#
+def CG_SO3(j1: Rational, m1: Rational,
+           j2: Rational, m2: Rational,
+           j3: Rational, m3: Rational) -> Expr:
+    if abs(m1) > j1 or abs(m2) > j2 or abs(m3) > j3:
+        return S.Zero
+
+    if not ((j1 + m1).is_integer and
+            (j2 + m2).is_integer and
+            (j3 + m3).is_integer):
+        return S.Zero
+
+    if m1 + m2 != m3:
+        return S.Zero
+
+    if j3 < abs(j1 - j2) or j3 > j1 + j2:
+        return S.Zero
+
+    return S.NegativeOne ** (j1 - j2 + m3) * \
+        simplify(Wigner_3j(j1, j2, j3, m1, m2, -m3) * sqrt(2 * j3 + 1))
+
+
 # Wigner_3j:=proc(j1,j2,j3,m1,m2,m3)
 #      (-1)^(2*j1-j2+m2)
 #        * sqrt((j1+j2-j3)!*(j1-m1)!*(j2-m2)!*(j3-m3)!*(j3+m3)!/
@@ -309,6 +404,24 @@ def show_CG_file(v1: nonnegint, v2: nonnegint, a2: posint, L2: nonnegint, v3: no
 #                     (s!*(j1-m1-s)!*(j2-j3+m1+s)!*(j3+m3-s)!),
 #              s=max(0,j3-j2-m1)..min(j3+m3,j1-m1))
 # end:
-#
-#
-#
+def Wigner_3j(j1: Rational, j2: Rational, j3: Rational,
+              m1: Rational, m2: Rational, m3: Rational) -> Expr:
+
+    return S.NegativeOne ** (2 * j1 - j2 + m2) * \
+        sqrt(factorial(j1 + j2 - j3) *
+             factorial(j1 - m1) *
+             factorial(j2 - m2) *
+             factorial(j3 - m3) /
+             (factorial(j1 + j2 + j3 + 1) *
+              factorial(j1 - j2 + j3) *
+              factorial(-j1 + j2 + j3) *
+              factorial(j1 + m1) *
+              factorial(j2 + m2))) * \
+        sum(S.NegativeOne ** s *
+            factorial(j1 + m1 + 2) *
+            factorial(j2 + j3 - m1 - s) /
+            (factorial(s) *
+             factorial(j1 - m1 - s) *
+             factorial(j2 - j3 + m1 + s) *
+             factorial(j3 + m3 - s)) for s in range(max(0, j3 - j2 - m1),
+                                                    min(j3 + m3, j1 - m1) + 1))

@@ -2,6 +2,19 @@
 
 diagonalising, basis transforming, and data displaying.
 """
+
+from typing import Optional, Callable
+from sympy import Expr, Matrix, shape, S
+
+import acmpy.globals as g
+from acmpy.globals import Designators
+from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo
+from acmpy.internal_operators import OperatorSum, Op_Tame
+from acmpy.spherical_space import dimSO5r3_rngV
+from acmpy.full_operators import RepXspace, dimXspace
+from acmpy.radial_space import dimRadial
+from acmpy.eigenvalues import Eigenfiddle
+
 # ###########################################################################
 # ####---------- Diagonalisation and Eigenbasis transformation ----------####
 # ###########################################################################
@@ -61,7 +74,7 @@ diagonalising, basis transforming, and data displaying.
 #   # However, in both cases, we still diagonalise only the individual
 #   # L-spaces.
 #
-#   if Op_Tame(ham_op) then  # work on L-spaces seperately...
+#   if Op_Tame(ham_op) then  # work on L-spaces separately...
 #
 #     for LL from L_min to LLM do
 #       sph_dim:=dimSO5r3_rngV(v_min,v_max,LL):
@@ -105,78 +118,76 @@ diagonalising, basis transforming, and data displaying.
 #
 #   [eigen_vals, eigen_bases, Xparams, Lvals];
 # end;
-#
-#
-# # The following procedure Eigenfiddle diagonalises the Matrix which is
-# # passed to it, and returns a pair
-# #                          [eigs_list,basis_Mat].
-# # The first element of this pair is a list of the eigenvalues in
-# # ascending order, and the second element of the pair is the matrix P
-# # which transforms the original matrix H to the diagonal matrix P^{-1}HP
-# # whose diagonal elements are those given in the first element of the pair.
-# # Thus, its columns are the eigenvectors corresponding to those eigenvalues.
-#
-# # The matrix (H) that is passed to Eigenfiddle is diagonalised using
-# # Maple's Eigenvectors procedure.
-# # This matrix ought to be Hermitian but might not be because of truncation
-# # effects. Thus, before being diagonalised, it is averaged with its transpose
-# # to ensure that it is symmetric, and therefore yields real eigenvalues.
-#
-# # Note that Maple attempts to diagonalise retaining the datatype
-# # of the passed Matrix. If this datatype is not a float, then
-# # the procedure is very slow. For ACM calculations, we should
-# # therefore ensure that Hmatrix has float entries.
-#
-#
-# Eigenfiddle:=proc(Hmatrix::Matrix,$)
-#     local i,n,real_eigens,eigenstuff,eigen_order;
-#
-#   n:=RowDimension(Hmatrix);
-#
-#   # The Maple function Eigenvectors returns a pair, the first of
-#   # which is a list of eigenvalues, and the second is a matrix
-#   # whose columns are the corresponding eigenvectors.
-#   # We ensure that the Matrix being processed is diagonal by
-#   # averaging it with its transpose.
-#
-#   eigenstuff:=Eigenvectors(Matrix(n,n,(i,j)->(Hmatrix[i,j]+Hmatrix[j,i])/2,
-#                                     scan=diagonal[upper],shape=symmetric));
-#
-#   # The following list contains pairs [eig,i], where i is the index
-#   # in the list. The idea is to sort the eigenvalues into increasing
-#   # order, but keep track of their original i's, so that we can
-#   # then use the same order for the eigenvectors.
-#
-#   real_eigens:=[seq([eigenstuff[1][i],i],i=1..n)];
-#
-#   # Now sort these into increasing values of the eigenvalues using
-#   # the pair_order function defined below.
-#
-#   real_eigens:=sort(real_eigens,pair_order);
-#
-#   # Get the index order - to be applied to the eigenvectors below.
-#
-#   eigen_order:=map2(op,2,real_eigens);
-#
-#   # Return pair,
-#   #   element 1 lists all (real) e-values
-#   #   element 2 is a transformation matrix, with the
-#   #              columns e-vectors of above e-values.
-#
-#   [ map2(op,1,real_eigens), Matrix([Column(eigenstuff[2],eigen_order)]) ];
-# end:
-#
-#
-# # The following procedure pair_order compares two lists, by comparing
-# # their first elements: it returns true if the first element of the
-# # first argument is less than the first element of the second.
-# # This is only used by Eigenfiddle above, in order to order eigenvectors.
-#
-# pair_order:=proc(eigenpair1::list(numeric),eigenpair2::list(numeric))
-#   evalb(eigenpair1[1]<eigenpair2[1]);
-# end:
-#
-#
+
+EigenValues = list[list[float]]
+EigenBases = list[Matrix]
+XParams = tuple[Expr, Expr, nonnegint, nonnegint, nonnegint, nonnegint]
+LValues = list[nonnegint]
+
+
+def DigXspace(ham_op: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> tuple[EigenValues, EigenBases, XParams, LValues]:
+    if L_max is None:
+        L_max = L_min
+    require_algebraic('anorm', anorm)
+    require_algebraic('lambda_base', lambda_base)
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    LLM: nonnegint = L_max
+
+    Xparams: XParams = anorm, lambda_base, nu_min, nu_max, v_min, v_max
+
+    Lvals: LValues = []
+    eigen_vals: EigenValues = []
+    eigen_bases: EigenBases = []
+
+    LL: int
+    sph_dim: int
+    L_matrix: Matrix
+    eigen_vals_result: list[float]
+    eigen_bases_result: Matrix
+    if Op_Tame(ham_op):
+
+        for LL in range(L_min, LLM + 1):
+            sph_dim = dimSO5r3_rngV(v_min, v_max, LL)
+            if sph_dim > 0:
+                Lvals.append(LL)
+
+                L_matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, LL)
+                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
+
+                eigen_vals.append(eigen_vals_result)
+
+                eigen_bases.append(eigen_bases_result)
+    else:
+        rep_matrix: Matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, LLM)
+        rad_dim: int = dimRadial(nu_min, nu_max)
+        Lstart: int = 1
+
+        for LL in range(L_min, LLM + 1):
+            sph_dim = dimSO5r3_rngV(v_min, v_max, LL)
+            Lstop: int = Lstart + rad_dim * sph_dim
+            if sph_dim > 0:
+                Lvals.append(LL)
+
+                L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
+
+                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
+
+                eigen_vals.append(eigen_vals_result)
+
+                eigen_bases.append(eigen_bases_result)
+                Lstart = Lstop
+
+    return eigen_vals, eigen_bases, Xparams, Lvals
+
+
 # # The following procedure AmpXspeig represents the operator encoded
 # # in tran_op on the truncated Hilbert space specified by the elements
 # # of Xparams and Lvals, and then transforms it to the basis specified
@@ -239,8 +250,33 @@ diagonalising, basis transforming, and data displaying.
 #   Matrix(L_count, (i,j)->eigen_invs[i].block_tran_mat[i,j].eigen_bases[j]);
 #
 # end;
-#
-#
+def AmpXspeig(tran_op: OperatorSum, eigen_bases: list[Matrix], Xparams: XParams, Lvals: list[nonnegint]
+              ) -> Optional[Matrix]:
+    L_count: int = len(Lvals)
+
+    if L_count == 0:
+        return None
+
+    anorm, lambda_base, nu_min, nu_max, v_min, v_max = Xparams
+
+    L_min: nonnegint = Lvals[0]
+    L_max: nonnegint = Lvals[-1]
+
+    tran_mat: Matrix = RepXspace(tran_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+
+    L_dims: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, LL) for LL in Lvals]
+    L_ends: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, L_min, LL) for LL in Lvals]
+
+    block_tran_mat: Matrix = Matrix(L_count, L_count,
+                                    lambda i, j: tran_mat[
+                                                 (L_ends[i] - L_dims[i]):L_ends[i],
+                                                 (L_ends[j] - L_dims[j]):L_ends[j]])
+    eigen_invs: list[Matrix] = [P ** -1 for P in eigen_bases]
+
+    return Matrix(L_count, L_count,
+                  lambda i, j: eigen_invs[i] * block_tran_mat[i, j] * eigen_bases[j])
+
+
 # ###########################################################################
 #
 # # The following procedure Show_Eigs displays in a convenient format
@@ -254,7 +290,7 @@ diagonalising, basis transforming, and data displaying.
 # # displayed, and all values displayed are taken with respect to it.
 # # Eigenvalues are displayed for each angular momentum in the
 # # range L_min..L_max, with those of constant angular momentum
-# # displayed as a horizontal list. to_show restricts the maximum
+# # displayed as a horizontal list. toshow restricts the maximum
 # # number of eigenvalues displayed for each angular momentum.
 # # The relative eigenvalues are displayed after being scaled (divided)
 # # by the value of the global parameter glb_eig_sft.
@@ -262,7 +298,9 @@ diagonalising, basis transforming, and data displaying.
 #
 # # If L_max is omitted then a single value L_min is used. If both
 # # are omitted then all values are used (well, 0..1000000).
-#
+L_MAX_DEFAULT: int = 1000000
+
+
 # Show_Eigs:=proc(eigen_vals::list,Lvals::list,
 #                      toshow::nonnegint:=glb_eig_num,
 #                      L_min::nonnegint:=0, L_max::nonnegint:=1000000,$)
@@ -331,16 +369,58 @@ diagonalising, basis transforming, and data displaying.
 #
 #   eigen_low;   # return smallest eigenvalue (in case it's needed!)
 # end;
-#
-#
+def Show_Eigs(eigen_vals: list[list[float]], Lvals: list[nonnegint],
+              toshow: nonnegint = g.glb_eig_num,
+              L_min: nonnegint = 0, L_max: nonnegint = L_MAX_DEFAULT
+              ) -> Optional[float]:
+    require_nonnegint('toshow', toshow)
+    require_nonnegint_range('L', L_min, L_max)
+
+    if toshow == 0 or len(eigen_vals) == 0:
+        return None
+
+    L_top: nonnegint = L_min if L_max == L_MAX_DEFAULT else L_max
+
+    if not any(L_min <= L <= L_top for L in Lvals):
+        return None
+
+    pre: int = g.glb_low_pre
+    wid: int = g.glb_rel_wid
+    sft: float = g.glb_eig_sft
+
+    eigen_low: float
+    if g.glb_eig_rel:
+        eigen_low = min_head(eigen_vals)
+        print(f'Lowest eigenvalue is {eigen_low:.{pre}f}. Relative eigenvalues follow' +
+              f' (each divided by {sft:.{pre}f}):')
+    else:
+        eigen_low = 0
+        print(f'Scaled eigenvalues follow (each divided by {sft:.{pre}f}:')
+
+    for L, vals in zip(Lvals, eigen_vals):
+        if L_min <= L <= L_max:
+            print(f'  At L={L:2d}: [' +
+                  ','.join([f'{((val - eigen_low) / sft):{wid}.{pre}f}'
+                            for val in vals]) +
+                  ']')
+
+    return eigen_low
+
+
 # # The following functions min_head and fsel are used to obtain,
 # # within a list of lists, the minimal value amongst the first elements.
 # # These procedures are only used within Show_Eigs above.
 #
 # min_head:=(alist)->min(op(map(fsel,alist)));
+def min_head(alist: list[list[float]]) -> float:
+    return min(nlist[0] for nlist in alist if len(nlist) > 0)
+
+
 # fsel:=(nlist)->`if`(nops(nlist)>0,nlist[1],NULL);
-#
-#
+def fsel(nlist: list[float]) -> Optional[float]:
+    return nlist[0] if len(nlist) > 0 else None
+
+
 # ###########################################################################
 #
 # # The procedure Show_Mels below is a very versatile procedure for
@@ -429,7 +509,7 @@ diagonalising, basis transforming, and data displaying.
 #   if nops(mel_lst)=0 then return NULL fi:
 #
 #   if ColumnDimension(Melements)=0 then
-#     error "No matrix elements avaiable!"
+#     error "No matrix elements available!"
 #   fi:
 #
 #   printf("Selected %s follow"
@@ -575,8 +655,163 @@ diagonalising, basis transforming, and data displaying.
 #   od:
 #   NULL;
 # end;
-#
-#
+glb_mel_f1: str = ''
+glb_mel_f2: str = ''
+glb_item_format: str = ''
+
+
+def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
+              mel_lst: Designators,
+              toshow: int = g.glb_rat_num,
+              mel_fun: Callable = g.glb_rat_fun,
+              scale: float | Expr = 1.0,
+              mel_format: str = g.def_mel_format,
+              mel_desg: str = g.def_mel_desg
+              ) -> None:
+
+    global glb_mel_f1, glb_mel_f2, glb_item_format
+
+    if len(mel_lst) == 0:
+        return
+
+    r, c = shape(Melements)
+    if c == 0:
+        raise ValueError('No matrix elements available!')
+
+    scale = S(scale)
+
+    low_pre: int = g.glb_low_pre
+    print(f'Selected {mel_desg} follow' +
+          f' (each divided by {scale.evalf():.{low_pre}f}):')
+
+    rel_wid: int = g.glb_rel_wid
+    rel_pre: int = g.glb_rel_pre
+    glb_item_format = f'{{:{rel_wid}.{rel_pre}f}}'
+
+    num: str = '{:d}'
+    tran_fmat1: str = g.glb_tran_format.format(num, num, num, num)
+    glb_mel_f1 = mel_format.format(tran_fmat1, glb_item_format)
+
+    fill: str = g.glb_tran_fill
+    tran_fmat2: str = g.glb_tran_format.format(num, fill, num, num)
+    glb_mel_f2 = mel_format.format(tran_fmat2, '{:s}')
+
+    for rate_ent in mel_lst:
+
+        if len(rate_ent) > 5:
+            print(f'  Bad matrix element specification: {rate_ent}')
+            continue
+
+        L1: int = -1
+        L2: int = -1
+        n1: int
+        n2: int
+        Lmod: int
+        L1_off: int
+        L2_off: int
+        TR_matrix: Matrix
+        TR_rows: int
+        TR_cols: int
+        mel: float
+
+        if len(rate_ent) > 1:
+            L1 = rate_ent[0]
+            L2 = rate_ent[1]
+
+            if L1 < 0 or L2 < 0:
+                continue
+
+        if len(rate_ent) == 4:
+            assert L1 >= 0 and L2 >= 0
+
+            try:
+                L1_off = Lvals.index(L1)
+                L2_off = Lvals.index(L2)
+                TR_matrix = Melements[L2_off, L1_off]
+                TR_rows, TR_cols = shape(TR_matrix)
+
+                n1 = rate_ent[2]
+                n2 = rate_ent[3]
+
+                if 0 < n1 <= TR_cols and 0 < n2 <= TR_rows:
+                    mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
+                    print(glb_mel_f1.format(L1, n1, L2, n2, mel))
+
+            except ValueError:
+                pass
+
+        elif len(rate_ent) == 5:
+            assert L1 >= 0 and L2 >= 0
+
+            n1 = rate_ent[2]
+            n2 = rate_ent[3]
+            if n1 <= 0 or n2 <= 0:
+                continue
+            Lmod = rate_ent[4]
+
+            Lcount: int
+            if Lmod > 0:
+                Lcount = iquo(Lvals[-1] - max(L1, L2), Lmod)
+            elif Lmod < 0:
+                Lmod = -Lmod
+                Lcount = iquo(min(L1, L2), Lmod)
+                L1 -= Lcount * Lmod
+                L2 -= Lcount * Lmod
+            else:
+                Lcount = 0
+
+            while Lcount >= 0:
+
+                try:
+                    L1_off = Lvals.index(L1)
+                    L2_off = Lvals.index(L2)
+                    TR_matrix = Melements[L2_off, L1_off]
+                    TR_rows, TR_cols = shape(TR_matrix)
+                    if n1 <= TR_cols and n2 <= TR_rows:
+                        assert n1 > 0 and n2 > 0
+                        mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
+                        print(glb_mel_f1.format(L1, n1, L2, n2, mel))
+                except ValueError:
+                    pass
+
+                L1 += Lmod
+                L2 += Lmod
+                Lcount -= 1
+
+        elif len(rate_ent) == 3:
+
+            Show_Mels_Row(Melements, Lvals, L1, L2, rate_ent[2], toshow, mel_fun, scale)
+
+        elif len(rate_ent) == 2:
+
+            for n2 in range(1, toshow + 1):
+                if Show_Mels_Row(Melements, Lvals, L1, L2, n2, toshow, mel_fun, scale) <= 0:
+                    break
+
+        elif len(rate_ent) == 1:
+
+            L2 = rate_ent[0]
+            if L2 < 0:
+                continue
+
+            Show_Mels_Rows(Melements, Lvals, L2, toshow, mel_fun, scale)
+
+        elif len(rate_ent) == 0:
+            for L2 in Lvals:
+
+                Show_Mels_Rows(Melements, Lvals, L2, toshow, mel_fun, scale)
+
+
+def Show_Mels_Rows(Melements: Matrix, Lvals: list[nonnegint],
+                   L2: nonnegint, toshow: int, mel_fun: Callable, scale: Expr) -> None:
+    """Show matrix element rows for the values of L1 and n2 that correspond to L2."""
+    TRopAM: nonnegint = g.glb_rat_TRopAM
+    for L1 in range(max(0, L2 - TRopAM), L2 + TRopAM + 1):
+        for n2 in range(1, toshow + 1):
+            if Show_Mels_Row(Melements, Lvals, L1, L2, n2, toshow, mel_fun, scale) <= 0:
+                break
+
+
 # # The following procedure Show_Mels_Row is used by the above procedure
 # # Show_Mels to display, for the fixed values L1,L2,n2, the functions
 # # of the matrix elements calculated for [L1,L2,n1,n2].
@@ -619,8 +854,38 @@ diagonalising, basis transforming, and data displaying.
 #   return 1:
 #
 # end:
-#
-#
+def Show_Mels_Row(Melements: Matrix, Lvals: list[nonnegint],
+                  L1: nonnegint, L2: nonnegint, n2: int,
+                  toshow: nonnegint,
+                  mel_fun: Callable,
+                  scale: Expr) -> int:
+    L1_off: int
+    L2_off: int
+    try:
+        L1_off = Lvals.index(L1)
+        L2_off = Lvals.index(L2)
+    except ValueError:
+        return 0
+
+    assert L1_off >= 0 and L2_off >= 0
+
+    TR_matrix: Matrix = Melements[L2_off - 1, L1_off - 1]
+    TR_rows: int
+    TR_cols: int
+    TR_rows, TR_cols = shape(TR_matrix)
+
+    if n2 > TR_rows or TR_cols == 0:
+        return 0
+
+    col_count: int = min(TR_cols, toshow)
+
+    mels: list[str] = [glb_item_format.format((mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf())
+                       for n1 in range(1, col_count + 1)]
+    print(glb_mel_f2.format(L1, L2, n2, '[' + ','.join(mels) + ']'))
+
+    return 1
+
+
 # # The procedures Show_Rats and Show_Amps below call Show_Mels
 # # above with its final four arguments (of eight) taking
 # # particular values specified by certain global variables.
@@ -664,7 +929,18 @@ diagonalising, basis transforming, and data displaying.
 #                glb_rat_format,
 #                glb_rat_desg):
 # end:
-#
+def Show_Rats(Melements: Matrix, Lvals: list[nonnegint],
+              rat_lst: Designators = g.glb_rat_lst,
+              toshow: int = g.glb_rat_num) -> None:
+    Show_Mels(Melements, Lvals,
+              rat_lst,
+              toshow,
+              g.glb_rat_fun,
+              g.glb_rat_sft,
+              g.glb_rat_format,
+              g.glb_rat_desg)
+
+
 # Show_Amps:=proc(Melements::Matrix, Lvals::list,
 #                   amp_lst::list(list):=glb_amp_lst,
 #                   toshow::integer:=glb_amp_num,$)
@@ -679,8 +955,18 @@ diagonalising, basis transforming, and data displaying.
 #                glb_amp_format,
 #                glb_amp_desg):
 # end:
-#
-#
+def Show_Amps(Melements: Matrix, Lvals: list[nonnegint],
+              amp_lst: Designators = g.glb_amp_lst,
+              toshow: int = g.glb_amp_num) -> None:
+    Show_Mels(Melements, Lvals,
+              amp_lst,
+              toshow,
+              g.glb_amp_fun,
+              g.glb_amp_sft,
+              g.glb_amp_format,
+              g.glb_amp_desg)
+
+
 # ###########################################################################
 #
 # # The following procedure ACM_ScaleOrAdapt combines many of those
@@ -877,8 +1163,97 @@ diagonalising, basis transforming, and data displaying.
 #   [eigen_quin[1],tran_mat,Lvals]:
 #
 # end;
-#
-#
+def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
+                     ham_op: OperatorSum,
+                     anorm: Expr, lambda_base: Expr,
+                     nu_min: nonnegint, nu_max: nonnegint,
+                     v_min: nonnegint, v_max: nonnegint,
+                     L_min: nonnegint, L_max: Optional[nonnegint] = None
+                     ) -> tuple[EigenValues, Matrix, LValues]:
+    require_nonnegint('fit_eig', fit_eig)
+    require_nonnegint('fit_rat', fit_rat)
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+
+    L_mx: nonnegint = L_min if L_max is None else L_max
+    require_nonnegint_range('L', L_min, L_mx)
+
+    if fit_eig > 0 and g.glb_eig_num > 0:
+        if g.glb_eig_L < L_min or g.glb_eig_L > L_mx or \
+                g.glb_eig_idx > dimXspace(nu_min, nu_max, v_min, v_max, g.glb_eig_L):
+            raise ValueError(f'Reference state {g.glb_eig_L}({g.glb_eig_idx}) not available')
+
+    if fit_rat > 0 and len(g.glb_rat_lst) > 0:
+        if g.glb_rat_L1 < L_min or g.glb_rat_L1 > L_mx or \
+                g.glb_rat_1dx > dimXspace(nu_min, nu_max, v_min, v_max, g.glb_rat_L1):
+            raise ValueError(f'Reference state {g.glb_rat_L1}({g.glb_rat_1dx}) not available')
+
+        if g.glb_rat_L2 < L_min or g.glb_rat_L2 > L_mx or \
+                g.glb_rat_2dx > dimXspace(nu_min, nu_max, v_min, v_max, g.glb_rat_L2):
+            raise ValueError(f'Reference state {g.glb_rat_L2}({g.glb_rat_2dx}) not available')
+
+    eigen_quin: tuple[EigenValues, EigenBases, XParams, LValues] = \
+        DigXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    eigen_vals: EigenValues = eigen_quin[0]
+    eigen_bases: EigenBases = eigen_quin[1]
+    Xparams: XParams = eigen_quin[2]
+    Lvals: LValues = eigen_quin[3]
+
+    if g.glb_eig_num > 0:
+
+        if fit_eig > 0:
+
+            eigen_low: float = min_head(eigen_vals) if g.glb_eig_rel else 0
+
+            try:
+                LL: int = Lvals.index(g.glb_eig_L)
+            except ValueError:
+                raise ValueError(f'glb_eig_L ({g.glb_eig_L}) is not in list of L values.')
+            g.glb_eig_sft = (eigen_vals[LL][g.glb_eig_idx - 1] - eigen_low) / g.glb_eig_fit
+
+            if g.glb_eig_sft == 0:
+                raise ValueError(f'Cannot scale: reference state {g.glb_eig_L}({g.glb_eig_idx}) has lowest energy')
+
+        Show_Eigs(eigen_vals, Lvals, g.glb_eig_num)
+
+    trans_mat: Matrix
+    if len(g.glb_rat_lst) > 0 or len(g.glb_amp_lst) > 0:
+
+        trans_mat = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
+
+        if fit_rat > 0:
+            L1: int = g.glb_rat_L1
+            L2: int = g.glb_rat_L2
+            i1: int = g.glb_rat_1dx
+            i2: int = g.glb_rat_2dx
+            try:
+                L1_off: int = Lvals.index(L1)
+            except ValueError:
+                raise ValueError(f'glb_rat_L1 ({L1}) is not in list of L values.')
+
+            try:
+                L2_off: int = Lvals.index(L2)
+            except ValueError:
+                raise ValueError(f'glb_rat_L2 ({L2}) is not in list of L values.')
+
+            mel: float = trans_mat[L2_off, L1_off][i2 - 1, i1 - 1]
+            g.glb_rat_sft = abs(g.glb_rat_fun(L1, L2, mel)) / g.glb_rat_fit
+
+            if g.glb_rat_sft == 0:
+                raise ValueError(f'Cannot scale zero transition rate B(E2: {L1}({i1}) -> {L2}({i2}))')
+
+            g.glb_amp_sft = g.glb_amp_sft_fun(g.glb_rat_sft)
+
+        Show_Rats(trans_mat, Lvals, g.glb_rat_lst, g.glb_rat_num)
+        Show_Amps(trans_mat, Lvals, g.glb_amp_lst, g.glb_amp_num)
+
+    else:
+
+        trans_mat = Matrix()
+
+    return eigen_vals, trans_mat, Lvals
+
+
 # # The following procedure ACM_Scale invokes the procedure ACM_ScaleOrAdapt
 # # above with fit_eig=0 and fit_rat=0 so that the values of the scaling
 # # parameters glb_eig_sft, glb_rat_sft and glb_amp_sft are used unchanged
@@ -894,8 +1269,17 @@ diagonalising, basis transforming, and data displaying.
 #
 #   ACM_ScaleOrAdapt(0,0,_passed):
 # end;
-#
-#
+
+
+def ACM_Scale(ham_op: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> tuple[EigenValues, Matrix, LValues]:
+    return ACM_ScaleOrAdapt(0, 0, ham_op, anorm, lambda_base,
+                            nu_min, nu_max, v_min, v_max, L_min, L_max)
+
 # # The following procedure ACM_Adapt invokes the procedure ACM_ScaleOrAdapt
 # # above with fit_eig=1 and fit_rat=1 so that the values of the scaling
 # # parameters glb_eig_sft, glb_rat_sft and glb_amp_sft are recalculated
@@ -911,5 +1295,13 @@ diagonalising, basis transforming, and data displaying.
 #
 #   ACM_ScaleOrAdapt(1,1,_passed):
 # end;
-#
-#
+
+
+def ACM_Adapt(ham_op: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> tuple[EigenValues, Matrix, LValues]:
+    return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
+                            nu_min, nu_max, v_min, v_max, L_min, L_max)

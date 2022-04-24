@@ -7,17 +7,16 @@ from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye, Rational, sqrt
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint
 from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
-    Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3
+    Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3, Spherical_Operators
 from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
-    RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem
+    RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem, Radial_Operators, Radial_Db, \
+    Radial_bm, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b
 from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
-    Radial_Operators, Spherical_Operators, Xspace_PiqPi, Xspace_PiPi2, Xspace_PiPi4, Xspace_Pi, Convert_red, \
-    NumSO5r3_Prod, Radial_Db, Radial_bm, Qred_p1, Qred_m1, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, \
-    QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, QxQxQred_m1, ME_SO5red
+    Convert_red, NumSO5r3_Prod, Qred_p1, Qred_m1, QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, \
+    QxQxQred_m1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi
 from acmpy.so5_so3_cg import CG_SO5r3
-import acmpy.globals as globals
+import acmpy.globals as g
 from acmpy.globals import glb_lam_fun
-
 
 # ###########################################################################
 # ####-------------- Representing operators on full Xspace --------------####
@@ -281,8 +280,6 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
     return Rmat
 
 
-# # MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-#
 # # The procedure RepXspace_Prod below returns the (alternative SO(3)-reduced)
 # # Matrix of a product of the operators listed in tables I,II and III,
 # # together with the diagonal operators SpDiag_sqLdim and SpDiag_sqLdiv,
@@ -616,7 +613,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
 
-    globals.glb_nu_lap = 0
+    g.glb_nu_lap = 0
 
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
@@ -634,7 +631,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
         for i2 in range(1, sph_dim + 1):
             idisp: int = (i2 - 1) * rad_dim
             lambda_disp_fin = glb_lam_fun(sph_labels[i2 - 1][0])
-            sph_ME: float = sph_Mat[i2 - 1][j2 - 1]
+            sph_ME: float = sph_Mat[i2 - 1, j2 - 1]
 
             if sph_ME == 0:
                 continue
@@ -642,7 +639,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
             rad_Mat: Matrix = RepRadial_Prod_rem(tuple(rad_ops), anorm,
                                                  lambda_base + lambda_disp_init,
                                                  lambda_disp_fin - lambda_disp_init,
-                                                 nu_min, nu_max, globals.glb_nu_lap)
+                                                 nu_min, nu_max, g.glb_nu_lap)
 
             for i1 in range(1, rad_dim + 1):
                 for j1 in range(1, rad_dim + 1):
@@ -1217,7 +1214,6 @@ def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
                     v_min: nonnegint, v_max: nonnegint,
                     L_min: nonnegint, L_max: nonnegint
                     ) -> Matrix:
-    print('Not implemented.')
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)

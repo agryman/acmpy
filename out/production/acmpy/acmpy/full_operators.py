@@ -1,4 +1,36 @@
 """6. Procedures that represent operators on the full (cross-product) Hilbert space."""
+
+from typing import Optional
+from functools import cache
+
+from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye, Rational, sqrt
+
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint
+from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
+    Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3
+from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
+    RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem
+from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
+    Radial_Operators, Spherical_Operators, Convert_red, \
+    NumSO5r3_Prod, Radial_Db, Radial_bm, Qred_p1, Qred_m1, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, \
+    QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, QxQxQred_m1, ME_SO5red
+from acmpy.so5_so3_cg import CG_SO5r3
+import acmpy.globals as globals
+from acmpy.globals import glb_lam_fun
+
+
+# # The four operators
+# #       pi, [pi x pi]_{v=2,L=2}, [pi x pi]_{v=2,L=L}, [q x pi x pi]_{v=3,L=0}
+# # intrinsically affect the whole product space:
+#
+# Xspace_Operators:=[ Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi ]:
+Xspace_Pi: Symbol = Symbol('Xspace_Pi', commutative=False)
+Xspace_PiPi2: Symbol = Symbol('Xspace_PiPi2', commutative=False)
+Xspace_PiPi4: Symbol = Symbol('Xspace_PiPi4', commutative=False)
+Xspace_PiqPi: Symbol = Symbol('Xspace_PiqPi', commutative=False)
+Xspace_Operators: tuple[Symbol, ...] = (Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi)
+
+
 # ###########################################################################
 # ####-------------- Representing operators on full Xspace --------------####
 # ###########################################################################
@@ -19,8 +51,18 @@
 #
 #     dimRadial(nu_min,nu_max)*dimSO5r3_rngVvarL(_passed[3..-1]):
 # end:
-#
-#
+def dimXspace(nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> nonnegint:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('L', L_min, L_max)
+
+    return dimRadial(nu_min, nu_max) * dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+
 # # The following procedure lbsXspace returns a list of labels [nu,v,alpha,L]
 # # for the basis states of the truncated Hilbert space:
 # # nu takes the range nu_min,..,nu_max, v takes the range v_min,..,v_max,
@@ -40,8 +82,25 @@
 #
 #   [seq( seq( [nu,op(s)], nu in rad_labels), s in sph_labels)];
 # end:
-#
-#
+XspaceLabel = tuple[Nu, Seniority, Alpha, AngularMomentum]
+
+
+def lbsXspace(nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L_min: nonnegint, L_max: Optional[nonnegint]
+              ) -> list[XspaceLabel]:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('L', L_min, L_max)
+
+    rad_labels: list[Nu] = lbsRadial(nu_min, nu_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+    return [(nu,) + s for s in sph_labels for nu in rad_labels]
+
+
 # ###########################################################################
 #
 #
@@ -62,7 +121,7 @@
 # # The final argument L_max is optional - if omitted then L_max=L_min,
 # # so that a single angular momentum value is used.
 #
-# # By alternative, we mean that the matrix elements should be mulitplied by
+# # By alternative, we mean that the matrix elements should be multiplied by
 # # sqrt(2*L_f+1) to get the genuine SO(3)-reduced matrix elements of the
 # # operator in question (see (37)). These are useful in practical use,
 # # because this 1/sqrt(2*L_f+1) appears in the Wigner-Eckart theorem
@@ -157,7 +216,7 @@
 #   # now clear all the remember tables used so that the next calculation
 #   # can start afresh (with a different Xspace).
 #   # (In this list, we have given each procedure a number, and following that
-#   #  in parentheses, the numbers of these precedures that get called by it:
+#   #  in parentheses, the numbers of these procedures that get called by it:
 #   #  this is useful for debugging).
 #
 #   forget(RepRadial):               # 1.
@@ -176,9 +235,64 @@
 #
 #   Rmat;
 # end:
-#
-#
-#
+def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
+              nu_min: nonnegint, nu_max: nonnegint,
+              v_min: nonnegint, v_max: nonnegint,
+              L: nonnegint, L_max: Optional[nonnegint] = None
+              ) -> Matrix:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    if L_max is None:
+        L_max = L
+    require_nonnegint_range('L', L, L_max)
+
+    n: int = len(x_oplc)
+    Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
+    Rmat: Matrix
+    if n == 0:
+        Rmat = zeros(dimXspace(nu_min, nu_max, v_min, v_max, L, L_max))
+    else:
+        coeff, prod = x_oplc[0]
+        Rmat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+        if coeff.is_constant():
+            Rmat = coeff.evalf() * Rmat
+        else:
+            Rmat = Rmat * diag(*[coeff.subs({NUMBER: nu,
+                                             SENIORITY: v,
+                                             ALFA: a,
+                                             ANGMOM: L}).evalf()
+                                 for (nu, v, a, L) in Xlabels])
+
+        for coeff, prod in x_oplc[1:]:
+            if coeff.is_constant():
+                Rmat = Rmat + coeff.evalf() * \
+                       RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+            else:
+                Pmat: Matrix = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+                Pmat = Pmat * diag(*[coeff.subs({NUMBER: nu,
+                                                 SENIORITY: v,
+                                                 ALFA: a,
+                                                 ANGMOM: L}).evalf()
+                                     for (nu, v, a, L) in Xlabels])
+                Rmat = Rmat + Pmat
+
+    RepRadial.cache_clear()
+    RepRadial_param.cache_clear()
+    Matrix_sqrt.cache_clear()
+    Matrix_sqrtInv.cache_clear()
+    RepRadial_bS_DS.cache_clear()
+    RepRadialshfs_Prod.cache_clear()
+    RepRadial_Prod_rem.cache_clear()
+    RepRadial_LC_rem.cache_clear()
+    RepXspace_Pi.cache_clear()
+    RepXspace_PiPi.cache_clear()
+    RepXspace_PiqPi.cache_clear()
+    RepSO5_Y_rem.cache_clear()
+    RepSO5r3_Prod_rem.cache_clear()
+
+    return Rmat
+
+
 # # MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 #
 # # The procedure RepXspace_Prod below returns the (alternative SO(3)-reduced)
@@ -255,7 +369,7 @@
 #       elif this_op=Xspace_Pi then   # For operator  [pi]_{v=1,L=2};
 #           xsp_Mat:=RepXspace_Pi(_passed[2..-1]):
 #
-#       # could put other Xpsace operators here!
+#       # could put other Xspace operators here!
 #
 #       else
 #         error "Operator %1 undefined", this_op:
@@ -292,8 +406,104 @@
 #   run_Mat:
 #
 # end:
-#
-#
+def RepXspace_Prod(x_ops: tuple[Symbol, ...],
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L_min: nonnegint, L_max: Optional[nonnegint]
+                   ) -> Matrix:
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    run_Mat: Optional[Matrix] = None
+    up_running: int = 0
+    sph_ops: tuple[Symbol, ...] = ()
+    nu_ops: tuple[Symbol, ...] = ()
+    xsp_Mat: Matrix
+
+    for this_op in x_ops:
+
+        if this_op in Radial_Operators:
+            nu_ops += (this_op,)
+        elif this_op in Spherical_Operators:
+            sph_ops += (this_op,)
+        else:
+            if nu_ops != () or sph_ops != ():
+                xsp_Mat = RepXspace_Twin(nu_ops, sph_ops,
+                                         anorm, lambda_base,
+                                         nu_min, nu_max,
+                                         v_min, v_max,
+                                         L_min, L_max)
+                nu_ops = ()
+                sph_ops = ()
+                if up_running > 0:
+                    assert run_Mat is not None
+                    run_Mat = run_Mat * xsp_Mat
+                else:
+                    assert run_Mat is None
+                    run_Mat = xsp_Mat
+                    up_running = 1
+
+            if this_op == Xspace_PiqPi:
+                xsp_Mat = RepXspace_PiqPi(anorm, lambda_base,
+                                          nu_min, nu_max,
+                                          v_min, v_max,
+                                          L_min, L_max)
+            elif this_op == Xspace_PiPi2:
+                xsp_Mat = RepXspace_PiPi(2, anorm, lambda_base,
+                                         nu_min, nu_max,
+                                         v_min, v_max,
+                                         L_min, L_max)
+            elif this_op == Xspace_PiPi4:
+                xsp_Mat = RepXspace_PiPi(4, anorm, lambda_base,
+                                         nu_min, nu_max,
+                                         v_min, v_max,
+                                         L_min, L_max)
+            elif this_op == Xspace_Pi:
+                xsp_Mat = RepXspace_Pi(anorm, lambda_base,
+                                       nu_min, nu_max,
+                                       v_min, v_max,
+                                       L_min, L_max)
+            else:
+                raise ValueError(f'Operator {this_op} undefined.')
+
+            assert xsp_Mat is not None
+            if up_running > 0:
+                assert run_Mat is not None
+                run_Mat = run_Mat * xsp_Mat
+            else:
+                assert run_Mat is None
+                run_Mat = Matrix(xsp_Mat)
+                up_running = 1
+
+    if nu_ops != [] or sph_ops != []:
+        xsp_Mat = RepXspace_Twin(nu_ops, sph_ops,
+                                 anorm, lambda_base,
+                                 nu_min, nu_max,
+                                 v_min, v_max,
+                                 L_min, L_max)
+
+        if up_running > 0:
+            assert run_Mat is not None
+            run_Mat = run_Mat * xsp_Mat
+        else:
+            assert run_Mat is None
+            run_Mat = xsp_Mat
+            up_running = 1
+
+    if up_running == 0:
+        assert run_Mat is None
+        run_Mat = eye(dimXspace(nu_min, nu_max,
+                                v_min, v_max,
+                                L_min, L_max))
+
+    assert run_Mat is not None
+    return run_Mat
+
+
 # # The following procedure RepXspace_Twin does much of the work
 # # for RepXspace_Prod above, and has similar arguments, except
 # # that it takes two lists of operators, rad_ops and sph_ops.
@@ -406,8 +616,53 @@
 #
 #   direct_Mat;
 # end:
-#
-#
+def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L_min: nonnegint, L_max: Optional[nonnegint]
+                   ) -> Matrix:
+    if L_max is None:
+        L_max = L_min
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    globals.glb_nu_lap = 0
+
+    sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_Mat: Matrix = RepSO5r3_Prod_rem(sph_ops, v_min, v_max, L_min, L_max)
+
+    sph_Mat = (Convert_red ** NumSO5r3_Prod(sph_ops)).evalf() * sph_Mat
+
+    rad_dim: int = dimRadial(nu_min, nu_max)
+
+    direct_Mat: Matrix = zeros(sph_dim * rad_dim)
+    for j2 in range(1, sph_dim + 1):
+        jdisp: int = (j2 - 1) * rad_dim
+        lambda_disp_init = glb_lam_fun(sph_labels[j2 - 1][0])
+
+        for i2 in range(1, sph_dim + 1):
+            idisp: int = (i2 - 1) * rad_dim
+            lambda_disp_fin = glb_lam_fun(sph_labels[i2 - 1][0])
+            sph_ME: float = sph_Mat[i2 - 1][j2 - 1]
+
+            if sph_ME == 0:
+                continue
+
+            rad_Mat: Matrix = RepRadial_Prod_rem(tuple(rad_ops), anorm,
+                                                 lambda_base + lambda_disp_init,
+                                                 lambda_disp_fin - lambda_disp_init,
+                                                 nu_min, nu_max, globals.glb_nu_lap)
+
+            for i1 in range(1, rad_dim + 1):
+                for j1 in range(1, rad_dim + 1):
+                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (rad_Mat[i1 - 1, j1 - 1] * sph_ME).evalf()
+
+    return direct_Mat
+
+
 # # The following procedure RepXpsace_Pi returns the Matrix representation
 # # of the pi/(-i\hbar) operator on the truncated Hilbert space
 # # determined by the arguments as above.
@@ -459,7 +714,7 @@
 #
 #   for i2 to sph_dim do
 #     L_fin:=sph_labels[i2][3]:    # L of final state
-#     if L_fin-L_init>2 or L_fin-L_init<-2 then next fi:  # zero becos q has L=2.
+#     if L_fin-L_init>2 or L_fin-L_init<-2 then next fi:  # zero because q has L=2.
 #
 #     v_fin:=sph_labels[i2][1]:    # seniority of final state
 #     al_fin:=sph_labels[i2][2]:   # alpha of same
@@ -519,8 +774,67 @@
 #
 #   direct_Mat:
 # end:
-#
-#
+@cache
+def RepXspace_Pi(anorm: Expr, lambda_base: Expr,
+                 nu_min: nonnegint, nu_max: nonnegint,
+                 v_min: nonnegint, v_max: nonnegint,
+                 L_min: nonnegint, L_max: nonnegint
+                 ) -> Matrix:
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    rad_dim: int = dimRadial(nu_min, nu_max)
+
+    sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    assert sph_dim == len(sph_labels)
+
+    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+    for j2 in range(1, sph_dim + 1):
+        v_init, al_init, L_init = sph_labels[j2 - 1]
+        jdisp: int = (j2 - 1) * rad_dim
+        lambda_disp_init: nonnegint = glb_lam_fun(v_init)
+
+        for i2 in range(1, sph_dim + 1):
+            v_fin, al_fin, L_fin = sph_labels[i2 - 1]
+            if L_fin - L_init > 2 or L_fin - L_init < -2:
+                continue
+            v_chg: int = v_fin - v_init
+            idisp: int = (i2 - 1) * rad_dim
+            lambda_disp_fin: nonnegint = glb_lam_fun(v_fin)
+
+            rad_Mat: Matrix
+            if v_chg == 1:
+
+                rad_Mat = RepRadial_LC_rem(((S.One, (Radial_Db,)),
+                                            (S(-v_init - 2), (Radial_bm,))),
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init, nu_min, nu_max)
+                rad_Mat = rad_Mat * (Qred_p1(v_init)).evalf()
+
+            elif v_chg == -1:
+
+                rad_Mat = RepRadial_LC_rem(((S.One, (Radial_Db,)),
+                                            (S(v_init + 1), (Radial_bm,))),
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init, nu_min, nu_max)
+                rad_Mat = rad_Mat * (Qred_m1(v_init)).evalf()
+
+            else:
+                continue
+
+            CG2: float = CG_SO5r3(v_init, al_init, L_init,
+                                  1, 1, 2,
+                                  v_fin, al_fin, L_fin)
+
+            for i1 in range(1, rad_dim + 1):
+                for j1 in range(1, rad_dim + 1):
+                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+
+    return direct_Mat
+
+
 # # The following procedure RepXpsace_PiPi returns Matrix representations
 # # of the operators
 # #            [pi x pi]_(v=2,L=2)          [pi x pi]_(v=2,L=4)
@@ -662,9 +976,89 @@
 #
 #   direct_Mat:
 # end:
-#
-#
-# # The following procedure RepXpsace_Pi returns the Matrix representation
+@cache
+def RepXspace_PiPi(PiPi_L: nonnegint,
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L_min: nonnegint, L_max: nonnegint
+                   ) -> Matrix:
+    require_nonnegint('PiPi_L', PiPi_L)
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    rad_dim: int = dimRadial(nu_min, nu_max)
+
+    sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+
+    for j2 in range(1, sph_dim + 1):
+        v_init, al_init, L_init = sph_labels[j2 - 1]
+        jdisp: int = (j2 - 1) * rad_dim
+        lambda_disp_init: int = glb_lam_fun(v_init)
+
+        for i2 in range(1, sph_dim + 1):
+            v_fin, al_fin, L_fin = sph_labels[i2 - 1]
+            if L_fin - L_init > PiPi_L or L_fin - L_init < -PiPi_L:
+                continue
+
+            v_chg: int = v_fin - v_init
+            idisp: int = (i2 - 1) * rad_dim
+            lambda_disp_fin: int = glb_lam_fun(v_fin)
+
+            if v_chg == 2:
+
+                rad_Mat = RepRadial_LC_rem(((S.One, (Radial_D2b,)),
+                                            (S((v_init + 2) * (v_init + 4)), (Radial_bm2,)),
+                                            (S(-2 * v_init - 5), (Radial_bm2, Radial_bDb))),
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+
+                rad_Mat = rad_Mat * (-QxQred_p2(v_init)).evalf()
+
+            elif v_chg == -2:
+
+                rad_Mat = RepRadial_LC_rem(((S.One, (Radial_D2b,)),
+                                            (S((v_init - 1) * (v_init + 1)), (Radial_bm2,)),
+                                            (S(2 * v_init + 1), (Radial_bm2, Radial_bDb))),
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+
+                rad_Mat = rad_Mat * (-QxQred_p2(v_init)).evalf()
+
+            elif v_chg == 0:
+
+                rad_Mat = RepRadial_LC_rem(((S.One, (Radial_D2b,)),
+                                            (S(-(v_init + 1) * (v_init + 2)), (Radial_bm2,))),
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+
+                rad_Mat = rad_Mat * (-QxQred_0(v_init)).evalf()
+
+            else:
+                continue
+
+            CG2: float = CG_SO5r3(v_init, al_init, L_init,
+                                  2, 1, PiPi_L,
+                                  v_fin, al_fin, L_fin)
+
+            for i1 in range(1, rad_dim + 1):
+                for j1 in range(1, rad_dim + 1):
+                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+
+            if PiPi_L == 2:
+                direct_Mat = -direct_Mat
+
+    return direct_Mat
+
+
+# # The following procedure RepXspace_PiqPi returns the Matrix representation
 # # of the operator
 # #                         [pi x q x pi]_(v=3,L=0)
 # #                         -----------------------
@@ -829,8 +1223,117 @@
 #
 #   direct_Mat:
 # end:
-#
-#
+@cache
+def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
+                    nu_min: nonnegint, nu_max: nonnegint,
+                    v_min: nonnegint, v_max: nonnegint,
+                    L_min: nonnegint, L_max: nonnegint
+                    ) -> Matrix:
+    print('Not implemented.')
+    require_nonnegint_range('nu', nu_min, nu_max)
+    require_nonnegint_range('v', v_min, v_max)
+    require_nonnegint_range('L', L_min, L_max)
+
+    rad_dim: int = dimRadial(nu_min, nu_max)
+
+    sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+    sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
+
+    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+
+    for j2 in range(1, sph_dim + 1):
+        v_init, al_init, L_init = sph_labels[j2 - 1]
+        jdisp: int = (j2 - 1) * rad_dim
+        lambda_disp_init: int = glb_lam_fun(v_init)
+
+        for i2 in range(1, sph_dim + 1):
+            v_fin, al_fin, L_fin = sph_labels[i2 - 1]
+            if L_fin != L_init:
+                continue
+            v_chg: int = v_fin - v_init
+            idisp: int = (i2 - 1) * rad_dim
+            lambda_disp_fin = glb_lam_fun(v_fin)
+
+            op_sum: OperatorSum
+            op_sum2: OperatorSum
+            rad_Mat: Matrix
+            rad_Mat2: Matrix
+            c: float
+            c2: float
+            if v_chg == 3:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S((v_init + 2) * (v_init + 4)), (Radial_bm,)),
+                          (S(-2 * v_init - 5), (Radial_Db,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                c = QxQxQred_p3(v_init).evalf()
+                rad_Mat = rad_Mat * c
+
+            elif v_chg == -3:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S((v_init - 1) * (v_init + 1)), (Radial_bm,)),
+                          (S(2 * v_init + 1), (Radial_Db,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                c = QxQxQred_m3(v_init).evalf()
+                rad_Mat = rad_Mat * c
+
+            elif v_chg == 1:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S(-(v_init + 1) * (v_init + 2)), (Radial_bm,)))
+                op_sum2 = ((S.one, (Radial_Db,)),
+                           (S(-v_init - 2), (Radial_bm,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                rad_Mat2 = RepRadial_LC_rem(op_sum2,
+                                            anorm, lambda_base + lambda_disp_init,
+                                            lambda_disp_fin - lambda_disp_init,
+                                            nu_min, nu_max)
+                c = QmxQxQred_p1(v_init).evalf()
+                c2 = ((2 * v_init + 5) * QixQxQred(v_init, v_fin, v_fin + 1)).evalf()
+                rad_Mat = rad_Mat * c + rad_Mat2 * c2
+
+            elif v_chg == -1:
+
+                op_sum = ((S.One, (Radial_b, Radial_D2b)),
+                          (S(-(v_init + 1) * (v_init + 2)), (Radial_bm,)))
+                op_sum2 = ((S.One, (Radial_Db,)),
+                           (S(v_init + 1), (Radial_bm,)))
+                rad_Mat = RepRadial_LC_rem(op_sum,
+                                           anorm, lambda_base + lambda_disp_init,
+                                           lambda_disp_fin - lambda_disp_init,
+                                           nu_min, nu_max)
+                rad_Mat2 = RepRadial_LC_rem(op_sum2,
+                                            anorm, lambda_base + lambda_disp_init,
+                                            lambda_disp_fin - lambda_disp_init,
+                                            nu_min, nu_max)
+                c = QxQxQred_m1(v_init).evalf()
+                c2 = -(2 * v_init) * QixQxQred(v_init, v_fin, v_fin - 1).evalf()
+                rad_Mat = rad_Mat * c + rad_Mat2 * c2
+
+            else:
+                continue
+
+            CG2: float = CG_SO5r3(v_init, al_init, L_init,
+                                  3, 1, 0,
+                                  v_fin, al_fin, L_fin)
+
+            for i1 in range(1, rad_dim + 1):
+                for j1 in range(1, rad_dim + 1):
+                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+
+    return direct_Mat
+
+
 # # The following procedure QixQxQred returns the genuine SO(5) reduced
 # # matrix elements
 # #          <v_f ||| [[Q^+ x Q x Q]]^3 ||| v_i>,             (**)
@@ -872,8 +1375,21 @@
 #     /CG_SO5r3(v_i,1,L_i,3,1,0,v_f,1,L_i)/sqrt(5*dimSO3(L_i)):
 #
 # end;
-#
-#
+def QixQxQred(v_i: nonnegint, v_f: nonnegint, v_int: nonnegint) -> Expr:
+    require_nonnegint('v_i', v_i)
+    require_nonnegint('v_f', v_f)
+    require_nonnegint('v_int', v_int)
+
+    L_i: int = 2 * min(v_i, v_f)
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v_int, L_i - 2, L_i + 2)
+    return -ME_SO5red(v_f, 1, v_int) * ME_SO5red(v_int, 2, v_i) * sqrt(Rational(2, 7)) / 15 * \
+           sum(CG_SO5r3(v_int, a, L, 1, 1, 2, v_f, 1, L_i) *
+               CG_SO5r3(v_i, 1, L_i, 2, 1, 2, v_int, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v_i, 1, L_i, 3, 1, 0, v_f, 1, L_i) / sqrt(5 * dimSO3(L_i))
+
+
 # # The four cases are also implemented separately by the following
 # # procedures (we don't use these procedures, but they are instructive!)
 # # The correspondence is
@@ -908,7 +1424,20 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v+1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QpxQxQred_p1(v: nonnegint) -> Expr:
+    require_nonnegint('v', v)
+
+    L1: int = 2 * v
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1)
+
+    return Qred_p1(v) * QxQred_0(v) * \
+           sum(CG_SO5r3(v, a, L, 1, 1, 2, v + 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
+
+
 # QmxQxQred_p1:=proc(v::nonnegint)
 #   local mediates,L1;
 #
@@ -930,7 +1459,20 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v+1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QmxQxQred_p1(v: nonnegint) -> Expr:
+    require_nonnegint('v', v)
+
+    L1: int = 2 * v
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v + 2, L1 - 2, L1 + 2)
+
+    return Qred_m1(v + 2) * QxQred_p2(v) * \
+           sum(CG_SO5r3(v + 2, a, L, 1, 1, 2, v + 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v + 2, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
+
+
 # QpxQxQred_m1:=proc(v::posint)
 #   local mediates,L1;
 #
@@ -950,7 +1492,17 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v-1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
+def QpxQxQred_m1(v: posint) -> Expr:
+    require_posint('v', v)
+
+    L1: int = 2 * v - 2
+
+    return Qred_p1(v - 2) * QxQred_m2(v) * \
+           CG_SO5r3(v - 2, 1, L1 - 2, 1, 1, 2, v - 1, 1, L1) * \
+           CG_SO5r3(v, 1, L1, 2, 1, 2, v - 2, 1, L1 - 2) * \
+           sqrt(dimSO3(L1 - 2))
+
+
 # QmxQxQred_m1:=proc(v::posint)
 #   local mediates,L1;
 #
@@ -972,5 +1524,16 @@
 #     /CG_SO5r3(v,1,L1,3,1,0,v-1,1,L1)/sqrt(5*dimSO3(L1)):
 #
 # end;
-#
-#
+def QmxQxQred_m1(v: posint) -> Expr:
+    require_posint('v', v)
+
+    L1: int = 2 * v - 2
+
+    mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1 + 2)
+
+    return Qred_m1(v) * QxQred_0(v) * \
+           sum(CG_SO5r3(v, a, L, 1, 1, 2, v - 1, 1, L1) *
+               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
+               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
+           CG_SO5r3(v, 1, L1, 3, 1, 0, v - 1, 1, L1) / \
+           sqrt(5 * dimSO3(L1))

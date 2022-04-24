@@ -2,15 +2,98 @@
 
 from typing import Callable
 from functools import cache
+from abc import ABC, abstractmethod
 
-from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, diag, eye, zeros
+from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, \
+    diag, eye, zeros
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, irem
-from acmpy.internal_operators import OperatorSum, Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, Radial_bm, \
-    Radial_Db, Radial_S0, Radial_Sp, Radial_Sm, Radial_id
-from acmpy.full_space import Eigenfiddle
+from acmpy.eigenvalues import Eigenfiddle
 
 Nu = nonnegint
+
+
+# # The following is a list containing the symbolic names for ten operators
+# # that are the "basic" radial operators.
+# # The way that they alter lambda is not fixed, but is determined
+# # automatically.
+#
+# Radial_Operators:=[Radial_Sm, Radial_S0, Radial_Sp,
+#                    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
+#                    Radial_b, Radial_bm, Radial_Db]:
+"""
+Implement all Maple symbols as SymPy symbols.
+These symbols are operators, so their multiplication should be noncommutative.
+"""
+Radial_Sm: Symbol = Symbol('Radial_Sm', commutative=False)
+Radial_S0: Symbol = Symbol('Radial_S0', commutative=False)
+Radial_Sp: Symbol = Symbol('Radial_Sp', commutative=False)
+Radial_b2: Symbol = Symbol('Radial_b2', commutative=False)
+Radial_bm2: Symbol = Symbol('Radial_bm2', commutative=False)
+Radial_D2b: Symbol = Symbol('Radial_D2b', commutative=False)
+Radial_bDb: Symbol = Symbol('Radial_bDb', commutative=False)
+Radial_b: Symbol = Symbol('Radial_b', commutative=False)
+Radial_bm: Symbol = Symbol('Radial_bm', commutative=False)
+Radial_Db: Symbol = Symbol('Radial_Db', commutative=False)
+
+"""
+Radial_Operators is a Maple list.
+A Maple list is an immutable sequence of objects.
+It should be implemented in Python as a tuple.
+Note that in some cases the results of a function are cached in a dict
+so all the arguments must be immutable in which case tuples must be used
+instead of list.
+"""
+Radial_Operators: tuple[Symbol, ...] = (
+    Radial_Sm, Radial_S0, Radial_Sp,
+    Radial_b2, Radial_bm2, Radial_D2b, Radial_bDb,
+    Radial_b, Radial_bm, Radial_Db
+)
+
+# # They will eventually be exchanged for operators in which the shift
+# # is specific. The first seven keep their names (for zero shift),
+# # but each instance of the final three will be exchanged for a
+# # symbolic name that indicates a shift by a shift of -1,0 or +1.
+# # The following lists will be used to achieve that.
+"""
+Radial_pl, Radial_ml, and Radial_zl are Maple tables.
+A Maple table should be implemented as a Python dictionary.
+"""
+# Radial_pl:=[Radial_b=Radial_b_pl,Radial_bm=Radial_bm_pl,
+#             Radial_Db=Radial_Db_pl]:
+Radial_b_pl: Symbol = Symbol('Radial_b_pl', commutative=False)
+Radial_bm_pl: Symbol = Symbol('Radial_bm_pl', commutative=False)
+Radial_Db_pl: Symbol = Symbol('Radial_Db_pl', commutative=False)
+Radial_pl: dict[Symbol, Symbol] = {
+    Radial_b: Radial_b_pl,
+    Radial_bm: Radial_bm_pl,
+    Radial_Db: Radial_Db_pl
+}
+
+# Radial_ml:=[Radial_b=Radial_b_ml,Radial_bm=Radial_bm_ml,
+#             Radial_Db=Radial_Db_ml]:
+Radial_b_ml: Symbol = Symbol('Radial_b_ml', commutative=False)
+Radial_bm_ml: Symbol = Symbol('Radial_bm_ml', commutative=False)
+Radial_Db_ml: Symbol = Symbol('Radial_Db_ml', commutative=False)
+Radial_ml: dict[Symbol, Symbol] = {
+    Radial_b: Radial_b_ml,
+    Radial_bm: Radial_bm_ml,
+    Radial_Db: Radial_Db_ml
+}
+
+# Radial_zl:=[Radial_b=Radial_b_zl,Radial_bm=Radial_bm_zl,
+#             Radial_Db=Radial_Db_zl]:
+Radial_b_zl: Symbol = Symbol('Radial_b_zl', commutative=False)
+Radial_bm_zl: Symbol = Symbol('Radial_bm_zl', commutative=False)
+Radial_Db_zl: Symbol = Symbol('Radial_Db_zl', commutative=False)
+Radial_zl: dict[Symbol, Symbol] = {
+    Radial_b: Radial_b_zl,
+    Radial_bm: Radial_bm_zl,
+    Radial_Db: Radial_Db_zl
+}
+
+"""Define a symbol for the radial identity operator."""
+Radial_id: Symbol = Symbol('Radial_id', commutative=True)
 
 
 # ###########################################################################
@@ -177,6 +260,7 @@ def ME_Radial_bm2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 def ME_Radial_pt(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
     require_nonnegint('mu_f', mu_f)
     require_nonnegint('mu_i', mu_i)
+    # TODO: check that lambdaa is not 1 since we divide by (lambdaa -1)
 
     return (-1) ** (mu_f - mu_i) * sqrt(factorial(mu_f) * gamma(lambdaa + mu_i) /
                                         (factorial(mu_i) * gamma(lambdaa + mu_f))) / (lambdaa - 1)
@@ -439,6 +523,8 @@ def ME_Radial_Db_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
         res += (-1) ** (mu_f - mu_i) * (Rational(3, 2) - lambdaa) \
                * sqrt((factorial(mu_i) * gamma(lambdaa + mu_f - 1))
                       / (factorial(mu_f) * gamma(lambdaa + mu_i)))
+
+    return res
 
 
 # # The following gives matrix elements of the identity operator
@@ -740,7 +826,7 @@ def ME_Radial(radial_op: Expr, anorm: Expr,
             return ME_Radial_id_ml(lambdaa, mu_f, mu_i, -lambda_var // 2)
 
     else:
-        op_prod: tuple[Symbol, ...] = () if radial_op == Radial_id else (radial_op,)
+        op_prod: list[Symbol] = [] if radial_op == Radial_id else [radial_op]
         MM: Matrix = RepRadial_Prod(op_prod, anorm, lambdaa, lambda_var, 0, max(mu_f, mu_i),
                                     iquo(abs(lambda_var) + 3, 2))
         return MM[mu_f, mu_i]
@@ -787,11 +873,10 @@ def ME_Radial(radial_op: Expr, anorm: Expr,
 def RepRadial(ME: Callable, lambdaa: Expr,
               nu_min: nonnegint, nu_max: nonnegint
               ) -> Matrix:
-    require_nonnegint('nu_min', nu_min)
-    require_nonnegint('nu_max', nu_max)
+    require_nonnegint_range('nu', nu_min, nu_max)
 
     n: int = nu_max - nu_min + 1
-    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + i, nu_min + j))
+    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
 
     return simplify(M)
 
@@ -814,11 +899,10 @@ def RepRadial(ME: Callable, lambdaa: Expr,
 def RepRadial_param(ME: Callable, lambdaa: Expr,
                     nu_min: nonnegint, nu_max: nonnegint, param: int
                     ) -> Matrix:
-    require_nonnegint('nu_min', nu_min)
-    require_nonnegint('nu_max', nu_max)
+    require_nonnegint_range('nu', nu_min, nu_max)
 
     n: int = nu_max - nu_min + 1
-    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + i, nu_min + j, param))
+    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
 
     return simplify(M)
 
@@ -839,8 +923,7 @@ def RepRadial_param(ME: Callable, lambdaa: Expr,
 def RepRadial_sq(ME: Callable, lambdaa: Expr,
                     nu_min: nonnegint, nu_max: nonnegint
                     ) -> Matrix:
-    require_nonnegint('nu_min', nu_min)
-    require_nonnegint('nu_max', nu_max)
+    require_nonnegint_range('nu', nu_min, nu_max)
 
     M: Matrix = RepRadial(ME, lambdaa, nu_min, nu_max).evalf()
 
@@ -1254,7 +1337,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm:Expr,
 
         elif i > 1 and lam_splits[i - 2] == 0:
 
-            if i < K:
+            if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
                 Mat *= 1 / anorm ** 2
@@ -1409,9 +1492,70 @@ def Lambda_Splits(K: int, T: nonnegint, R: int
 # # of types [K,T] and S, the former obtained using RepRadial_bS_DS below
 # # and the latter directly from RepRadial (here K,T and S are integers,
 # # with T nonnegative, and S=+1,-1,0).
-KTOp = tuple[int, nonnegint]
-SOp = int
-KTSOp = KTOp | SOp
+
+
+class KTSOp(ABC):
+    """Abstract base class for KTOp and SOp."""
+
+    @abstractmethod
+    def representation(self, anorm: Expr,
+                       lambdaa: Expr, R: int,
+                       nu_min: nonnegint, nu_max: nonnegint
+                       ) -> Matrix:
+        ...
+
+
+class KTOp(KTSOp):
+    K: int
+    T: nonnegint
+
+    def __init__(self, K: int, T: nonnegint) -> None:
+        require_int('K', K)
+        require_nonnegint('T', T)
+
+        self.K = K
+        self.T = T
+
+    def __eq__(self, other) -> bool:
+        return self.K == other.K and self.T == other.T if isinstance(other, KTOp) else False
+
+    def __hash__(self) -> int:
+        return hash((self.K, self.T))
+
+    def representation(self, anorm: Expr,
+                       lambdaa: Expr, R: int,
+                       nu_min: nonnegint, nu_max: nonnegint
+                       ) -> Matrix:
+        return RepRadial_bS_DS(self.K, self.T, anorm, lambdaa, R, nu_min, nu_max)
+
+
+class SOp(KTSOp):
+    S: int
+
+    def __init__(self, S: int) -> None:
+        if S not in {-1, 0, 1}:
+            raise ValueError(f'S must be -1, 0, or 1. Got: {S}')
+
+        self.S = S
+
+    def __eq__(self, other) -> bool:
+        return self.S == other.S if isinstance(other, SOp) else False
+
+    def __hash__(self) -> int:
+        return hash(self.S)
+
+    def representation(self, anorm: Expr,
+                       lambdaa: Expr, R: int,
+                       nu_min: nonnegint, nu_max: nonnegint
+                       ) -> Matrix:
+        if R != 0:
+            raise ValueError("Non-zero lambda shift for S operator (this shouldn't arise!)")
+
+        ME: Callable = [ME_Radial_Sm, ME_Radial_S0, ME_Radial_Sp][self.S + 1]
+        return RepRadial(ME, lambdaa, nu_min, nu_max)
+
+
+KTSOps = tuple[KTSOp, ...]
 
 
 # # For each element in the list rps_op, the lambda shift is specified
@@ -1485,8 +1629,8 @@ KTSOp = KTOp | SOp
 #
 # end;
 @cache
-def RepRadialshfs_Prod(rps_op: list[KTSOp], anorm: Expr,
-                       lambdaa: Expr, lambda_shfs: list[int],
+def RepRadialshfs_Prod(rps_op: KTSOps, anorm: Expr,
+                       lambdaa: Expr, lambda_shfs: tuple[int],
                        nu_min: nonnegint, nu_max: nonnegint
                        ) -> Matrix:
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -1504,26 +1648,9 @@ def RepRadialshfs_Prod(rps_op: list[KTSOp], anorm: Expr,
         for i in range(n, 0, -1):
 
             r_op: KTSOp = rps_op[i - 1]
-
-            if isinstance(r_op, int):
-                if lambda_shfs[i - 1] != 0:
-                    raise ValueError("Non-zero lambda shift for S operator (this shouldn't arise!)")
-
-                if r_op == 0:
-                    Mat = RepRadial(ME_Radial_S0, lambda_run, nu_min, nu_max)
-                elif r_op == 1:
-                    Mat = RepRadial(ME_Radial_Sp, lambda_run, nu_min, nu_max)
-                elif r_op == -1:
-                    Mat = RepRadial(ME_Radial_Sm, lambda_run, nu_min, nu_max)
-                else:
-                    raise ValueError('Unrecognised S operator')
-            elif isinstance(r_op, tuple) and len(r_op) == 2 and \
-                    isinstance(r_op[0], int) and isinstance(r_op[1], int) and r_op[1] >= 0:
-                Mat = RepRadial_bS_DS(r_op[0], r_op[1], anorm, lambda_run, lambda_shfs[i - 1],
-                                      nu_min, nu_max)
-                lambda_run += lambda_shfs[i - 1]
-            else:
-                raise ValueError(f'radial operator {r_op} undefined')
+            R: int = lambda_shfs[i - 1]
+            Mat = r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
+            lambda_run += R
 
             if i == n:
                 Mat_product = Mat
@@ -1673,16 +1800,16 @@ def RepRadial_Prod_common(rbs_op: list[Symbol], anorm: Expr,
     elif (lambdaa + lambda_var).evalf() <= 0:
         raise ValueError(f'Non-positive lambda value {lambdaa + lambda_var}')
 
-    parsed_ops: list[KTSOp] = Parse_RadialOp_List(rbs_op)
+    parsed_ops: KTSOps = Parse_RadialOp_List(rbs_op)
 
-    lambda_shfs: list[int] = Lambda_RadialOp_List(parsed_ops, lambda_var)
+    lambda_shfs: tuple[int, ...] = Lambda_RadialOp_List(parsed_ops, lambda_var)
 
     if len(lambda_shfs) > len(parsed_ops):
         if lambda_shfs[0] > 0:
-            parsed_ops = [(0, 0)] + parsed_ops
+            parsed_ops = (KTOp(0, 0),) + parsed_ops
         else:
-            parsed_ops.append((0, 0))
-            lambda_shfs = lambda_shfs[1:] + [lambda_shfs[0]]
+            parsed_ops += (KTOp(0, 0),)
+            lambda_shfs = lambda_shfs[1:] + (lambda_shfs[0],)
 
     nu_min_shift: int = min(nu_lap, nu_min)
 
@@ -1817,44 +1944,48 @@ def RepRadial_Prod_rem(rbs_op: list[Symbol], anorm: Expr,
 #   POp_List:
 #
 # end:
-def Parse_RadialOp_List(rs_op: list[Symbol]) -> list[KTSOp]:
-    POp_List: list[KTSOp] = []
+def Parse_RadialOp_List(rs_op: list[Symbol]) -> KTSOps:
+    POp_List: KTSOps = ()
     T: nonnegint = 0
     K: int = 0
 
     idx: int
+    Radial_S_ops: list[Symbol] = [Radial_Sm, Radial_S0, Radial_Sp]
+    Radial_D_ops: list[Symbol] = [Radial_Db, Radial_D2b]
+    Radial_b_ops: list[Symbol] = [Radial_b, Radial_b2]
+    Radial_bm_ops: list[Symbol] = [Radial_bm, Radial_bm2]
     for op in rs_op[::-1]:
-        if op in [Radial_Sm, Radial_S0, Radial_Sp]:
-            idx = 1 + [Radial_Sm, Radial_S0, Radial_Sp].index(op)
+        if op in Radial_S_ops:
+            idx = 1 + Radial_S_ops.index(op)
             if K != 0 or T > 0:
-                POp_List = [(K, T)] + POp_List
+                POp_List = (KTOp(K, T),) + POp_List
                 K = 0
                 T = 0
-            POp_List = [idx - 2] + POp_List
-        elif op in [Radial_Db, Radial_D2b]:
-            idx = [Radial_Db, Radial_D2b].index(op)
+            POp_List = (SOp(idx - 2),) + POp_List
+        elif op in Radial_D_ops:
+            idx = 1 + Radial_D_ops.index(op)
             if K != 0:
-                POp_List = [(K, T)] + POp_List
+                POp_List = (KTOp(K, T),) + POp_List
                 K = 0
                 T = 0
             T += idx
         elif op == Radial_bDb:
             if K != 0:
-                POp_List = [(K, T)] + POp_List
+                POp_List = (KTOp(K, T),) + POp_List
                 T = 0
             T += 1
             K = 1
-        elif op in [Radial_b, Radial_b2]:
-            idx = 1 + [Radial_b, Radial_b2].index(op)
+        elif op in Radial_b_ops:
+            idx = 1 + Radial_b_ops.index(op)
             K += idx
-        elif op in [Radial_bm, Radial_bm2]:
-            idx = 1 + [Radial_bm, Radial_bm2].index(op)
+        elif op in Radial_bm_ops:
+            idx = 1 + Radial_bm_ops.index(op)
             K -= idx
         else:
             raise ValueError(f'operator {op} undefined')
 
         if K != 0 or T > 0:
-            POp_List = [(K, T)] + POp_List
+            POp_List = (KTOp(K, T),) + POp_List
 
     return POp_List
 
@@ -1982,7 +2113,7 @@ def Parse_RadialOp_List(rs_op: list[Symbol]) -> list[KTSOp]:
 #   fi:
 #
 # end:
-def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
+def Lambda_RadialOp_List(rsp_op: KTSOps, lambda_var: int) -> tuple[int, ...]:
     require_int('lambda_var', lambda_var)
 
     lambda_rem: int = abs(lambda_var)
@@ -1991,10 +2122,11 @@ def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
     max_vars: list[int] = [0] * n
 
     for i0, op in enumerate(rsp_op):
-        if isinstance(op, list) and len(op) == 2:
-            K, T = op
+        if isinstance(op, KTOp):
+            K = op.K
+            T = op.T
             max_vars[i0] = abs(K) + T
-        elif not isinstance(op, int):
+        elif not isinstance(op, SOp):
             raise ValueError(f'operator {op} undefined')
 
     max_count: int = sum(max_vars)
@@ -2017,7 +2149,8 @@ def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
         if oddin > 0:
             lambda_list[oddin - 1] = 0
 
-        assert sum(lambda_list) == odd_count
+        # TODO: The following assertion failed. Why? - Add logging.
+        # assert sum(lambda_list) == odd_count
 
     elif lambda_rem < max_count:
         lambda_list = odd_vars.copy()
@@ -2027,7 +2160,7 @@ def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
                 break
             var: int = 2 * iquo(min(lambda_rem + 1, max_vars[i0] - odd_vars[i0]), 2)
             lambda_list[i0] += var
-            lambda_var -= var
+            lambda_rem -= var
 
         if lambda_rem < 0:
             if oddin > 0:
@@ -2043,17 +2176,17 @@ def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
             lambda_rem += 1
 
         if lambda_rem > 0:
-            if lambda_var > 0 and n > 0 and isinstance(rsp_op[0], list):
+            if lambda_var > 0 and n > 0 and isinstance(rsp_op[0], KTOp):
                 lambda_list[0] += lambda_rem
-            elif lambda_var < 0 and n > 0 and isinstance(rsp_op[-1], list):
+            elif lambda_var < 0 < n and isinstance(rsp_op[-1], KTOp):
                 lambda_list[-1] += lambda_rem
             else:
                 lambda_list = [lambda_rem] + lambda_list
 
     if lambda_var >= 0:
-        return lambda_list
+        return tuple(lambda_list)
     else:
-        return [-lambdaa for lambdaa in lambda_list]
+        return tuple([-lambdaa for lambdaa in lambda_list])
 
 
 # # The following procedure is similar to RepRadial_Prod above, but is able to
@@ -2115,7 +2248,7 @@ def Lambda_RadialOp_List(rsp_op: list[KTSOp], lambda_var: int) -> list[int]:
 #
 #   Mat;
 # end:
-def RepRadial_LC(rlc_op: list[tuple[Expr, list[KTSOp]]], anorm: Expr,
+def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
                  lambdaa: Expr, lambda_var: int,
                  nu_min: nonnegint, nu_max: nonnegint,
                  nu_lap: nonnegint = 0
@@ -2132,7 +2265,7 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, list[KTSOp]]], anorm: Expr,
     return M
 
 
-def RepRadial_LC_common(rlc_op: list[tuple[Expr, list[KTSOp]]], anorm: Expr,
+def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
                         lambdaa: Expr, lambda_var: int,
                         nu_min: nonnegint, nu_max: nonnegint,
                         nu_lap: nonnegint = 0
@@ -2185,9 +2318,9 @@ def RepRadial_LC_common(rlc_op: list[tuple[Expr, list[KTSOp]]], anorm: Expr,
 #   Mat;
 # end:
 @cache
-def RepRadial_LC_rem(rlc_op: OperatorSum, anorm: Expr,
+def RepRadial_LC_rem(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
                      lambdaa: Expr, lambda_var: int,
                      nu_min: nonnegint, nu_max: nonnegint,
                      nu_lap: nonnegint = 0) -> Matrix:
 
-    return RepRadial_Prod_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
+    return RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)

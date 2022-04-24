@@ -3,7 +3,16 @@ This file was seeded with the contents of the Maple code acm1.4.mpl which is the
 Each line of the Maple code has been commented with a Python line comment so the code is valid Python.
 I will convert each Maple line into equivalent Python.
 """
-from acmpy.globals import ACM_set_defaults
+from acmpy.compat import *
+from acmpy.eigenvalues import *
+from acmpy.full_operators import *
+from acmpy.full_space import *
+from acmpy.globals import *
+from acmpy.hamiltonian_data import *
+from acmpy.internal_operators import *
+from acmpy.radial_space import *
+from acmpy.so5_so3_cg import *
+from acmpy.spherical_space import *
 
 
 # # acm.mpl (version 1.4, 27 Sept 2015)
