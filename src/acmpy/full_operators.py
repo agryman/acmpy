@@ -636,7 +636,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
             if sph_ME == 0:
                 continue
 
-            rad_Mat: Matrix = RepRadial_Prod_rem(tuple(rad_ops), anorm,
+            rad_Mat: Matrix = RepRadial_Prod_rem(rad_ops, anorm,
                                                  lambda_base + lambda_disp_init,
                                                  lambda_disp_fin - lambda_disp_init,
                                                  nu_min, nu_max, g.glb_nu_lap)
@@ -1223,7 +1223,7 @@ def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
-    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+    direct_Mat: Matrix = zeros(sph_dim * rad_dim)
 
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]

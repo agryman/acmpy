@@ -782,7 +782,7 @@ def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
 #   fi:
 #
 # end:
-def ME_Radial(radial_op: Expr, anorm: Expr,
+def ME_Radial(radial_op: Symbol, anorm: Expr,
               lambdaa: Expr, lambda_var: int,
               mu_f: nonnegint, mu_i: nonnegint
               ) -> Expr:
@@ -826,7 +826,7 @@ def ME_Radial(radial_op: Expr, anorm: Expr,
             return ME_Radial_id_ml(lambdaa, mu_f, mu_i, -lambda_var // 2)
 
     else:
-        op_prod: list[Symbol] = [] if radial_op == Radial_id else [radial_op]
+        op_prod: tuple[Symbol, ...] = () if radial_op == Radial_id else (radial_op,)
         MM: Matrix = RepRadial_Prod(op_prod, anorm, lambdaa, lambda_var, 0, max(mu_f, mu_i),
                                     iquo(abs(lambda_var) + 3, 2))
         return MM[mu_f, mu_i]
@@ -1233,7 +1233,7 @@ def Matrix_sqrtInv(Amatrix: Matrix) -> Matrix:
 #
 # end:
 @cache
-def RepRadial_bS_DS(K: int, T: nonnegint, anorm:Expr,
+def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
                     lambdaa: Expr, R: int,
                     nu_min: nonnegint, nu_max: nonnegint
                     ) -> Matrix:
@@ -1769,7 +1769,7 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: Expr,
 #     fi:
 #
 # end;
-def RepRadial_Prod(rbs_op: list[Symbol], anorm: Expr,
+def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: Expr,
                    lambdaa: Expr, lambda_var: int,
                    nu_min: nonnegint, nu_max: nonnegint,
                    nu_lap: nonnegint
@@ -1786,7 +1786,7 @@ def RepRadial_Prod(rbs_op: list[Symbol], anorm: Expr,
     return rep
 
 
-def RepRadial_Prod_common(rbs_op: list[Symbol], anorm: Expr,
+def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: Expr,
                           lambdaa: Expr, lambda_var: int,
                           nu_min: nonnegint, nu_max: nonnegint,
                           nu_lap: nonnegint
@@ -1877,7 +1877,7 @@ def RepRadial_Prod_common(rbs_op: list[Symbol], anorm: Expr,
 #
 # end;
 @cache
-def RepRadial_Prod_rem(rbs_op: list[Symbol], anorm: Expr,
+def RepRadial_Prod_rem(rbs_op: tuple[Symbol, ...], anorm: Expr,
                        lambdaa: Expr, lambda_var: int,
                        nu_min: nonnegint, nu_max: nonnegint,
                        nu_lap: nonnegint = 0
@@ -1944,7 +1944,7 @@ def RepRadial_Prod_rem(rbs_op: list[Symbol], anorm: Expr,
 #   POp_List:
 #
 # end:
-def Parse_RadialOp_List(rs_op: list[Symbol]) -> KTSOps:
+def Parse_RadialOp_List(rs_op: tuple[Symbol, ...]) -> KTSOps:
     POp_List: KTSOps = ()
     T: nonnegint = 0
     K: int = 0
@@ -1984,8 +1984,8 @@ def Parse_RadialOp_List(rs_op: list[Symbol]) -> KTSOps:
         else:
             raise ValueError(f'operator {op} undefined')
 
-        if K != 0 or T > 0:
-            POp_List = (KTOp(K, T),) + POp_List
+    if K != 0 or T > 0:
+        POp_List = (KTOp(K, T),) + POp_List
 
     return POp_List
 

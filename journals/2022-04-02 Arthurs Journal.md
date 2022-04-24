@@ -805,5 +805,82 @@ Lowest eigenvalue is 15.6250. Relative eigenvalues follow (each divided by 1.000
 ```
 Lowest eigenvalue should be 6.25000. Debug `ham22`- TODO
 
-Create tests for recent fixes:
-*
+Create tests for recent fixes: - IN-PROGRESS
+* `RepRadial_bS_DS` - DONE
+
+Tests have not discovered any errors in `RepRadial_bS_DS`.
+* Continue tracing execution for `ham22` to locate error. - TODO
+
+break 12:50 pm
+
+### 3:55 pm
+
+Create test cases for the simple hamiltonians. - DONE
+Use `DigXspace`.
+
+Tracing execution for `ham22`.
+* Parse_RadialOp_List([Radial_b2, Radial_b2]) should return [[4,0]]
+  * is returning [[4,0],[2,0]]
+  * inspect code for `Parse_RadialOp_List` - DONE
+  * create test cases for `Parse_RadialOp_List` - DONE
+  * Found the error: final code block was indented too much and therefore in the loop!
+  * All `Parse_RadialOp_List` tests pass now.
+  * All tests pass now.
+
+* Correct the type declarations for rbs_op in `RepRadial_Prod_rem` and its callers. - DONE
+  * Should be tuple[Symbol,...], not list[Symbol] because its cached
+  * Check args of all cached functions - arg should be immutable
+  
+Function signatures:
+* def RepXspace_Twin(rad_ops: tuple[Symbol, ...] -> RepRadial_Prod_rem(tuple(rad_ops),
+* def RepRadial_Prod_rem(rbs_op: list[Symbol] -> RepRadial_Prod_common(rbs_op
+* def RepRadial_Prod_common(rbs_op: list[Symbol] -> Parse_RadialOp_List(rbs_op)
+* def Parse_RadialOp_List(rs_op: list[Symbol]
+* def RepRadial_Prod(rbs_op: list[Symbol] -> RepRadial_Prod_common(rbs_op
+* def ME_Radial(radial_op: Expr -> RepRadial_Prod(op_prod,
+
+Corrections:
+* def RepXspace_Twin(rad_ops: tuple[Symbol, ...] -> RepRadial_Prod_rem(rad_ops,
+* def RepRadial_Prod_rem(rbs_op: tuple[Symbol, ...] -> RepRadial_Prod_common(rbs_op
+* def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...] -> Parse_RadialOp_List(rbs_op)
+* def Parse_RadialOp_List(rs_op: tuple[Symbol, ...]
+* def ME_Radial(radial_op: Symbol -> RepRadial_Prod(op_prod,
+
+mypy and pytest pass with no errors.
+
+Rerun example 2.2.
+
+Recall that the Maple result is:
+```text
+Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.56,    1.99,    2.86,    3.61,    4.09]
+  At L= 2: [    0.10,    0.97,    1.74,    2.19,    2.38,    3.05]
+  At L= 3: [    1.11,    2.70,    3.32,    4.58,    5.12,    5.43]
+  At L= 4: [    0.30,    1.23,    1.92,    2.08,    2.41,    2.80]
+  At L= 5: [    1.41,    2.20,    3.22,    3.64,    3.89,    4.47]
+  At L= 6: [    0.61,    1.58,    2.35,    2.49,    2.83,    2.88]
+                                                                       elapsed := 7.946
+```
+
+The Python result is now:
+```text
+Lowest eigenvalue is -6.13099. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.55,    1.97,    2.86,    3.60,    4.03]
+  At L= 2: [    0.11,    0.97,    1.77,    2.17,    2.38,    3.02]
+  At L= 3: [    1.14,    2.70,    3.30,    4.56,    5.10,    5.35]
+  At L= 4: [    0.30,    1.21,    1.90,    2.07,    2.39,    2.79]
+  At L= 5: [    1.39,    2.21,    3.20,    3.60,    3.86,    4.44]
+  At L= 6: [    0.61,    1.58,    2.34,    2.47,    2.79,    2.86]
+elapsed process time for ACM_Scale: 687.323225
+```
+
+* Do the corrections give the expected Maple result?
+  * The Python results are now very close to the Maple results, but too different to be explained by round-off error.
+  * There is probably still a minor bug in the code.
+* Has performance improved?
+  * No. The Python code is still much slower: 687/8 = 86 times slower.
+  * I strongly suspect that the bottleneck is using the SymPy Matrix functions for eigenvalues, inverses, and multiplication.
+  * I expect NumPy to perform much better, but I really should profile the execution.
+* Define a simpler test case that will allow debugging of the numeric differences. - TODO
+
+break 7:10 pm
