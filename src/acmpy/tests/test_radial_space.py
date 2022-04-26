@@ -1,12 +1,11 @@
 """This module tests the radial_space.py module."""
 
-from acmpy.radial_space import Radial_Operators, Radial_Sm
-from acmpy.radial_space import Parse_RadialOp_List, Radial_D2b, KTSOps, KTSOp, KTOp
-from acmpy.radial_space import RepRadial_bS_DS
-from acmpy.radial_space import Radial_b, Radial_b2, Radial_bm, Radial_bm2
-from sympy import S, Expr, Rational, Matrix, shape
-from math import isclose
 import pytest
+from math import isclose
+from sympy import S, Expr, Rational, Matrix, shape, sqrt
+from acmpy.compat import nonnegint
+from acmpy.radial_space import Radial_Operators, Radial_Sm, Parse_RadialOp_List, Radial_D2b, KTSOps, KTSOp, KTOp, \
+    RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, ME_Radial_D2b
 
 
 class TestRadial:
@@ -86,15 +85,40 @@ class TestRepRadial_bS_DS:
          (3, 2, -4.611654921),
          (4, 1, -1.976423538)]
     )
-    def test_KT(self, K, T, expected):
-        anorm: Expr = S.One
-        lambdaa: Expr = Rational(5, 2)
-        R: int = 0
-        nu_min: int = 0
-        nu_max: int = 0
-
-        rep: Matrix = RepRadial_bS_DS(K, T, anorm, lambdaa, R, nu_min, nu_max)
+    def test_KT000(self, K, T, expected):
+        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 0)
         assert shape(rep) == (1, 1)
 
         result: float = float(rep[0, 0])
         assert isclose(result, expected)
+
+    def test_KT001(self):
+        K: int = 0
+        T: int = 2
+        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 1)
+        assert shape(rep) == (2, 2)
+
+        expected: Matrix = Matrix([[-Rational(7, 6), 7 * sqrt(10) / 30],
+                                   [7 * sqrt(10) / 30, -Rational(19, 6)]])
+        for i in range(2):
+            for j in range(2):
+                a: float = rep[i, j].evalf()
+                b: float = expected[i, j].evalf()
+                assert isclose(a, b)
+
+
+class TestME_Radial_D2b:
+    """Tests ME_Radial_D2b() function."""
+
+    @pytest.mark.parametrize(
+        "mu_f,mu_i,expected",
+        [(0, 0, -Rational(7, 6)),
+         (0, 1, 7 * sqrt(10) / 30),
+         (1, 0, 7 * sqrt(10) / 30),
+         (1, 1, -Rational(19, 6))]
+    )
+    def test_fi(self, mu_f: nonnegint, mu_i: nonnegint, expected: Expr):
+        ME: Expr = ME_Radial_D2b(Rational(5, 2), mu_f, mu_i)
+        a: float = ME.evalf()
+        b: float = expected.evalf()
+        assert isclose(a, b)

@@ -62,17 +62,9 @@ class TestDigXspace:
          (ACM_Hamiltonian(c43=1), 0),
          (ACM_Hamiltonian(c50=1), 0)]
     )
-    def test_ham_op(self, ham_op: OperatorSum, expected: float):
-        anorm: Expr = S.One
-        lambda_base: Expr = Rational(5, 2)
-        nu_min: int = 0
-        nu_max: int = 0
-        v_min: int = 0
-        v_max: int = 0
-        L_min: int = 0
-        L_max: int = 0
+    def test_ham_op_000000(self, ham_op: OperatorSum, expected: float):
         eigen_spaces: tuple[EigenValues, EigenBases, XParams, LValues] = \
-            DigXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+            DigXspace(ham_op, S.One, Rational(5, 2), 0, 0, 0, 0, 0, 0)
 
         eigen_vals: EigenValues = eigen_spaces[0]
         n: int = len(eigen_vals)
@@ -90,8 +82,40 @@ class TestDigXspace:
         assert shape(eigen_base) == (m, m)
 
         Xparams: XParams = eigen_spaces[2]
-        assert Xparams == (anorm, lambda_base, nu_min, nu_max, v_min, v_max)
+        assert Xparams == (S.One, Rational(5, 2), 0, 0, 0, 0)
 
         Lvals: LValues = eigen_spaces[3]
         assert n == len(Lvals)
         assert Lvals[0] == 0
+
+    @pytest.mark.parametrize(
+        "ham_op,expected",
+        [(ACM_Hamiltonian(c11=1), [-5.37082869331582, -1.62917130668418]),
+         (ACM_Hamiltonian(c20=1), [1, 1]),
+         (ACM_Hamiltonian(c21=1), [1.62917130668418, 5.37082869331582]),
+         (ACM_Hamiltonian(c22=1), [2.65419914678928, 28.8458008532107]),
+         (ACM_Hamiltonian(c23=1), [0.245029645333333, 1.08830368800000]),
+         (ACM_Hamiltonian(c30=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c31=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c32=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c33=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c40=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c41=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c42=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c43=1), [0.0, 0.0]),
+         (ACM_Hamiltonian(c50=1), [0.0, 0.0])]
+    )
+    def test_ham_op_010101(self, ham_op: OperatorSum, expected: list[float]):
+        eigen_spaces: tuple[EigenValues, EigenBases, XParams, LValues] = \
+            DigXspace(ham_op, S.One, Rational(5, 2), 0, 1, 0, 1, 0, 1)
+
+        eigen_vals: EigenValues = eigen_spaces[0]
+        n: int = len(eigen_vals)
+        assert n == 1
+
+        eigen_val: list[float] = eigen_vals[0]
+        m: int = len(eigen_val)
+        assert m == 2
+
+        for actual_val, expected_val in zip(eigen_val, expected):
+            assert isclose(actual_val, expected_val)

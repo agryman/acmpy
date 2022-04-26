@@ -8,6 +8,8 @@ def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
     P: Matrix
     D: Matrix
     P, D = M.diagonalize()
+    # M*P = P*D
+
     eigenvalues: list[float] = [float(D[i, i]) for i in range(D.shape[0])]
 
     return eigenvalues, P

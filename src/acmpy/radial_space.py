@@ -291,8 +291,9 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
     require_nonnegint('mu_f', mu_f)
     require_nonnegint('mu_i', mu_i)
 
+    stuff: Expr
     if mu_f == mu_i - 1:
-        stuff = sqrt((lambdaa + mu_i) * mu_f)
+        stuff = sqrt((lambdaa + mu_i - 1) * mu_i)
     elif mu_f == mu_i:
         stuff = -lambdaa - 2 * mu_i
     elif mu_f == mu_i + 1:

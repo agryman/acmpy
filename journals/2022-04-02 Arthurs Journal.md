@@ -884,3 +884,99 @@ elapsed process time for ACM_Scale: 687.323225
 * Define a simpler test case that will allow debugging of the numeric differences. - TODO
 
 break 7:10 pm
+
+## 2022-04-25
+
+### 11:20 am
+
+Define a simpler test case that will allow debugging of the numeric differences. - DONE
+* Increase the size of the truncated Hilbert space: try (0,1,0,1,0,1), and check each atomic Hamiltonian
+
+The only error occurs for c11=1.
+
+Maple eigenvalues:
+```text
+[-5.37082869331582, -1.62917130668418]
+```
+
+Python eigenvalues:
+```text
+[-4.774754878398197, -2.225245121601804]
+```
+
+Trace execution for c11=1 - TODO
+
+break 12:40 pm
+
+### 3:15 pm
+
+Trace execution for c11=1 - IN-PROGRESS
+
+The following call produces the wrong result.
+```text
+RepRadial_bS_DS(0, 2, 1, 5/2, 0, 0, 1)
+```
+* create test case - TODO
+
+break 6:20 pm
+
+### 7:45 pm
+
+* create test case - IN-PROGRESS
+```text
+RepRadial_bS_DS(0, 2, 1, 5/2, 0, 0, 1)
+```
+
+Found error in call:
+```text
+ME_Radial_D2b(Rational(5,2),0,1)
+```
+Python returns:
+```text
+-4*sqrt(10)/15
+```
+
+Maple returns
+```text
+(7*sqrt(10))/30
+```
+
+Create test cases for `ME_Radial_D2b` - DONE
+
+Fixed error in `ME_Radial_D2b`
+
+All tests pass: 99 passed in 0.92s
+
+All modules type check ok: Success: no issues found in 39 source files.
+
+Does this fix the problem in Example 2.2?
+
+Recall that the Maple result is:
+```text
+Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.56,    1.99,    2.86,    3.61,    4.09]
+  At L= 2: [    0.10,    0.97,    1.74,    2.19,    2.38,    3.05]
+  At L= 3: [    1.11,    2.70,    3.32,    4.58,    5.12,    5.43]
+  At L= 4: [    0.30,    1.23,    1.92,    2.08,    2.41,    2.80]
+  At L= 5: [    1.41,    2.20,    3.22,    3.64,    3.89,    4.47]
+  At L= 6: [    0.61,    1.58,    2.35,    2.49,    2.83,    2.88]
+                                                                       elapsed := 7.946
+```
+
+The Python result is now:
+```text
+Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.56,    1.99,    2.86,    3.61,    4.09]
+  At L= 2: [    0.10,    0.97,    1.74,    2.19,    2.38,    3.05]
+  At L= 3: [    1.11,    2.70,    3.32,    4.58,    5.12,    5.43]
+  At L= 4: [    0.30,    1.23,    1.92,    2.08,    2.41,    2.80]
+  At L= 5: [    1.41,    2.20,    3.22,    3.64,    3.89,    4.47]
+  At L= 6: [    0.61,    1.58,    2.35,    2.49,    2.83,    2.88]
+elapsed process time for ACM_Scale: 702.547779
+```
+
+The performance ration = 703/8 = 88 times slower!
+
+Profile the execution of the Python code to confirm that the bottleneck is in the SymPy matrix functions. - TODO
+
+break 9:00 pm
