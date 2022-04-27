@@ -975,8 +975,176 @@ Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00
 elapsed process time for ACM_Scale: 702.547779
 ```
 
-The performance ration = 703/8 = 88 times slower!
+The performance ratio = 703/8 = 88 times slower!
 
 Profile the execution of the Python code to confirm that the bottleneck is in the SymPy matrix functions. - TODO
 
 break 9:00 pm
+
+## 2022-04-26
+
+### 3:05 pm
+
+Profile the execution of the Python code to confirm that the bottleneck is in the SymPy matrix functions. - DONE
+
+Analyze stats. - IN-PROGRESS
+
+break 5:30 pm
+
+### 8:05 pm
+
+With the profiler, execution time doubled:
+```text
+nu_max: 5, v_max: 18, L_max: 6
+Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.56,    1.99,    2.86,    3.61,    4.09]
+  At L= 2: [    0.10,    0.97,    1.74,    2.19,    2.38,    3.05]
+  At L= 3: [    1.11,    2.70,    3.32,    4.58,    5.12,    5.43]
+  At L= 4: [    0.30,    1.23,    1.92,    2.08,    2.41,    2.80]
+  At L= 5: [    1.41,    2.20,    3.22,    3.64,    3.89,    4.47]
+  At L= 6: [    0.61,    1.58,    2.35,    2.49,    2.83,    2.88]
+elapsed process time for ACM_Scale: 1600.625652
+```
+
+As expected, the most time was spent in the `mpmath` library.
+```text
+Tue Apr 26 17:14:05 2022    acm_scale_5_18_6_stats
+
+         2858748085 function calls (2857025419 primitive calls) in 1626.970 seconds
+
+   Ordered by: internal time
+   List reduced from 1527 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+233803625  244.384    0.000  244.384    0.000 .../mpmath/libmp/libmpf.py:208(_normalize1)
+163700301  177.221    0.000  338.970    0.000 .../mpmath/libmp/libmpf.py:884(python_mpf_mul)
+142185223  174.084    0.000  237.372    0.000 .../mpmath/matrices/matrices.py:432(__getitem__)
+ 75628882  140.697    0.000  216.609    0.000 .../mpmath/matrices/matrices.py:497(__setitem__)
+152046925  132.782    0.000  508.440    0.000 <string>:2(__mul__)
+ 90669756  120.841    0.000  268.107    0.000 .../mpmath/libmp/libmpf.py:702(mpf_add)
+     3173  119.692    0.038 1086.391    0.342 .../mpmath/matrices/eigen.py:248(qr_step)
+879476903/879373823  102.741    0.000  102.983    0.000 {built-in method builtins.isinstance}
+ 46542826   42.822    0.000  192.615    0.000 <string>:2(__add__)
+ 43961396   39.566    0.000  200.577    0.000 <string>:2(__sub__)
+245624090   38.565    0.000   38.565    0.000 {built-in method __new__ of type object at 0x10ce04c70}
+270392476   35.531    0.000   35.833    0.000 {built-in method builtins.hasattr}
+       18   33.397    1.855  284.169   15.787 .../mpmath/matrices/eigen.py:45(hessenberg_reduce_0)
+ 87930448   30.990    0.000   59.619    0.000 .../mpmath/libmp/libintmath.py:91(python_bitcount)
+ 87930824   28.434    0.000   28.434    0.000 {built-in method _bisect.bisect_right}
+ 91710109   25.006    0.000   28.266    0.000 .../mpmath/ctx_mp_python.py:621(convert)
+ 43961419   18.787    0.000  148.516    0.000 .../mpmath/libmp/libmpf.py:797(mpf_sub)
+ 75667006   15.705    0.000   15.705    0.000 .../mpmath/ctx_mp_python.py:145(__nonzero__)
+   114372   12.865    0.000   71.609    0.001 .../mpmath/ctx_mp_python.py:890(fdot)
+       18   11.804    0.656  106.844    5.936 .../mpmath/matrices/eigen.py:150(hessenberg_reduce_1)
+ 13337660    8.821    0.000   13.579    0.000 .../mpmath/functions/functions.py:288(conj)
+  7192353    6.935    0.000    6.940    0.000 .../mpmath/libmp/libmpf.py:153(_normalize)
+ 11429100    6.877    0.000   44.070    0.000 .../mpmath/matrices/matrices.py:583(<genexpr>)
+       18    2.697    0.150   25.439    1.413 .../mpmath/matrices/eigen.py:552(eig_tr_r)
+   114372    2.663    0.000    3.336    0.000 .../mpmath/libmp/libmpf.py:802(mpf_sum)
+    98874    2.543    0.000    2.582    0.000 .../mpmath/rational.py:31(__new__)
+1892121/1739578    2.027    0.000    4.576    0.000 .../sympy/core/sympify.py:92(sympify)
+ 13337660    1.756    0.000    1.756    0.000 .../mpmath/ctx_mp_python.py:129(<lambda>)
+       18    1.706    0.095 1098.951   61.053 .../mpmath/matrices/eigen.py:383(hessenberg_qr)
+94014/9522    1.519    0.000    9.402    0.001 .../sympy/simplify/powsimp.py:15(powsimp)
+```
+
+It is clear that most of the time is being spent in the mpmath library.
+SymPy uses mpmath for Matrix operations.
+SymPy matrices can hold arbitrary expressions so each matrix element is a Python object.
+This means that access is slower than for a matrix that has elements of a fixed size.
+NumPy supports matrices whose elements have a fixed size and can therefore
+exploit optimized access.
+* convert floating point Matrix operations to use NumPy - TODO
+* perform profiling on a simpler test case: (5, 3, 3)
+
+```text
+Tue Apr 26 16:05:57 2022    acm_scale_5_3_3_stats
+         18242704 function calls (17662043 primitive calls) in 10.356 seconds
+   Ordered by: internal time
+   List reduced from 1507 to 30 due to restriction <30>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+38067/3849    0.542    0.000    3.363    0.001 .../sympy/simplify/powsimp.py:15(powsimp)
+441548/440226    0.444    0.000    0.922    0.000 .../sympy/core/sympify.py:92(sympify)
+668689/624634    0.442    0.000    1.971    0.000 .../sympy/core/cache.py:69(wrapper)
+2909461/2867280    0.438    0.000    0.505    0.000 {built-in method builtins.isinstance}
+   308236    0.270    0.000    0.270    0.000 .../mpmath/libmp/libmpf.py:208(_normalize1)
+123442/123327    0.214    0.000    0.487    0.000 .../sympy/core/expr.py:144(__eq__)
+31225/8137    0.194    0.000    0.343    0.000 .../sympy/core/compatibility.py:315(default_sort_key)
+   203971    0.187    0.000    0.364    0.000 .../mpmath/libmp/libmpf.py:884(python_mpf_mul)
+   169310    0.179    0.000    0.248    0.000 .../mpmath/matrices/matrices.py:432(__getitem__)
+   697437    0.172    0.000    0.224    0.000 {built-in method builtins.getattr}
+    97458    0.166    0.000    0.257    0.000 .../mpmath/matrices/matrices.py:497(__setitem__)
+   627912    0.163    0.000    0.224    0.000 .../sympy/core/numbers.py:2294(__hash__)
+   187985    0.150    0.000    0.551    0.000 <string>:2(__mul__)
+5809/5611    0.150    0.000    0.529    0.000 .../sympy/core/mul.py:178(flatten)
+239685/238713    0.146    0.000    0.750    0.000 .../sympy/core/sympify.py:479(_sympify)
+      241    0.145    0.001    1.333    0.006 .../mpmath/matrices/eigen.py:248(qr_step)
+   114987    0.142    0.000    0.301    0.000 .../mpmath/libmp/libmpf.py:702(mpf_add)
+   234345    0.137    0.000    0.185    0.000 .../sympy/core/numbers.py:807(__hash__)
+   233112    0.135    0.000    0.319    0.000 .../sympy/core/numbers.py:1978(__hash__)
+43646/19733    0.130    0.000    0.813    0.000 .../sympy/core/compatibility.py:501(ordered)
+547729/526291    0.118    0.000    0.146    0.000 .../sympy/core/expr.py:126(__hash__)
+   816724    0.114    0.000    0.117    0.000 {built-in method builtins.hasattr}
+    58271    0.114    0.000    0.247    0.000 .../sympy/core/numbers.py:1876(__eq__)
+     5781    0.106    0.000    0.245    0.000 .../sympy/core/facts.py:499(deduce_all_facts)
+31144/8050    0.104    0.000    0.210    0.000 .../sympy/core/compatibility.py:479(_nodes)
+219237/83601    0.099    0.000    0.127    0.000 .../sympy/core/basic.py:2065(_preorder_traversal)
+23025/6418    0.087    0.000    0.555    0.000 .../sympy/core/exprtools.py:1224(do)
+   198315    0.080    0.000    0.110    0.000 <frozen importlib._bootstrap>:404(parent)
+     7602    0.078    0.000    0.388    0.000 .../sympy/core/function.py:2882(expand_log)
+    16784    0.078    0.000    0.814    0.000 .../sympy/core/basic.py:1241(replace)
+```
+
+The profile for the simpler test case is very different. Here the mpmath library is not the most time-consuming.
+* increase the dimensions of the simple test case so that it runs in a few minutes and shows the mpmath bottleneck
+  * mpmath becomes the bottleneck for (nu_max, v_max, L_max) = (5, 6, 6) which runs in 26/56 seconds
+* continue measurements - DONE
+* run all tests and mypy, then tag the current branch as stable v1.0 - TODO
+* create a new branch for numpy - TODO
+* review numpy docs - TODO
+
+break 10:10 pm
+
+## 2022-04-27
+
+### 10:30 am
+
+* scan code for TODO comments and fix if important or easy - IN-PROGRESS
+* run all tests and mypy, then tag the current branch as stable v1.0 - TODO
+* create a new branch for numpy - TODO
+* review numpy docs - DONE
+
+break 12:35 am
+
+### 3:10 pm
+
+* scan code for TODO comments and fix if important or easy - DONE
+* run all tests and mypy - DONE
+* commit latest changes - 
+* tag the current branch as stable v1.0 - TODO
+* create a new branch for numpy - TODO
+
+
+What type should `Mel` be in:
+```text
+def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
+```
+
+* Look at call chain:
+  * glb_rat_fun is set to quad_amp_fun
+  * Show_Mels sets mel_fun to g.glb_rat_fun as default
+  * Show_Mels uses mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1])
+  * Show_Mels calls Show_Mels_Row(Melements, Lvals, L1, L2, rate_ent[2], toshow, mel_fun, scale)
+  * Show_Mels calls Show_Mels_Rows(Melements, Lvals, L2, toshow, mel_fun, scale)
+  * Show_Mels_Row calls mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1])
+  * Show_Mels_Rows calls Show_Mels_Row(Melements, Lvals, L1, L2, n2, toshow, mel_fun, scale)
+* What type are the elements of TR_matrix?
+  * The elements should be floats.
+  * At present, they are usually the result of applying the evalf() method
+  * The result of .evalf() could be a sympy Float or general Expr object (if the object cannot be evaluated)
+  * Going forward, I am going to assume that the result MUST be numeric
+  * Therefore, use the float() function instead of evalf() since an exception will be thrown if the object is not numeric
+  * Furthermore, since Mel is a float, the result should also be a float
+```text
+def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+```

@@ -1,7 +1,8 @@
 from time import process_time
+from sympy import sqrt, Rational
 import acmpy.examples.ex_1_0_preliminaries as preliminaries
-from acmpy.examples.ex_2_1_specification_of_hamiltonian import B,RWC_ham_fig5a
-from acmpy.acm1_4 import ACM_Scale, sqrt, Rational
+from acmpy.examples.ex_2_1_specification_of_hamiltonian import B, RWC_ham_fig5a
+from acmpy.acm1_4 import ACM_Scale
 
 
 def main() -> None:

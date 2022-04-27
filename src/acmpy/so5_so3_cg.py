@@ -375,9 +375,16 @@ def CG_SO5r3(v1: nonnegint, a1: posint, L1: nonnegint,
 #   (-1)^(j1-j2+m3)*
 #       simplify(Wigner_3j(j1,j2,j3,m1,m2,-m3)*sqrt(2*j3+1),sqrt);
 # end:
-def CG_SO3(j1: Rational, m1: Rational,
-           j2: Rational, m2: Rational,
-           j3: Rational, m3: Rational) -> Expr:
+def CG_SO3(j1: nonnegint | Rational, m1: int | Rational,
+           j2: nonnegint | Rational, m2: int | Rational,
+           j3: nonnegint | Rational, m3: int | Rational) -> Expr:
+    j1, m1, j2, m2, j3, m3 = S((j1, m1, j2, m2, j3, m3))
+
+    if not((2 * j1).is_integer and (2 * m1).is_integer and
+           (2 * j2).is_integer and (2 * m2).is_integer and
+           (2 * j3).is_integer and (2 * m3).is_integer):
+        raise ValueError(f'all arguments must be half-integers: {j1}, {m1}, {j2}, {m2}, {j3}, {m3}')
+
     if abs(m1) > j1 or abs(m2) > j2 or abs(m3) > j3:
         return S.Zero
 
@@ -404,21 +411,23 @@ def CG_SO3(j1: Rational, m1: Rational,
 #                     (s!*(j1-m1-s)!*(j2-j3+m1+s)!*(j3+m3-s)!),
 #              s=max(0,j3-j2-m1)..min(j3+m3,j1-m1))
 # end:
-def Wigner_3j(j1: Rational, j2: Rational, j3: Rational,
-              m1: Rational, m2: Rational, m3: Rational) -> Expr:
+def Wigner_3j(j1: nonnegint | Rational, j2: nonnegint | Rational, j3: nonnegint | Rational,
+              m1: int | Rational, m2: int | Rational, m3: int | Rational) -> Expr:
+    j1, j2, j3, m1, m2, m3 = S((j1, j2, j3, m1, m2, m3))
 
     return S.NegativeOne ** (2 * j1 - j2 + m2) * \
         sqrt(factorial(j1 + j2 - j3) *
              factorial(j1 - m1) *
              factorial(j2 - m2) *
-             factorial(j3 - m3) /
+             factorial(j3 - m3) *
+             factorial(j3 + m3) /
              (factorial(j1 + j2 + j3 + 1) *
               factorial(j1 - j2 + j3) *
               factorial(-j1 + j2 + j3) *
               factorial(j1 + m1) *
               factorial(j2 + m2))) * \
         sum(S.NegativeOne ** s *
-            factorial(j1 + m1 + 2) *
+            factorial(j1 + m1 + s) *
             factorial(j2 + j3 - m1 - s) /
             (factorial(s) *
              factorial(j1 - m1 - s) *

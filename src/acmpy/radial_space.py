@@ -260,7 +260,9 @@ def ME_Radial_bm2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 def ME_Radial_pt(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
     require_nonnegint('mu_f', mu_f)
     require_nonnegint('mu_i', mu_i)
-    # TODO: check that lambdaa is not 1 since we divide by (lambdaa -1)
+
+    if lambdaa == S.One:
+        raise ValueError(f'lambdaa must not be 1: {lambdaa}')
 
     return (-1) ** (mu_f - mu_i) * sqrt(factorial(mu_f) * gamma(lambdaa + mu_i) /
                                         (factorial(mu_i) * gamma(lambdaa + mu_f))) / (lambdaa - 1)
@@ -623,19 +625,7 @@ lamvar: Symbol = symbols('lamvar', real=True)
 # end;
 def MF_Radial_id_poly(mu: nonnegint, nu: nonnegint, r: nonnegint
                       ) -> Expr:
-    require_nonnegint('mu', mu)
-    require_nonnegint('nu', nu)
-    require_nonnegint('r', r)
-
-    if nu > mu + r:
-        return S.Zero
-
-    res: Expr = sum((-1) ** j * binomial(r, j) * binomial(r + mu - nu + j - 1, r - 1)
-                    * gamma(lamvar + mu + 2 * r) / gamma(lamvar + mu + r + j)
-                    * gamma(mu + j + 1) / gamma(mu + 1)
-                    for j in range(max(0, nu - mu), r + 1))
-
-    return simplify(res) * (-1) ** (mu + nu)
+    return MF_Radial_id_pl(lamvar, mu, nu, r)
 
 
 # # Old version of above, which evaluates at the particular value
@@ -703,6 +693,8 @@ def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
     if nu > mu + r:
         return S.Zero
 
+    # NOTE: The Maple source is correct because it fails to define k.
+    # NOTE: This function is not used anywhere.
     assert r + mu - nu >= 0
     k: int = r + mu - nu + 1 # TODO: verify this is the correct value of k
     assert k >= 1
@@ -2150,7 +2142,7 @@ def Lambda_RadialOp_List(rsp_op: KTSOps, lambda_var: int) -> tuple[int, ...]:
         if oddin > 0:
             lambda_list[oddin - 1] = 0
 
-        # TODO: The following assertion failed. Why? - Add logging.
+        # TODO: The following assertion failed. Why?
         # assert sum(lambda_list) == odd_count
 
     elif lambda_rem < max_count:

@@ -22,7 +22,7 @@ from acmpy.compat import nonnegint, require_nonnegint, irem, is_odd, posint, req
 #
 # ACM_version:=1.4:
 
-"""The version should be implemented as a Python string, not a float."""
+"""The version identifier should be implemented as a Python string, not a float."""
 ACM_version: str = '1.4'
 
 
@@ -42,45 +42,45 @@ ACM_version: str = '1.4'
 #   global glb_rat_TRopAM;
 #   Mel*CG_SO3(Li,Li,glb_rat_TRopAM,Lf-Li,Lf,Lf)
 # end;
-def quad_amp_fun(Li, Lf, Mel):
+def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
     global glb_rat_TRopAM
-    # TODO: determine the correct type hint for angular momentum
-    return Mel * CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf)
+
+    return float(Mel * CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf))
 
 
 # mel_amp_fun:=proc(Li,Lf,Mel)
 #   Mel*sqrt(2*Lf+1)
 # end;
-def mel_amp_fun(Li, Lf, Mel) -> Expr:
-    return Mel * sqrt(2 * Lf + 1)
+def mel_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+    return float(Mel * sqrt(2 * Lf + 1))
 
 
 # unit_amp_fun:=proc(Li,Lf,Mel)
 #   Mel
 # end;
-def unit_amp_fun(Li, Lf, Mel) -> Expr:
-    return Mel
+def unit_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+    return float(Mel)
 
 
 # quad_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)/dimSO3(Li)
 # end;
-def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
-    return Mel ** 2 * dimSO3(Lf) / dimSO3(Li)
+def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+    return float(Mel ** 2 * dimSO3(Lf) / dimSO3(Li))
 
 
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;
-def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
-    return Mel ** 2 * dimSO3(Lf)
+def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+    return float(Mel ** 2 * dimSO3(Lf))
 
 
 # unit_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2
 # end;
-def unit_rat_fun(Li, Lf, Mel) -> Expr:
-    return Mel**2
+def unit_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+    return float(Mel**2)
 
 
 # # The following was described in a previous version
@@ -89,10 +89,10 @@ def unit_rat_fun(Li, Lf, Mel) -> Expr:
 #   global glb_rat_TRopAM;
 #   Mel*gen_amp_mul(Li,Lf,glb_rat_TRopAM)
 # end;
-def mix_amp_fun(Li, Lf, Mel) -> Expr:
+def mix_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
     global glb_rat_TRopAM
 
-    return Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM)
+    return float(Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM))
 
 
 # gen_amp_mul:=proc(Li,Lf,Lt,$)
@@ -100,12 +100,11 @@ def mix_amp_fun(Li, Lf, Mel) -> Expr:
 #   else sqrt(2*Lf+1)
 #   fi:
 # end;
-def gen_amp_mul(Li, Lf, Lt) -> Expr:
-    # TODO: determine the correct type hint for angular momentum
+def gen_amp_mul(Li: nonnegint, Lf: nonnegint, Lt: nonnegint) -> float:
     if Li == Lf:
-        return CG_SO3(Lf, Lf, Lt, 0, Lf, Lf)
+        return float(CG_SO3(Lf, Lf, Lt, 0, Lf, Lf))
 
-    return sqrt(2 * Lf + 1)
+    return float(sqrt(2 * Lf + 1))
 
 
 # # The following procedure definitions determine functions used for
@@ -350,7 +349,7 @@ glb_lam_fun: Callable[[nonnegint], nonnegint] = lambda_acm_fun
 # glb_rat_TRop:=quad_op:
 # glb_rat_TRopAM:=2:
 glb_rat_TRop: OperatorSum = quad_op
-glb_rat_TRopAM: int = 2
+glb_rat_TRopAM: nonnegint = 2
 
 
 # # The following determine how "transition rates" are displayed in the
@@ -362,7 +361,8 @@ glb_rat_TRopAM: int = 2
 # glb_rat_fun:=quad_rat_fun:
 # glb_rat_format:=def_rat_format:
 # glb_rat_desg:=def_rat_desg:
-glb_rat_fun: Callable = quad_rat_fun
+MEFunction = Callable[[nonnegint, nonnegint, float], float]
+glb_rat_fun: MEFunction = quad_rat_fun
 glb_rat_format: str = def_rat_format
 glb_rat_desg: str = def_rat_desg
 
@@ -402,7 +402,8 @@ glb_tran_fill: str = '#'
 #
 # glb_rat_lst:=[]:
 # glb_amp_lst:=[]:
-Designators = tuple[tuple[int, ...], ...]
+Designator = tuple[int, ...]
+Designators = tuple[Designator, ...]
 glb_rat_lst: Designators = ()
 glb_amp_lst: Designators = ()
 
@@ -1030,7 +1031,6 @@ def ACM_show_amp_lst(show: int = 1) -> Designators:
 #
 #   [glb_rat_TRop,glb_rat_TRopAM]:
 # end;
-# TODO: correct warning for glb_rat_TRop
 def ACM_set_transition(TR_op: OperatorSum = glb_rat_TRop,
                        show: int = 1) -> tuple[OperatorSum, int]:
     global glb_rat_TRop, glb_rat_TRopAM
