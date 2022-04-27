@@ -1119,11 +1119,6 @@ break 12:35 am
 ### 3:10 pm
 
 * scan code for TODO comments and fix if important or easy - DONE
-* run all tests and mypy - DONE
-* commit latest changes - 
-* tag the current branch as stable v1.0 - TODO
-* create a new branch for numpy - TODO
-
 
 What type should `Mel` be in:
 ```text
@@ -1148,3 +1143,9 @@ def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel) -> Expr:
 ```text
 def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
 ```
+
+* run all tests and mypy - DONE
+* commit latest changes - DONE
+* tag the current branch as v1-0-0 - DONE
+* create a new branch for numpy - TODO
+
