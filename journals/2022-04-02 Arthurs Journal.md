@@ -90,7 +90,7 @@ break 7:12 pm
 
 break 2:19 pm
 
-## 4:44 pm
+### 4:44 pm
 
 `full_space.py` - IN-PROGRESS
 * `Show_Mels` - IN-PROGRESS
@@ -106,7 +106,7 @@ break 7:59 pm
 
 break 9:30 am
 
-## 3:23 pm
+### 3:23 pm
 
 `full_space.py` - IN-PROGRESS
 * `Show_Mels` - DONE
@@ -1147,5 +1147,360 @@ def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
 * run all tests and mypy - DONE
 * commit latest changes - DONE
 * tag the current branch as v1-0-0 - DONE
-* create a new branch for numpy - TODO
+* create a new branch for numpy - DONE
+  * convert SymPy Matrix operations to NumPy - TODO
+  * measure performance change - TODO
 
+break 5:35 pm
+
+### 7:30 pm
+
+* convert SymPy Matrix operations to NumPy - TODO
+  * start with Eigenfiddle. Replace with numpy.linalg.eigh - TODO
+    * see https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh
+* measure performance change - TODO
+
+My strategy is to work one function at a time:
+  * implement the internals using numpy
+  * this may require conversion from sympy Matrix to numpy and back
+  * test
+  * change the interface to use numpy
+  * fix all the callers 
+  * fix any test cases too, and create new ones
+  * run pytest and mypy after changes
+  * eventually all the numeric Matrix use will be converted to numpy, leaving the essentially symbolic uses with sympy
+
+break 9:30 pm
+
+## 2022-04-28
+
+### 9:55 am
+
+* convert SymPy Matrix operations to NumPy - IN-PROGRESS
+  * start with Eigenfiddle. Replace with numpy.linalg.eigh - IN-PROGRESS
+    * see https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh
+* measure performance change - TODO
+
+break 12:15 pm
+
+### 2:50 pm
+
+* convert SymPy Matrix operations to NumPy - IN-PROGRESS
+  * start with Eigenfiddle. Replace with numpy.linalg.eigh - DONE
+    * see https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh
+* measure performance change - DONE
+
+I implemented Eigenfiddle using numpy.linalg.eigh.
+* Profile execution.
+
+Previous performance:
+```text
+# bottleneck is mpmath
+# (5, 6, 6) 26, 56
+```
+
+With the change we get a 26/12 =  2.2x performance increase:
+```text
+# bottleneck is sympy
+# (5, 6, 6) 12, 22
+```
+The slowest functions are:
+```text
+Thu Apr 28 15:38:26 2022    acm_scale_5_6_6_stats
+
+         34450515 function calls (33099299 primitive calls) in 20.262 seconds
+
+   Ordered by: internal time
+   List reduced from 875 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+94014/9522    1.351    0.000    8.349    0.001 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:15(powsimp)
+1085379/1085337    1.150    0.000    2.303    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:92(sympify)
+1632348/1545210    1.083    0.000    4.257    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/cache.py:69(wrapper)
+4369006/4266627    0.792    0.000    0.952    0.000 {built-in method builtins.isinstance}
+296787/296227    0.529    0.000    1.201    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:144(__eq__)
+76554/19530    0.480    0.000    0.844    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:315(default_sort_key)
+  1675451    0.403    0.000    0.525    0.000 {built-in method builtins.getattr}
+  1540039    0.402    0.000    0.552    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:2294(__hash__)
+13401/13001    0.355    0.000    1.064    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/mul.py:178(flatten)
+   571172    0.344    0.000    0.789    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1978(__hash__)
+   572409    0.325    0.000    0.446    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:807(__hash__)
+105480/47772    0.319    0.000    2.011    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:501(ordered)
+   584447    0.307    0.000    1.789    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:479(_sympify)
+   155590    0.304    0.000    0.646    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1876(__eq__)
+1319329/1273744    0.293    0.000    0.348    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:126(__hash__)
+76680/19548    0.261    0.000    0.524    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:479(_nodes)
+535056/202680    0.242    0.000    0.310    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:2065(_preorder_traversal)
+56730/15876    0.215    0.000    1.375    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/exprtools.py:1224(do)
+   487764    0.199    0.000    0.271    0.000 <frozen importlib._bootstrap>:404(parent)
+     8376    0.198    0.000    0.468    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/facts.py:499(deduce_all_facts)
+    41010    0.191    0.000    1.941    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:1241(replace)
+198289/169363    0.185    0.000    1.139    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/decorators.py:88(__sympifyit_wrapper)
+1592663/1579025    0.175    0.000    0.212    0.000 {built-in method builtins.hash}
+84492/37548    0.173    0.000    6.085    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:102(recurse)
+20577/19827    0.167    0.000    1.535    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/operations.py:46(__new__)
+     6426    0.164    0.000    0.810    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/function.py:3060(count_ops)
+ 6228/180    0.161    0.000   18.841    0.105 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/simplify.py:411(simplify)
+     9522    0.160    0.000    1.155    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/polys/polyutils.py:231(_parallel_dict_from_expr_no_gens)
+   102379    0.158    0.000    0.183    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/functions/elementary/exponential.py:207(__instancecheck__)
+   102063    0.147    0.000    0.190    0.000 <frozen importlib._bootstrap>:1053(_handle_fromlist)
+```
+
+Measure performance for (5, 9, 6).
+Formerly:
+```text
+(5, 9, 6) 76, 163
+```
+Now:
+```text
+(5, 9, 6) 13, 23
+```
+This is an even more dramatic speedup. 76/13 = 5.8x, and much less profiling overhead due to the
+vastly reduced number of calls to mpmath to get/set items.
+
+Profile:
+```text
+Thu Apr 28 15:48:55 2022    acm_scale_5_9_6_stats
+
+         36215831 function calls (34843683 primitive calls) in 21.814 seconds
+
+   Ordered by: internal time
+   List reduced from 875 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+94014/9522    1.397    0.000    8.534    0.001 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:15(powsimp)
+1138495/1138453    1.253    0.000    2.743    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:92(sympify)
+1670975/1581450    1.136    0.000    4.501    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/cache.py:69(wrapper)
+4624397/4522011    0.861    0.000    1.023    0.000 {built-in method builtins.isinstance}
+298405/297689    0.551    0.000    1.250    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:144(__eq__)
+76866/19842    0.486    0.000    0.864    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:315(default_sort_key)
+  1769667    0.436    0.000    0.559    0.000 {built-in method builtins.getattr}
+  1567076    0.409    0.000    0.563    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:2294(__hash__)
+   576724    0.375    0.000    0.501    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:807(__hash__)
+13855/13448    0.372    0.000    1.183    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/mul.py:178(flatten)
+   574440    0.351    0.000    0.849    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1978(__hash__)
+   161326    0.327    0.000    0.692    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1876(__eq__)
+106260/48162    0.324    0.000    2.046    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:501(ordered)
+   602301    0.322    0.000    1.872    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:479(_sympify)
+1327477/1281798    0.301    0.000    0.357    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:126(__hash__)
+76992/19860    0.258    0.000    0.528    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:479(_nodes)
+536304/203928    0.254    0.000    0.327    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:2065(_preorder_traversal)
+     9302    0.233    0.000    0.535    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/facts.py:499(deduce_all_facts)
+56730/15876    0.232    0.000    1.416    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/exprtools.py:1224(do)
+   493860    0.214    0.000    0.288    0.000 <frozen importlib._bootstrap>:404(parent)
+84492/37548    0.214    0.000    6.205    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:102(recurse)
+    41010    0.200    0.000    2.006    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:1241(replace)
+206727/175410    0.194    0.000    1.251    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/decorators.py:88(__sympifyit_wrapper)
+1620478/1606766    0.179    0.000    0.217    0.000 {built-in method builtins.hash}
+21287/20496    0.175    0.000    1.674    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/operations.py:46(__new__)
+     9522    0.168    0.000    1.192    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/polys/polyutils.py:231(_parallel_dict_from_expr_no_gens)
+     6426    0.167    0.000    0.831    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/function.py:3060(count_ops)
+ 6228/180    0.166    0.000   19.335    0.107 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/simplify.py:411(simplify)
+   102386    0.161    0.000    0.187    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/functions/elementary/exponential.py:207(__instancecheck__)
+  1037935    0.157    0.000    0.157    0.000 {built-in method builtins.hasattr}
+```
+
+Measure (5, 12, 6).
+Previously:
+```text
+(5, 12, 6) 186, 410
+```
+Now:
+```text
+(5, 12, 6) 13, 24
+```
+Speedup for execution = 186/13 = 14.3x, for profiling = 410/24 = 17x.
+
+```text
+Thu Apr 28 15:56:22 2022    acm_scale_5_12_6_stats
+
+         38456897 function calls (37060270 primitive calls) in 22.818 seconds
+
+   Ordered by: internal time
+   List reduced from 877 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+94014/9522    1.377    0.000    8.456    0.001 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:15(powsimp)
+1213006/1212964    1.269    0.000    3.208    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:92(sympify)
+1725245/1632875    1.138    0.000    4.661    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/cache.py:69(wrapper)
+4952455/4850060    0.876    0.000    1.036    0.000 {built-in method builtins.isinstance}
+300063/299191    0.536    0.000    1.228    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:144(__eq__)
+77178/20154    0.491    0.000    0.859    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:315(default_sort_key)
+  1905565    0.461    0.000    0.599    0.000 {built-in method builtins.getattr}
+  1604667    0.415    0.000    0.570    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:2294(__hash__)
+14391/13975    0.386    0.000    1.303    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/mul.py:178(flatten)
+   578278    0.384    0.000    0.841    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1978(__hash__)
+   626206    0.375    0.000    1.887    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:479(_sympify)
+   581609    0.341    0.000    0.462    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:807(__hash__)
+   170466    0.326    0.000    0.696    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1876(__eq__)
+107040/48552    0.325    0.000    2.055    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:501(ordered)
+1336249/1290478    0.291    0.000    0.350    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:126(__hash__)
+77304/20172    0.266    0.000    0.543    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:479(_nodes)
+    10372    0.258    0.000    0.593    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/facts.py:499(deduce_all_facts)
+537552/205176    0.245    0.000    0.315    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:2065(_preorder_traversal)
+56730/15876    0.220    0.000    1.396    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/exprtools.py:1224(do)
+   499956    0.207    0.000    0.281    0.000 <frozen importlib._bootstrap>:404(parent)
+215511/181663    0.199    0.000    1.356    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/decorators.py:88(__sympifyit_wrapper)
+84564/69048    0.194    0.000    0.924    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1031(__new__)
+    41010    0.191    0.000    1.983    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:1241(replace)
+1658859/1645070    0.183    0.000    0.220    0.000 {built-in method builtins.hash}
+  1094312    0.180    0.000    0.180    0.000 {built-in method builtins.hasattr}
+22087/21242    0.177    0.000    1.805    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/operations.py:46(__new__)
+84492/37548    0.173    0.000    6.157    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:102(recurse)
+   913187    0.167    0.000    0.167    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:713(args)
+     6426    0.166    0.000    0.822    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/function.py:3060(count_ops)
+     9522    0.163    0.000    1.152    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/polys/polyutils.py:231(_parallel_dict_from_expr_no_gens)
+```
+
+Measure (5, 15, 6).
+
+Previously:
+```text
+(5, 15, 6) 394, 823
+```
+
+Now:
+```text
+(5, 15, 6) 14, 26
+```
+
+Speedup for execution = 394/14 = 28x, for profiling = 823/26 = 32x.
+
+```text
+Thu Apr 28 16:05:00 2022    acm_scale_5_15_6_stats
+
+         41195379 function calls (39772909 primitive calls) in 24.436 seconds
+
+   Ordered by: internal time
+   List reduced from 877 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+94014/9522    1.417    0.000    8.423    0.001 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:15(powsimp)
+1306456/1306414    1.387    0.000    3.990    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:92(sympify)
+1794254/1699494    1.173    0.000    4.854    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/cache.py:69(wrapper)
+5347190/5244791    0.939    0.000    1.102    0.000 {built-in method builtins.isinstance}
+301681/300653    0.545    0.000    1.236    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:144(__eq__)
+77490/20466    0.497    0.000    0.868    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:315(default_sort_key)
+  2080712    0.470    0.000    0.599    0.000 {built-in method builtins.getattr}
+  1651866    0.432    0.000    0.596    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:2294(__hash__)
+14852/14432    0.397    0.000    1.437    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/mul.py:178(flatten)
+   585973    0.359    0.000    0.487    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:807(__hash__)
+   581595    0.348    0.000    0.828    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1978(__hash__)
+   653870    0.348    0.000    1.884    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:479(_sympify)
+   180986    0.347    0.000    0.737    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1876(__eq__)
+107820/48942    0.328    0.000    2.056    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:501(ordered)
+1344422/1298563    0.298    0.000    0.354    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:126(__hash__)
+    11324    0.291    0.000    0.692    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/facts.py:499(deduce_all_facts)
+104931/79371    0.274    0.000    1.534    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1031(__new__)
+77616/20484    0.261    0.000    0.527    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:479(_nodes)
+538802/206426    0.245    0.000    0.313    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:2065(_preorder_traversal)
+    41010    0.229    0.000    1.976    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:1241(replace)
+56730/15876    0.217    0.000    1.385    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/exprtools.py:1224(do)
+   506052    0.212    0.000    0.288    0.000 <frozen importlib._bootstrap>:404(parent)
+    25560    0.211    0.000    1.160    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:68(_convert_numpy_types)
+224289/187890    0.205    0.000    1.393    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/decorators.py:88(__sympifyit_wrapper)
+   177125    0.202    0.000    0.407    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:58(_is_numpy_instance)
+1706809/1692952    0.190    0.000    0.226    0.000 {built-in method builtins.hash}
+22804/21911    0.184    0.000    1.956    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/operations.py:46(__new__)
+  1565382    0.183    0.000    0.198    0.000 {method 'get' of 'dict' objects}
+84492/37548    0.174    0.000    6.134    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:102(recurse)
+     6426    0.171    0.000    0.822    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/function.py:3060(count_ops)
+```
+
+Measure (5, 18, 6).
+
+Previously:
+```text
+(5, 18, 6) 702, 1600
+```
+
+Now:
+```text
+(5, 18, 6) 15, 27
+```
+
+Speedup for execution = 702/15 = 46.8x, for profiling = 1600/27 = 59.2x
+
+```text
+Thu Apr 28 16:11:31 2022    acm_scale_5_18_6_stats
+
+         44262526 function calls (42810645 primitive calls) in 25.822 seconds
+
+   Ordered by: internal time
+   List reduced from 877 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+1420352/1420310    1.509    0.000    4.824    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:92(sympify)
+94014/9522    1.336    0.000    8.303    0.001 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/simplify/powsimp.py:15(powsimp)
+1878845/1781294    1.175    0.000    5.023    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/cache.py:69(wrapper)
+5813323/5710917    0.979    0.000    1.137    0.000 {built-in method builtins.isinstance}
+303339/302155    0.542    0.000    1.233    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:144(__eq__)
+  2296572    0.494    0.000    0.626    0.000 {built-in method builtins.getattr}
+77802/20778    0.489    0.000    0.853    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:315(default_sort_key)
+  1709578    0.434    0.000    0.598    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:2294(__hash__)
+   590841    0.423    0.000    0.547    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:807(__hash__)
+15385/14958    0.405    0.000    1.595    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/mul.py:178(flatten)
+130406/92284    0.378    0.000    2.174    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1031(__new__)
+   193979    0.374    0.000    0.779    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1876(__eq__)
+    12378    0.363    0.000    0.806    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/facts.py:499(deduce_all_facts)
+   686645    0.361    0.000    1.926    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:479(_sympify)
+   585416    0.345    0.000    0.883    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/numbers.py:1978(__hash__)
+108600/49332    0.326    0.000    2.032    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:501(ordered)
+    38122    0.312    0.000    1.725    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:68(_convert_numpy_types)
+1353163/1307210    0.290    0.000    0.346    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/expr.py:126(__hash__)
+77928/20796    0.259    0.000    0.525    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/compatibility.py:479(_nodes)
+540048/207672    0.244    0.000    0.315    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:2065(_preorder_traversal)
+56730/15876    0.215    0.000    1.362    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/exprtools.py:1224(do)
+   512148    0.212    0.000    0.291    0.000 <frozen importlib._bootstrap>:404(parent)
+  1741710    0.206    0.000    0.223    0.000 {method 'get' of 'dict' objects}
+233387/194307    0.204    0.000    1.450    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/decorators.py:88(__sympifyit_wrapper)
+   170053    0.198    0.000    0.308    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/mpmath/libmp/libmpf.py:291(from_man_exp)
+    41010    0.192    0.000    1.919    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/basic.py:1241(replace)
+1765272/1751361    0.190    0.000    0.227    0.000 {built-in method builtins.hash}
+23607/22657    0.189    0.000    2.126    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/operations.py:46(__new__)
+   189735    0.188    0.000    0.405    0.000 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/sympy/core/sympify.py:58(_is_numpy_instance)
+   177563    0.187    0.000    0.261    0.000 <frozen importlib._bootstrap>:1053(_handle_fromlist)
+```
+
+The elapsed process time for the (5, 18, 6) case is now around 15 seconds.
+This is fast enough to include in the automated test suite.
+
+The elapsed time for the (5, 18, 6) Example 2.2 was 8 seconds in Maple.
+The Python elapsed time is 15 seconds.
+Therefore, the Python code is now just 15/8 = 1.875x slower than Maple.
+The performance of Python is now in the same ballpark as Maple, after simply using
+the NumPy eigh function instead of the SymPy Eigenvectors function.
+This is a huge payoff.
+
+The Python code is using SymPy in many places.
+The use of SymPy is warranted when the solution requires symbolic processing.
+However, most of the ACM code is numeric.
+The SO5 CG coefficients are already numeric so there will always be some round-off error.
+It is conceivable that some symbolic simplification of the intermediate results
+might reduce round-off errors, however I have no evidence that this is the case.
+I will therefore reduce the use of SymPy going forward.
+
+In order to proceed with confidence, I will create a detailed testcase for the (5, 18, 6)
+example and run it after every code refactoring step.
+This will provide an early warning of any loss of precision caused by using built-in Python
+numeric processing.
+
+Next steps:
+* run mypy - DONE
+* run pytest - DONE
+* Create a test case for (5, 18, 6) calling `DigXspace` directly - DONE
+  * Takes around 15 seconds to run now
+  * Eigenvalues have absolute tolerance of 1e-6
+* Ripple the new interface of Eigenfiddle into the callers. - TODO
+* Convert more SymPy Matrix operations to NumPy - IN-PROGRESS
+
+break 6:00 pm
+
+
+## 2022-04-29
+
+### 11:40 pm
+
+The current numpy is stable and useful so 
+* commit the changes and merge the branch into master.
+* Tag master as v1-1-2. 

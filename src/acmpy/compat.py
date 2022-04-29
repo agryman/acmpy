@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from math import isclose
 from sympy import Expr, Matrix
 
 IntFloatExpr = int | float | Expr
@@ -100,3 +101,25 @@ def readdata_float(filename: str) -> list[float]:
         data: list[float] = [parse_line_float(line) for line in f]
 
     return data
+
+
+ABS_TOL: float = 1e-14
+
+
+def is_zeros(zs: list[float], abs_tol: float = ABS_TOL) -> bool:
+    """Return True if and only if every element in the list zs is close to 0."""
+    return all(isclose(z, 0, abs_tol=abs_tol) for z in zs)
+
+
+def is_close(xs: list[float], ys: list[float], abs_tol: float = ABS_TOL) -> bool:
+    """Return True if and only if every element of list xs is close to the corresponding element of list ys."""
+    if len(xs) != len(ys):
+        return False
+    return is_zeros([x - y for x, y in zip(xs, ys)], abs_tol)
+
+
+def is_sorted(vals: list) -> bool:
+    """Return True if and only if the list is in ascending order."""
+    return all(a <= b for (a, b) in zip(vals[:-1], vals[1:]))
+
+
