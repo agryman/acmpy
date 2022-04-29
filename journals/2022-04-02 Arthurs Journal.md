@@ -1503,4 +1503,4 @@ break 6:00 pm
 
 The current numpy is stable and useful so 
 * commit the changes and merge the branch into master.
-* Tag master as v1-1-2. 
+* Tag master as v1-1-0. 

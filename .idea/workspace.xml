@@ -5,28 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acmpy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/acmpy.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_12_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_12_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_15_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_15_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_18_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_18_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_3_3_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_3_3_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_3_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_3_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_6_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_6_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/stats/v1/acm_scale_5_9_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/data/stats/v1-1-1/acm_scale_5_9_6_stats" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-04-02 Arthurs Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-04-02 Arthurs Journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/compat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/eigenvalues.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/eigenvalues.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_12_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_12_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_15_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_15_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_18_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_18_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_6_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_6_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_9_6_stats" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/acm_scale_5_9_6_stats" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/profile_acm_scale.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/profile_acm_scale.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/read_acm_scale_5_18_6_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/read_acm_scale_stats.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/tests/test_eigenvalues.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_eigenvalues.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/tests/test_full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_full_space.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,19 +48,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "TODO_SCOPE": "Module 'acmpy'",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/arthurryman/Documents/repositories/agryman/acmpy/data/stats/v1",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;TODO_SCOPE&quot;: &quot;Module 'acmpy'&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/arthurryman/Documents/repositories/agryman/acmpy/data/stats/v1&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/data/stats/v1" />
@@ -147,6 +126,9 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -469,7 +451,7 @@
       <workItem from="1650730446483" duration="21848000" />
       <workItem from="1650899322602" duration="18570000" />
       <workItem from="1650999809138" duration="32475000" />
-      <workItem from="1651154168787" duration="19994000" />
+      <workItem from="1651154168787" duration="20326000" />
     </task>
     <servers />
   </component>
