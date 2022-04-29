@@ -36,6 +36,8 @@ def main(nu_max: nonnegint = 5, v_max: nonnegint = 18, L_max: nonnegint = 6) -> 
 if __name__ == '__main__':
     # (nu_max, v_max, L_max) times are in seconds, with and without cProfile
 
+    # measured on v1-1-1
+
     # bottleneck is sympy
     # (5, 3, 3) 5, 11
     # (5, 3, 6) 8, 15
@@ -48,7 +50,7 @@ if __name__ == '__main__':
     # (5, 18, 6) 702, 1600
 
     nu_max: nonnegint = 5
-    v_max: nonnegint = 6
+    v_max: nonnegint = 18
     L_max: nonnegint = 6
 
     # run without profiling

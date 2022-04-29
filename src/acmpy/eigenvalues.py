@@ -1,6 +1,22 @@
 """This module computes eigenvalues and eigenbases."""
 
+import numpy as np
 from sympy import Matrix, shape
+
+
+def Matrix_to_ndarray(M: Matrix) -> np.ndarray:
+    """Creates an NumPy ndarray of floats from a SymPy Matrix."""
+    return np.array([float(m) for m in M]).reshape(*shape(M))
+
+
+def ndarray_to_Matrix(M: np.ndarray) -> Matrix:
+    """Creates a SymPy Matrix from an NumPy ndarray of floats."""
+    return Matrix(*M.shape, lambda i, j: M[i, j])
+
+
+def ndarray_to_list(vals: np.ndarray) -> list[float]:
+    """Creates a list of floats from an NumPy ndarray of floats."""
+    return [float(val) for val in vals.flat]
 
 
 def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
@@ -74,6 +90,23 @@ def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
 #   [ map2(op,1,real_eigens), Matrix([Column(eigenstuff[2],eigen_order)]) ];
 # end:
 def Eigenfiddle(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
+    M: np.ndarray = Matrix_to_ndarray(Hmatrix)
+
+    n, m = M.shape
+    if n != m:
+        raise ValueError(f'Matrix is not square: {n}, {m}')
+
+    H: np.ndarray = (M + M.T) / 2
+
+    eigenvalues: np.ndarray
+    P: np.ndarray
+    eigenvalues, P = np.linalg.eigh(H)
+
+    return ndarray_to_list(eigenvalues), ndarray_to_Matrix(P)
+
+
+def Eigenfiddle_sympy(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
+    """Legacy SymPy implementation of Eigenfiddle()."""
 
     n, m = shape(Hmatrix)
     if n != m:
@@ -93,4 +126,3 @@ def Eigenfiddle(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
     eigen_vectors: Matrix = Matrix(n, n, lambda i, j: P[i, eigen_order[j]])
 
     return eigen_values, eigen_vectors
-

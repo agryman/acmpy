@@ -3,8 +3,9 @@
 import pytest
 from math import isclose
 
-from sympy import Matrix, zeros, eye, Expr, S, Rational, shape
+from sympy import Matrix, zeros, eye, Expr, S, Rational, shape, sqrt
 
+from acmpy.compat import nonnegint, is_close
 from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues
 from acmpy.internal_operators import OperatorSum, ACM_Hamiltonian
 
@@ -40,6 +41,21 @@ class TestEigenfiddle:
         values, P = Eigenfiddle(M)
         assert values == [2, 3]
         assert P == Matrix([[0, 1], [1, 0]])
+
+
+@pytest.fixture
+def RWC_ham_fig5a() -> tuple[OperatorSum, int]:
+    B: int = 20
+    c2: Expr = Rational(3, 2)
+    c1: Expr = 1 - 2 * c2
+    chi: Expr = S(2)
+
+    x1: Expr = -Rational(1, 2) / B
+    x3: Expr = B * c1 / 2
+    x4: Expr = B * c2 / 2
+    x6: Expr = -chi
+
+    return ACM_Hamiltonian(x1, 0, x3, x4, 0, x6), B
 
 
 class TestDigXspace:
@@ -119,3 +135,36 @@ class TestDigXspace:
 
         for actual_val, expected_val in zip(eigen_val, expected):
             assert isclose(actual_val, expected_val)
+
+    def test_RWC_ham_fig5a(self, RWC_ham_fig5a: tuple[OperatorSum, int]):
+        ham_op: OperatorSum
+        B: int
+        ham_op, B = RWC_ham_fig5a
+
+        anorm: Expr = sqrt(B)
+        lambda_base = Rational(5, 2)
+        nu_max: nonnegint = 5
+        v_max: nonnegint = 18
+        L_max: nonnegint = 6
+
+        eigenvalues: EigenValues
+        eigenbases: EigenBases
+        Xparams: XParams
+        Lvalues: LValues
+        eigenvalues, eigenbases, Xparams, Lvalues = \
+            DigXspace(ham_op, anorm, lambda_base, 0, nu_max, 0, v_max, 0, L_max)
+        assert len(eigenvalues) == len(eigenbases) == len(Lvalues)
+        assert Xparams == (anorm, lambda_base, 0, nu_max, 0, v_max)
+        assert Lvalues == [0, 2, 3, 4, 5, 6]
+        eigenvalues0 = \
+            [-6.34375707499380, -4.78545798998482, -4.35747748405318, -3.48850681486454, -2.73134974998671,
+             -2.25842037137952, -1.73459666025923, -1.13462248733653, -0.736777010494252, 0.160419162784534,
+             0.521734783125385, 0.970033490381626, 1.95787532379122, 2.42764405036288, 3.00581475182882,
+             3.18486516213996, 4.64346770256370, 5.05068078949680, 6.40881513104548, 6.84697423641121,
+             7.20544375346920, 7.51749874359587, 8.31750292121193, 12.1843362699147, 12.4710174136258,
+             14.0657418485429, 15.8072046367031, 17.2409316641216, 20.8190503413780, 26.5388079991238,
+             27.5820693590971, 27.8399026988631, 31.1136235176620, 55.3686357370119, 63.0177158483787,
+             65.8797570627707, 79.8590667187793, 81.0625504949505, 129.522857254927, 196.283915332330,
+             251.523252295420, 521.303008835543]
+        assert len(eigenvalues[0]) == len(eigenvalues0)
+        assert is_close(eigenvalues[0], eigenvalues0, abs_tol=1e-6)
