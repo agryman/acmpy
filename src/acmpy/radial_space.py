@@ -1,13 +1,15 @@
 """2. Procedures that pertain only to the radial (beta) space."""
 
+import numpy as np
 from typing import Callable
 from functools import cache
 from abc import ABC, abstractmethod
 
 from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, \
-    diag, eye, zeros
+    diag, eye, zeros, ImmutableMatrix
 
-from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, irem
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, \
+    irem, Matrix_to_ndarray, ndarray_to_list, ndarray_to_Matrix
 from acmpy.eigenvalues import Eigenfiddle
 
 Nu = nonnegint
@@ -944,11 +946,18 @@ def RepRadial_sq(ME: Callable, lambdaa: Expr,
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
 @cache
-def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
+def Matrix_sqrt(Amatrix: ImmutableMatrix) -> Matrix:
+
+    Amatrix_np: np.ndarray = Matrix_to_ndarray(Amatrix.evalf())
+    eigen_vals_np: np.ndarray
+    P_np: np.ndarray
+
+    eigen_vals_np, P_np = Eigenfiddle(Amatrix_np)
 
     eigen_vals: list[float]
     P: Matrix
-    eigen_vals, P = Eigenfiddle(Amatrix.evalf())
+    eigen_vals = ndarray_to_list(eigen_vals_np)
+    P = ndarray_to_Matrix(P_np)
 
     Diag_sq: Matrix = diag(*[sqrt(val) for val in eigen_vals])
 
@@ -975,9 +984,15 @@ def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
 @cache
-def Matrix_sqrtInv(Amatrix: Matrix) -> Matrix:
+def Matrix_sqrtInv(Amatrix: ImmutableMatrix) -> Matrix:
 
-    eigen_vals, P = Eigenfiddle(Amatrix.evalf())
+    Amatrix_np: np.ndarray = Matrix_to_ndarray(Amatrix.evalf())
+    eigen_vals_np: np.ndarray
+    P_np: np.ndarray
+
+    eigen_vals_np, P_np = Eigenfiddle(Amatrix_np)
+    eigen_vals = ndarray_to_list(eigen_vals_np)
+    P = ndarray_to_Matrix(P_np)
 
     Diag_sq: Matrix = diag(*[1 / sqrt(val) for val in eigen_vals])
 

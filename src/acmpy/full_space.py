@@ -3,10 +3,12 @@
 diagonalising, basis transforming, and data displaying.
 """
 
+import numpy as np
 from typing import Optional, Callable
 from sympy import Expr, Matrix, shape, S
 
-from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo
+from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo, \
+    Matrix_to_ndarray, ndarray_to_Matrix, ndarray_to_list
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
@@ -152,6 +154,11 @@ def DigXspace(ham_op: OperatorSum,
     L_matrix: Matrix
     eigen_vals_result: list[float]
     eigen_bases_result: Matrix
+
+    L_matrix_np: np.ndarray
+    eigen_vals_result_np: np.ndarray
+    eigen_bases_result_np: np.ndarray
+
     if Op_Tame(ham_op):
 
         for LL in range(L_min, LLM + 1):
@@ -160,7 +167,11 @@ def DigXspace(ham_op: OperatorSum,
                 Lvals.append(LL)
 
                 L_matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, LL)
-                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
+
+                L_matrix_np = Matrix_to_ndarray(L_matrix)
+                eigen_vals_result_np, eigen_bases_result_np = Eigenfiddle(L_matrix_np)
+                eigen_vals_result = ndarray_to_list(eigen_vals_result_np)
+                eigen_bases_result = ndarray_to_Matrix(eigen_bases_result_np)
 
                 eigen_vals.append(eigen_vals_result)
 
@@ -178,7 +189,10 @@ def DigXspace(ham_op: OperatorSum,
 
                 L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
 
-                eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
+                L_matrix_np = Matrix_to_ndarray(L_matrix)
+                eigen_vals_result_np, eigen_bases_result_np = Eigenfiddle(L_matrix_np)
+                eigen_vals_result = ndarray_to_list(eigen_vals_result_np)
+                eigen_bases_result = ndarray_to_Matrix(eigen_bases_result_np)
 
                 eigen_vals.append(eigen_vals_result)
 

@@ -1501,6 +1501,196 @@ break 6:00 pm
 
 ### 11:40 pm
 
-The current numpy is stable and useful so 
-* commit the changes and merge the branch into master.
-* Tag master as v1-1-0. 
+The current numpy branch is stable and useful so:
+* commit the changes, create PR, and merge PR into master. - DONE
+* Tag master as v1-1-0. - DONE
+
+Next steps:
+* Ripple the new interface of Eigenfiddle into the callers. - IN-PROGRESS
+* Convert more SymPy Matrix operations to NumPy - IN-PROGRESS
+
+break 12:30 pm
+
+### 2:35 pm
+
+Next steps:
+* Ripple the new interface of Eigenfiddle into the callers. - IN-PROGRESS
+  * Learn how to use type hints for numpy
+  * See https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray - DONE
+    * Use `import numpy.typing as npt`
+    * Define type `NDArrayFloat = npt.NDArray[np.float64]`
+* Convert more SymPy Matrix operations to NumPy - IN-PROGRESS
+
+break 5:00 pm
+
+## 2022-04-30
+
+### 11:15 am
+
+* Ripple the new interface of Eigenfiddle into the callers. - DONE
+* Convert more SymPy Matrix operations to NumPy - IN-PROGRESS
+  * Check where Matrix_to_ndarray is used
+  * This indicates conversion from SymPy Matrix
+  * Convert all uses of Matrix for floats to ndarray
+  * The most time-consuming function is DigXspace
+    * Time is begin spend simplifying SymPy expressions
+    * Find where simplification is being done and determine if it is needed for accuracy before evalf() is called - TODO
+
+```text
+Fri Apr 29 11:48:14 2022    acm_scale_5_18_6_stats
+         44262526 function calls (42810645 primitive calls) in 25.822 seconds
+   Random listing order was used
+   List reduced from 877 to 1 due to restriction <'DigXspace'>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001   25.827   25.827 full_space.py:128(DigXspace)
+```
+
+* `anorm: Expr, lambda_base: Expr` 
+  * why are these expressions? 
+  * can they be changed to floats?
+  * these values parameterize the radial space
+
+```text
+
+# The following procedure returns a single matrix element
+#     F^{(anorm)}_{lambda_var,mu_f}{lambda,mu_i}(Op),
+
+ME_Radial:=proc(radial_op::algebraic, anorm::algebraic,
+                   lambda::algebraic, lambda_var::integer,
+```
+
+```text
+
+# The following represents the radial operator beta^K * d^T/d(beta)^T,
+# with a specific lambda shift (for K integer, T nonneg integer, R integer).
+# It returns the explicit matrix of elements
+#     F^{(anorm)}_{lambda+R,mu_f}{lambda,mu_i}(beta^K * d^T/d(beta)^T),
+
+# The values lambda and lambda+R should be positive 
+
+# The matrix elements of the result are analytic (exact expressions
+# involving surds) unless anorm or lambda are floats, or K+T+R is odd,
+# in which cases the matrix elements might be a mix of floats and surds.
+
+RepRadial_bS_DS:=proc(K::integer, T::nonnegint, anorm::algebraic,
+                          lambda::algebraic, R::integer,
+                          nu_min::nonnegint, nu_max::nonnegint)
+```
+
+```text
+# The following returns, for a certain Op determined by rps_op, 
+# the explicit matrix of elements
+#     F^{(anorm)}_{lambda+R,mu_f}{lambda,mu_i}(Op),
+
+RepRadialshfs_Prod:=proc(rps_op::list, anorm::algebraic,
+                          lambda::algebraic, lambda_shfs::list,
+                          nu_min::nonnegint, nu_max::nonnegint)
+```
+
+```text
+# The following represents a product Op of radial operators, specified by a
+# list rbs_op, between two bases with the difference between their lambda
+# values given by lambda_var. It returns the explicit matrix of
+# elements
+#     F^{(anorm)}_{lambda+lambda_var,mu_f}{lambda,mu_i}(Op),
+
+# The result might need evalf operating on it to ensure that the returned
+# matrix has float entries.
+# The matrix elements of the result are analytic (exact expressions
+# involving surds) unless anorm or lambda are floats, or the parity
+# of the operator rbs_op is opposite to that of lambda_var,
+# in which cases the matrix elements might be a mix of floats and surds.
+
+# If lambda_var is of the same parity as rbs_op, then
+# the result will be analytic (however truncation effects
+# during matrix multiplication might affect the accuracy of the
+# outlying matrix elements). Otherwise, somewhere along the
+# line, a matrix square root is taken and this results in
+# floating point matrix elements, or combinations of such and surds.
+
+RepRadial_Prod:=proc(rbs_op::list, anorm::algebraic,
+                          lambda::algebraic, lambda_var::integer,
+```
+
+```text
+# The following procedure is similar to RepRadial_Prod above, but is able to
+# represent linear combinations of products of the basic radial operators.
+# The arguments anorm, lambda, lambda_var, nu_min, nu_max are same as above,
+
+# The return value is a Matrix, whose elements might need to be acted
+# upon by evalf to ensure that they are floats.
+
+RepRadial_LC:=proc(rlc_op::list(list), anorm::algebraic,
+                          lambda::algebraic, lambda_var::integer,
+```
+
+```text
+
+# The arguments anorm and lambda_base specify the parameters that
+# determine the radial basis.
+# The returned matrix elements are all floating point numbers
+
+
+# The values of anorm and lambda_base help to determine the radial
+# basis states (they do not affect the SO(5) action).
+# The value of lambda associated with a particular state [nu,v,alpha,L]
+# in the cross product space is determined by lambda_base+glb_lam_fun(v),
+# where the function glb_lam_fun has been previously set
+# (by ACM_set_basis_type or ACM_set_lambda_fun).
+# The initial and final bases are identical.
+
+RepXspace:=proc(x_oplc::list, anorm::algebraic, lambda_base::algebraic,
+```
+
+```text
+# The arguments anorm and lambda_base specify the parameters that
+# determine the radial basis.
+# The returned matrix elements are all floating point numbers
+
+RepXspace_Prod:=proc(x_ops::list,
+                     anorm::algebraic,lambda_base::algebraic,
+```
+
+```text
+# Note that the matrix elements are all determined analytically if
+# and only if, the degree of the radial operator has the same parity
+# (odd or even) as the total seniority of the spherical operator.
+# Otherwise, they are determined non-analytically (through the taking
+# of a matrix square root).
+
+RepXspace_Twin:=proc(rad_ops::list, sph_ops::list,
+                     anorm::algebraic, lambda_base::algebraic,
+```
+
+In summary, it appears that `anorm` and `lambda_base` are allowed to be exact algebraic
+expressions (involving surds) so that the matrix elements can be expressed analytically.
+However, both of these parameters are allowed to be given as floats.
+In either case, the resulting matrix appears always to be converted to floats via evalf()
+before it is diagonalized.
+
+My conclusion is that I should continue to allow these parameters to be given as SymPy expressions
+for now. However, if this reduces performance without any performance benefit then they should
+always be converted to floats before used in subsequent calculations.
+Perhaps this is a case for implementing an abstract class with two concrete implementations,
+name one for Expr and the other for float.
+It would then be easier to compare performance and accuracy.
+
+Next step:
+* check the code for uses of evalf() and determine if NumPy can be used at that point. - TODO
+* my short term goal is to tune performance enough for the memorial symposium on 2022-06-04
+
+break 12:40 pm
+
+### 3:10 pm
+
+I am testing Matrix_sqrt. In Maple this function has a remember table which corresponds
+to the @cache decorator in Python. However, the arguments to a cached function must be immutable.
+* Create an immutable SymPy matrix for the argument. - DONE
+* Is there an immutable NumPy ndarray type? - DONE
+  * There is no immutable ndarray type.
+  * Therefore, I could use ImmutableMatrix as the type so it can be hashed but this would require copying
+  * Alternatively, I could wrap the ndarray in a class that supports the Hashable protocol
+  * For safety, the ndarray could have its writable flag set to False to avoid accidental modification
+  * However, it is probable that the @cache decorator only uses the hash value of the arguments and doesn't actually save them
+
+break 5:40 pm

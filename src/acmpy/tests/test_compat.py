@@ -1,10 +1,12 @@
 """This module tests the compat.py module."""
 
+import numpy as np
 from pathlib import Path
 import pytest
 
 from acmpy.compat import require_int, require_nonnegint, require_posint, \
-    parse_line_float, readdata_float
+    parse_line_float, readdata_float, \
+    NDArrayFloat, is_nd_float, is_nd_vector, is_nd_matrix, is_nd_square
 
 
 class TestRequireInt:
@@ -17,9 +19,9 @@ class TestRequireInt:
 
     def test_type_error(self):
         with pytest.raises(TypeError):
-            require_int('x', 1.0)
+            require_int('x', 1.0)  # type: ignore
         with pytest.raises(TypeError):
-            require_int('y', '1')
+            require_int('y', '1')  # type: ignore
 
 
 class TestRequireNonNegInt:
@@ -31,9 +33,9 @@ class TestRequireNonNegInt:
 
     def test_type_error(self):
         with pytest.raises(TypeError):
-            require_nonnegint('x', 1.0)
+            require_nonnegint('x', 1.0)  # type: ignore
         with pytest.raises(TypeError):
-            require_nonnegint('y', '1')
+            require_nonnegint('y', '1')  # type: ignore
 
     def test_value_error(self):
         with pytest.raises(ValueError):
@@ -48,9 +50,9 @@ class TestRequirePosInt:
 
     def test_type_error(self):
         with pytest.raises(TypeError):
-            require_posint('x', 1.0)
+            require_posint('x', 1.0)  # type: ignore
         with pytest.raises(TypeError):
-            require_posint('y', '1')
+            require_posint('y', '1')  # type: ignore
 
     def test_value_error(self):
         with pytest.raises(ValueError):
@@ -85,3 +87,56 @@ class TestReadDataFloat:
         assert data[0] == 1.0
         assert data[1] == 2.0
         assert data[2] == 3.0
+
+
+class TestIs_nd_float:
+    """Tests the is_nd_float() function."""
+
+    @pytest.mark.parametrize(
+        "a,b",
+        [(np.array([1.0]), True),
+         (np.array([1], dtype='int'), False)]
+    )
+    def test_ok(self, a: NDArrayFloat, b: bool):
+        assert is_nd_float(a) == b
+
+
+class TestIs_nd_vector:
+    """Tests the is_nd_vector() function."""
+
+    @pytest.mark.parametrize(
+        "a,b",
+        [(np.array([1.0]), True),
+         (np.array([1.0, 2.0]), True),
+         (np.array([1], dtype='int'), False),
+         (np.array([[1.0], [1.0]]), False)]
+    )
+    def test_ok(self, a: NDArrayFloat, b: bool):
+        assert is_nd_vector(a) == b
+
+
+class TestIs_nd_matrix:
+    """Tests the is_nd_matrix() function."""
+
+    @pytest.mark.parametrize(
+        "a,b",
+        [(np.array([1.0]), False),
+         (np.array([1.0, 2.0]), False),
+         (np.array([1], dtype='int'), False),
+         (np.array([[1.0], [1.0]]), True)]
+    )
+    def test_ok(self, a: NDArrayFloat, b: bool):
+        assert is_nd_matrix(a) == b
+
+
+class TestIs_nd_square:
+    """Tests the is_nd_square() function."""
+
+    @pytest.mark.parametrize(
+        "a,b",
+        [(np.array([[1, 0], [0, 1]], dtype='int'), False),
+         (np.array([[1.0, 0.0], [0.0, 1.0]]), True),
+         (np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]), False)]
+    )
+    def test_ok(self, a: NDArrayFloat, b: bool):
+        assert is_nd_square(a) == b

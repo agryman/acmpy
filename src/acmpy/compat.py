@@ -1,9 +1,11 @@
 """This module defines functions to achieve compatibility with Maple."""
 
 import re
+import numpy as np
+import numpy.typing as npt
 from pathlib import Path
 from math import isclose
-from sympy import Expr, Matrix
+from sympy import Expr, Matrix, shape
 
 IntFloatExpr = int | float | Expr
 """IntFloatExpr is a convenience type for function arguments that 
@@ -14,6 +16,8 @@ into SymPy expressions."""
 # define Python type aliases that approximate Maple types
 nonnegint = int
 posint = int
+
+NDArrayFloat = npt.NDArray[np.float64]
 
 
 def require_algebraic(name: str, value: Expr) -> None:
@@ -123,3 +127,52 @@ def is_sorted(vals: list) -> bool:
     return all(a <= b for (a, b) in zip(vals[:-1], vals[1:]))
 
 
+def is_nd_zeros(zs: NDArrayFloat, abs_tol: float = ABS_TOL) -> bool:
+    """Return True if and only if every element in the n-dimensional array of floats zs is close to 0."""
+    return is_zeros(ndarray_to_list(zs), abs_tol)
+
+
+def is_nd_float(a: NDArrayFloat) -> bool:
+    """Return True if and only if a is an n-dimensional array of floats."""
+    return a.dtype == np.float64
+
+
+def is_nd_vector(v: NDArrayFloat) -> bool:
+    """Return True if and only if v is a 1-dimensional array of floats."""
+    return is_nd_float(v) and v.ndim == 1
+
+
+def is_nd_matrix(m: NDArrayFloat) -> bool:
+    """Return True if and only if m is a 2-dimensional array of floats."""
+    return is_nd_float(m) and m.ndim == 2
+
+
+def is_nd_square(m: NDArrayFloat) -> bool:
+    """Return True if and only if m is a square 2-dimensional array of floats."""
+    if not is_nd_matrix(m):
+        return False
+    r, c = m.shape
+    return r == c
+
+
+def list_to_ndarray(x: list) -> NDArrayFloat:
+    return np.array(x, dtype=np.float64)
+
+
+def lists_to_ndarrays(t: tuple[list, ...]) -> tuple[NDArrayFloat, ...]:
+    return tuple(list_to_ndarray(x) for x in t)
+
+
+def ndarray_to_list(vals: NDArrayFloat) -> list[float]:
+    """Creates a flat list of floats from an NumPy ndarray of floats."""
+    return [float(val) for val in vals.flat]
+
+
+def Matrix_to_ndarray(M: Matrix) -> NDArrayFloat:
+    """Creates an NumPy 2-dimensional ndarray of floats from a SymPy Matrix."""
+    return np.array([float(m) for m in M]).reshape(*shape(M))
+
+
+def ndarray_to_Matrix(M: NDArrayFloat) -> Matrix:
+    """Creates a SymPy Matrix from an NumPy 2-dimensional ndarray of floats."""
+    return Matrix(*M.shape, lambda i, j: M[i, j])

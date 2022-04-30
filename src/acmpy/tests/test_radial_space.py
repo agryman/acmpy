@@ -1,11 +1,13 @@
 """This module tests the radial_space.py module."""
 
 import pytest
+import numpy as np
 from math import isclose
-from sympy import S, Expr, Rational, Matrix, shape, sqrt
-from acmpy.compat import nonnegint
+from sympy import S, Expr, Rational, Matrix, shape, sqrt, ImmutableMatrix
+from acmpy.compat import nonnegint, NDArrayFloat, list_to_ndarray, is_zeros, Matrix_to_ndarray, ndarray_to_Matrix, \
+    is_nd_square, is_nd_zeros
 from acmpy.radial_space import Radial_Operators, Radial_Sm, Parse_RadialOp_List, Radial_D2b, KTSOps, KTSOp, KTOp, \
-    RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, ME_Radial_D2b
+    RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, ME_Radial_D2b, Matrix_sqrt, Matrix_sqrtInv
 
 
 class TestRadial:
@@ -19,7 +21,7 @@ class TestParse_RadialOp_List:
     """Tests the Parse_RadialOp_List() function."""
 
     def test_Radial_D2b(self):
-        parsed_ops: KTSOps = Parse_RadialOp_List([Radial_D2b])
+        parsed_ops: KTSOps = Parse_RadialOp_List((Radial_D2b,))
         assert len(parsed_ops) == 1
 
         kts_op: KTSOp = parsed_ops[0]
@@ -32,14 +34,14 @@ class TestParse_RadialOp_List:
 
     @pytest.mark.parametrize(
         "rs_op, expected_K",
-        [([Radial_b], 1),
-         ([Radial_b2], 2),
-         ([Radial_bm], -1),
-         ([Radial_bm2], -2),
-         ([Radial_b, Radial_b], 2),
-         ([Radial_b, Radial_b, Radial_b], 3),
-         ([Radial_b2, Radial_b2], 4),
-         ([Radial_b2, Radial_b2, Radial_b2], 6)]
+        [((Radial_b,), 1),
+         ((Radial_b2,), 2),
+         ((Radial_bm,), -1),
+         ((Radial_bm2,), -2),
+         ((Radial_b, Radial_b), 2),
+         ((Radial_b, Radial_b, Radial_b), 3),
+         ((Radial_b2, Radial_b2), 4),
+         ((Radial_b2, Radial_b2, Radial_b2), 6)]
     )
     def test_Radial_bS(self, rs_op, expected_K):
         parsed_ops: KTSOps = Parse_RadialOp_List(rs_op)
@@ -122,3 +124,53 @@ class TestME_Radial_D2b:
         a: float = ME.evalf()
         b: float = expected.evalf()
         assert isclose(a, b)
+
+
+def is_sqrt(A: NDArrayFloat, B: NDArrayFloat) -> bool:
+    """Return True if and only if B is the square root of A."""
+    return A.shape == B.shape and is_nd_square(A) and is_nd_square(B) and \
+        is_nd_zeros(A - B @ B)
+
+
+class TestMatrix_sqrt:
+    """Tests the Matrix_sqrt() function."""
+
+    @pytest.mark.parametrize(
+        "A,B",
+        [([[1.0, 0.0], [0.0, 1.0]], [[1.0, 0.0], [0.0, 1.0]]),
+         ([[4.0, 0.0], [0.0, 9.0]], [[2.0, 0.0], [0.0, 3.0]])]
+    )
+    def test_ok(self, A: list[list[float]], B: list[list[float]]):
+        a: NDArrayFloat = list_to_ndarray(A)
+        b: NDArrayFloat = list_to_ndarray(B)
+        assert is_sqrt(a, b)
+
+        a_matrix: Matrix = ndarray_to_Matrix(a)
+        c_matrix: Matrix = Matrix_sqrt(ImmutableMatrix(a_matrix))
+        c: NDArrayFloat = Matrix_to_ndarray(c_matrix)
+        assert is_sqrt(a, c)
+
+
+def is_sqrtInv(A: NDArrayFloat, B: NDArrayFloat) -> bool:
+    """Return True if and only if B is inverse of the square root of A."""
+    return A.shape == B.shape and is_nd_square(A) and is_nd_square(B) and \
+        is_nd_zeros(A @ B @ B - np.eye(A.shape[0]))
+
+
+class TestMatrix_sqrtInv:
+    """Tests the Matrix_sqrtInv() function."""
+
+    @pytest.mark.parametrize(
+        "A,B",
+        [([[1.0, 0.0], [0.0, 1.0]], [[1.0, 0.0], [0.0, 1.0]]),
+         ([[4.0, 0.0], [0.0, 9.0]], [[1 / 2.0, 0.0], [0.0, 1 / 3.0]])]
+    )
+    def test_ok(self, A: list[list[float]], B: list[list[float]]):
+        a: NDArrayFloat = list_to_ndarray(A)
+        b: NDArrayFloat = list_to_ndarray(B)
+        assert is_sqrtInv(a, b)
+
+        a_matrix: Matrix = ndarray_to_Matrix(a)
+        c_matrix: Matrix = Matrix_sqrtInv(ImmutableMatrix(a_matrix))
+        c: NDArrayFloat = Matrix_to_ndarray(c_matrix)
+        assert is_sqrtInv(a, c)

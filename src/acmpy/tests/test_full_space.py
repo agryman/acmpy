@@ -1,9 +1,10 @@
 """This module tests the full_space.py module."""
 
+import numpy as np
 import pytest
 from math import isclose
 
-from sympy import Matrix, zeros, eye, Expr, S, Rational, shape, sqrt
+from sympy import Matrix, Expr, S, Rational, shape, sqrt
 
 from acmpy.compat import nonnegint, is_close
 from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues
@@ -14,33 +15,32 @@ class TestEigenfiddle:
     """Test the Eigenfiddle function."""
 
     def test_error_not_square(self):
-        M: Matrix = zeros(2, 3)
+        M: np.ndarray = np.zeros((2, 3))
         with pytest.raises(ValueError):
             Eigenfiddle(M)
 
     def test_ok_identity(self):
-        M: Matrix = eye(2)
-        values: list[float]
-        P: Matrix
+        M: np.ndarray = np.eye(2)
+        values: np.ndarray
+        P: np.ndarray
         values, P = Eigenfiddle(M)
-        assert values == [1, 1]
-        assert P == M
+        assert all(values == np.array([1, 1]))
 
     def test_ok_2_3(self):
-        M: Matrix = Matrix([[2, 0], [0, 3]])
-        values: list[float]
-        P: Matrix
+        M: np.ndarray = np.array([[2, 0], [0, 3]])
+        values: np.ndarray
+        P: np.ndarray
         values, P = Eigenfiddle(M)
-        assert values == [2, 3]
-        assert P == eye(2)
+        assert all(values == np.array([2, 3]))
+        assert all(P.flat == np.eye(2).flat)
 
     def test_ok_3_2(self):
-        M: Matrix = Matrix([[3, 0], [0, 2]])
-        values: list[float]
-        P: Matrix
+        M: np.ndarray = np.array([[3, 0], [0, 2]])
+        values: np.ndarray
+        P: np.ndarray
         values, P = Eigenfiddle(M)
-        assert values == [2, 3]
-        assert P == Matrix([[0, 1], [1, 0]])
+        assert all(values.flat == np.array([2, 3]).flat)
+        assert all(P.flat == np.array([[0, 1], [1, 0]]).flat)
 
 
 @pytest.fixture
