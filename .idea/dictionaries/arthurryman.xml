@@ -2,20 +2,27 @@
   <dictionary name="arthurryman">
     <words>
       <w>acmpy</w>
+      <w>agryman</w>
       <w>angmom</w>
+      <w>arthurryman</w>
       <w>clebsch</w>
       <w>coeff</w>
       <w>coeffs</w>
       <w>diagonalisation</w>
       <w>eigenbasis</w>
       <w>eigenfiddle</w>
+      <w>eigenstuff</w>
+      <w>eigenvals</w>
+      <w>eigenvects</w>
       <w>evalb</w>
       <w>halfsigma</w>
       <w>hamiltonians</w>
       <w>iquo</w>
       <w>irem</w>
       <w>irreps</w>
+      <w>lambdaa</w>
       <w>lmin</w>
+      <w>ndarrays</w>
       <w>noncommutative</w>
       <w>nonnegative</w>
       <w>nonnegint</w>

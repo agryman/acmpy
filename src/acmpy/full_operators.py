@@ -10,7 +10,7 @@ from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3
     Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3, Spherical_Operators
 from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
     RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem, Radial_Operators, Radial_Db, \
-    Radial_bm, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b
+    Radial_bm, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, RepRadial_b2_sqrt, RepRadial_b2_sqrtInv
 from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
     Convert_red, NumSO5r3_Prod, Qred_p1, Qred_m1, QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, \
     QxQxQred_m1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi
@@ -265,8 +265,8 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
 
     RepRadial.cache_clear()
     RepRadial_param.cache_clear()
-    Matrix_sqrt.cache_clear()
-    Matrix_sqrtInv.cache_clear()
+    RepRadial_b2_sqrt.cache_clear()
+    RepRadial_b2_sqrtInv.cache_clear()
     RepRadial_bS_DS.cache_clear()
     RepRadialshfs_Prod.cache_clear()
     RepRadial_Prod_rem.cache_clear()

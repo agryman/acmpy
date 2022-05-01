@@ -132,9 +132,9 @@ def is_nd_zeros(zs: NDArrayFloat, abs_tol: float = ABS_TOL) -> bool:
     return is_zeros(ndarray_to_list(zs), abs_tol)
 
 
-def is_nd_float(a: NDArrayFloat) -> bool:
-    """Return True if and only if a is an n-dimensional array of floats."""
-    return a.dtype == np.float64
+def is_nd_float(x: NDArrayFloat) -> bool:
+    """Return True if and only if x is an n-dimensional array of floats."""
+    return x.dtype == np.float64
 
 
 def is_nd_vector(v: NDArrayFloat) -> bool:

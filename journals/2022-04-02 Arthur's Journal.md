@@ -356,7 +356,7 @@ Do topological sort of modules by imports. - DONE
 * `acm1_4.py`: globals
 * `hamiltonian_data.py`: compat, internal_operators, globals
 * `globals.py`: internal_operators, spherical_space, so5_so3_cg, compat
-* `radial_space.py`: compat, internal_operators, eignenvalues
+* `radial_space.py`: compat, internal_operators, eigenvalues
 * `internal_operators.py`: compat, so5_s03_cg, spherical_space
 * `so5_so3_cg.py`: compat, spherical_space
 * `spherical_space.py`: compat
@@ -436,7 +436,7 @@ tasks involving floating point matrices. - TODO
 Debugging with debug_acm_scale.
 * RepXspace_Prod returns a 1 x 1 matrix with `zoo` as its entry. - TODO
 * The `zoo` is returned from RepXspace_Twin when the operator is Radial_bm2
-* The matrix elements in `RepXspace_Twin` are assumed to be float but are actually Expr: `sph_ME: float = sph_Mat[i2 - 1, j2 - 1]`
+* The matrix elements in `RepXspace_Twin` are assumed to be `float` but are actually `Expr`: `sph_ME: float = sph_Mat[i2 - 1, j2 - 1]`
 * The call to `RepRadial_Prod_rem` returns `zoo`
 * The call to `RepRadialshfs_Prod` returns `zoo`
 * The call to `r_op.representation(anorm, lambda_run, R, nu_min, nu_max)` returns `zoo` where the args
@@ -1694,3 +1694,38 @@ to the @cache decorator in Python. However, the arguments to a cached function m
   * However, it is probable that the @cache decorator only uses the hash value of the arguments and doesn't actually save them
 
 break 5:40 pm
+
+### 7:50 pm
+
+* Convert more SymPy Matrix operations to NumPy - IN-PROGRESS
+  * Check where Matrix_to_ndarray is used - TODO
+
+The `RepRadial` function in `radial_space.py` is cached.
+It takes an `ME` function as its first argument.
+The IDE is complaining that the function in not Hashable.
+* Correct this type warning - TODO
+  * Define a type?
+  * Wrap function in new class?
+
+The Python docs say:
+```text
+class collections.abc.Hashable
+ABC for classes that provide the __hash__() method.
+```
+
+The IDE warning:
+```text
+Expected type 'Hashable', got '(lambdaa: Expr, mu_f: int, mu_i: int) -> Expr' instead
+```
+is probably incorrect since the cache decorator does work at runtime.
+The IDE is probably overstating the requirement since an object is hashable if it
+implements the `__hash__` method whereas `Hashable` means that it inherits from the ABC `Hashable`.
+This is an example of nominal versus structural (aka static duck) typing.
+See: https://docs.python.org/3/library/typing.html#nominal-vs-structural-subtyping
+
+From my point of view, I prefer nominal typing since the IDE and mypy can find type errors
+more reliably.
+* should I define an ABC for the ME functions? - TODO
+
+break 9:30 pm
+
