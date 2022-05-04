@@ -8,7 +8,7 @@ from typing import Optional, Callable
 from sympy import Expr, Matrix, shape, S
 
 from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo, \
-    Matrix_to_ndarray, ndarray_to_Matrix, ndarray_to_list
+    Matrix_to_ndarray, ndarray_to_Matrix, ndarray_to_list, NDArrayFloat
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
@@ -166,9 +166,7 @@ def DigXspace(ham_op: OperatorSum,
             if sph_dim > 0:
                 Lvals.append(LL)
 
-                L_matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, LL)
-
-                L_matrix_np = Matrix_to_ndarray(L_matrix)
+                L_matrix_np = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, LL)
                 eigen_vals_result_np, eigen_bases_result_np = Eigenfiddle(L_matrix_np)
                 eigen_vals_result = ndarray_to_list(eigen_vals_result_np)
                 eigen_bases_result = ndarray_to_Matrix(eigen_bases_result_np)
@@ -177,7 +175,8 @@ def DigXspace(ham_op: OperatorSum,
 
                 eigen_bases.append(eigen_bases_result)
     else:
-        rep_matrix: Matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, LLM)
+        rep_matrix_np: NDArrayFloat = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, LLM)
+        # rep_matrix: Matrix = ndarray_to_Matrix(rep_matrix_np)
         rad_dim: int = dimRadial(nu_min, nu_max)
         Lstart: int = 1
 
@@ -187,9 +186,10 @@ def DigXspace(ham_op: OperatorSum,
             if sph_dim > 0:
                 Lvals.append(LL)
 
-                L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
+                # L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
 
-                L_matrix_np = Matrix_to_ndarray(L_matrix)
+                # L_matrix_np = Matrix_to_ndarray(L_matrix)
+                L_matrix_np = rep_matrix_np[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
                 eigen_vals_result_np, eigen_bases_result_np = Eigenfiddle(L_matrix_np)
                 eigen_vals_result = ndarray_to_list(eigen_vals_result_np)
                 eigen_bases_result = ndarray_to_Matrix(eigen_bases_result_np)
@@ -276,7 +276,8 @@ def AmpXspeig(tran_op: OperatorSum, eigen_bases: list[Matrix], Xparams: XParams,
     L_min: nonnegint = Lvals[0]
     L_max: nonnegint = Lvals[-1]
 
-    tran_mat: Matrix = RepXspace(tran_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    tran_mat_np: NDArrayFloat = RepXspace(tran_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    tran_mat: Matrix = ndarray_to_Matrix(tran_mat_np)
 
     L_dims: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, LL) for LL in Lvals]
     L_ends: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, L_min, LL) for LL in Lvals]

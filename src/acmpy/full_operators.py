@@ -1,11 +1,13 @@
 """6. Procedures that represent operators on the full (cross-product) Hilbert space."""
 
+import numpy as np
 from typing import Optional
 from functools import cache
 
 from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye, Rational, sqrt
 
-from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint, \
+    NDArrayFloat, Matrix_to_ndarray, ndarray_to_Matrix
 from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
     Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3, Spherical_Operators
 from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
@@ -226,7 +228,7 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> Matrix:
+              ) -> NDArrayFloat:
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     if L_max is None:
@@ -235,33 +237,44 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
 
     n: int = len(x_oplc)
     Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
-    Rmat: Matrix
+    # Rmat: Matrix
+    Rmat_np: NDArrayFloat
     if n == 0:
-        Rmat = zeros(dimXspace(nu_min, nu_max, v_min, v_max, L, L_max))
+        d: int = dimXspace(nu_min, nu_max, v_min, v_max, L, L_max)
+        Rmat_np = np.zeros((d, d), dtype=np.float64)
+        # Rmat = zeros(d)
     else:
         coeff, prod = x_oplc[0]
-        Rmat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+        Rmat_np = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+        # Rmat = ndarray_to_Matrix(Rmat_np)
         if coeff.is_constant():
-            Rmat = coeff.evalf() * Rmat
+            # Rmat = coeff.evalf() * Rmat
+            Rmat_np = float(coeff) * Rmat_np
         else:
-            Rmat = Rmat * diag(*[coeff.subs({NUMBER: nu,
-                                             SENIORITY: v,
-                                             ALFA: a,
-                                             ANGMOM: L}).evalf()
-                                 for (nu, v, a, L) in Xlabels])
+            coeffs = [coeff.subs({NUMBER: nu,
+                              SENIORITY: v,
+                              ALFA: a,
+                              ANGMOM: L}).evalf()
+                  for (nu, v, a, L) in Xlabels]
+            # Rmat = Rmat * diag(*coeffs)
+            Rmat_np = Rmat_np * np.array([float(x) for x in coeffs])
 
         for coeff, prod in x_oplc[1:]:
+            Pmat_np: NDArrayFloat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+            # Pmat: Matrix = ndarray_to_Matrix(Pmat_np)
             if coeff.is_constant():
-                Rmat = Rmat + coeff.evalf() * \
-                       RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+                # Rmat = Rmat + coeff.evalf() * Pmat
+                Rmat_np = Rmat_np + float(coeff) * Pmat_np
             else:
-                Pmat: Matrix = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
-                Pmat = Pmat * diag(*[coeff.subs({NUMBER: nu,
-                                                 SENIORITY: v,
-                                                 ALFA: a,
-                                                 ANGMOM: L}).evalf()
-                                     for (nu, v, a, L) in Xlabels])
-                Rmat = Rmat + Pmat
+                coeffs = [coeff.subs({NUMBER: nu,
+                                      SENIORITY: v,
+                                      ALFA: a,
+                                      ANGMOM: L}).evalf()
+                          for (nu, v, a, L) in Xlabels]
+                # Pmat = Pmat * diag(*coeffs)
+                Pmat_np = Pmat_np * np.array([float(c) for c in coeffs])
+                # Rmat = Rmat + Pmat
+                Rmat_np = Rmat_np + Pmat_np
 
     RepRadial.cache_clear()
     RepRadial_param.cache_clear()
@@ -277,7 +290,7 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
     RepSO5_Y_rem.cache_clear()
     RepSO5r3_Prod_rem.cache_clear()
 
-    return Rmat
+    return Rmat_np
 
 
 # # The procedure RepXspace_Prod below returns the (alternative SO(3)-reduced)
@@ -396,7 +409,7 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: Optional[nonnegint]
-                   ) -> Matrix:
+                   ) -> NDArrayFloat:
     if L_max is None:
         L_max = L_min
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -486,7 +499,7 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
                                 L_min, L_max))
 
     assert run_Mat is not None
-    return run_Mat
+    return Matrix_to_ndarray(run_Mat)
 
 
 # # The following procedure RepXspace_Twin does much of the work
