@@ -237,18 +237,14 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
 
     n: int = len(x_oplc)
     Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
-    # Rmat: Matrix
     Rmat_np: NDArrayFloat
     if n == 0:
         d: int = dimXspace(nu_min, nu_max, v_min, v_max, L, L_max)
         Rmat_np = np.zeros((d, d), dtype=np.float64)
-        # Rmat = zeros(d)
     else:
         coeff, prod = x_oplc[0]
         Rmat_np = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
-        # Rmat = ndarray_to_Matrix(Rmat_np)
         if coeff.is_constant():
-            # Rmat = coeff.evalf() * Rmat
             Rmat_np = float(coeff) * Rmat_np
         else:
             coeffs = [coeff.subs({NUMBER: nu,
@@ -256,14 +252,11 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
                               ALFA: a,
                               ANGMOM: L}).evalf()
                   for (nu, v, a, L) in Xlabels]
-            # Rmat = Rmat * diag(*coeffs)
             Rmat_np = Rmat_np * np.array([float(x) for x in coeffs])
 
         for coeff, prod in x_oplc[1:]:
             Pmat_np: NDArrayFloat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
-            # Pmat: Matrix = ndarray_to_Matrix(Pmat_np)
             if coeff.is_constant():
-                # Rmat = Rmat + coeff.evalf() * Pmat
                 Rmat_np = Rmat_np + float(coeff) * Pmat_np
             else:
                 coeffs = [coeff.subs({NUMBER: nu,
@@ -271,9 +264,7 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
                                       ALFA: a,
                                       ANGMOM: L}).evalf()
                           for (nu, v, a, L) in Xlabels]
-                # Pmat = Pmat * diag(*coeffs)
                 Pmat_np = Pmat_np * np.array([float(c) for c in coeffs])
-                # Rmat = Rmat + Pmat
                 Rmat_np = Rmat_np + Pmat_np
 
     RepRadial.cache_clear()

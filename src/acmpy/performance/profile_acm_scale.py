@@ -13,7 +13,7 @@ from acmpy.examples.ex_2_1_specification_of_hamiltonian import make_RWC_ham_fig5
 from acmpy.compat import nonnegint
 
 
-def main(nu_max: nonnegint = 5, v_max: nonnegint = 18, L_max: nonnegint = 6) -> None:
+def run_ACM_Scale(nu_max: nonnegint = 5, v_max: nonnegint = 18, L_max: nonnegint = 6) -> None:
     ACM_set_defaults(0)
     ACM_set_output(2, 8, 5)
     ACM_set_datum(1)
@@ -54,12 +54,17 @@ if __name__ == '__main__':
     L_max: nonnegint = 6
 
     # run without profiling
-    main(nu_max, v_max, L_max)
+    run_ACM_Scale(nu_max, v_max, L_max)
 
     # run with profiling
-    command: str = f'main({nu_max}, {v_max}, {L_max})'
+    # command: str = f'run_ACM_Scale({nu_max}, {v_max}, {L_max})'
+    # cProfile.run(command, filename)
+
+    with cProfile.Profile() as pr:
+        run_ACM_Scale(nu_max, v_max, L_max)
+
     filename: str = f'acm_scale_{nu_max}_{v_max}_{L_max}_stats'
-    cProfile.run(command, filename, SortKey.CUMULATIVE)
+    pr.dump_stats(filename)
 
     p: Stats = Stats(filename)
     p.sort_stats(SortKey.TIME).print_stats(30)

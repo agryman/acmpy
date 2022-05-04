@@ -226,9 +226,39 @@ NameError: name 'main' is not defined
 ```
 
 * Why the changed behaviour in cProfile.run?
-* Debug the execution - no exception
-* Rerun - exception occurs
-* commit latest changes to numpy branch
-* check out master and run profiler
+  * Debug the execution -  - DONE no exception
+  * Rerun - exception occurs - DONE
+  * commit latest changes to numpy branch - DONE
+  * check out master and run profiler - DONE no exception
+  * Summary: I can't profile execution on the numpy branch
+  * What has changed? Do a diff between master and numpy branches - DONE no smoking gun
+  * other people have hit this problem
+  * they work around it using `cProfile.runctx(‘functionname(args)’, globals(), locals())`
+  * update the code to avoid passing command string - DONE
 
+The execution time is now 15.24s:
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 5, v_max: 18, L_max: 6
+Lowest eigenvalue is -6.34376. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.56,    1.99,    2.86,    3.61,    4.09]
+  At L= 2: [    0.10,    0.97,    1.74,    2.19,    2.38,    3.05]
+  At L= 3: [    1.11,    2.70,    3.32,    4.58,    5.12,    5.43]
+  At L= 4: [    0.30,    1.23,    1.92,    2.08,    2.41,    2.80]
+  At L= 5: [    1.41,    2.20,    3.22,    3.64,    3.89,    4.47]
+  At L= 6: [    0.61,    1.58,    2.35,    2.49,    2.83,    2.88]
+elapsed process time for ACM_Scale: 15.248869000000001
+```
 
+Eliminate redundancy in `RepXspace` - TODO
+
+break 6:30 pm

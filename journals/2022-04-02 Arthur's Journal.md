@@ -507,7 +507,7 @@ At this point I can do one the following:
 3. Compare performance of Sympy versus Numpy.
 
 #### Decision
-* The Numpy performance on matrix operations is too slow to be used in practice.
+* The SymPy performance on matrix operations is too slow to be used in practice.
 * The use of Python is therefore not attractive unless it performs comparably to Maple.
 * The entire Maple notebook took 10261 seconds to execute.
 * The first ACM_Scale example took around 38 minutes = 38 * 60 seconds = 2280 seconds to execute.
@@ -555,7 +555,7 @@ Lowest eigenvalue is -3045.21343. Relative eigenvalues follow (each divided by 1
 elapsed process time for ACM_Scale: 659.327389
 ```
 
-There elapsed time is 659 seconds which is almost 100x slower than Maple.
+The elapsed time is 659 seconds which is almost 100x slower than Maple.
 Also, the results are different, and the output does not respect the settings.
 All eigenvalues are displayed and each is displayed with too much precision.
 
