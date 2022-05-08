@@ -1,5 +1,6 @@
 """8. Procedures that aid the production of the data for the particular Hamiltonians considered in [RWC2009]."""
 
+import math
 from typing import Callable
 
 from sympy import S, Expr, sqrt, Rational, Symbol, symbols, solveset
@@ -45,17 +46,15 @@ def RWC_Ham(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, chi: IntFloatEx
 #   aa*(4+9/(lambda0-1))/8/B + B*lambda0*c1/2/aa
 #               + B*lambda0*(lambda0+1)*c2/2/aa^2 + kappa/3:
 # end:
-def RWC_expt(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr,
-             anorm: IntFloatExpr, lambda0: IntFloatExpr
-             ) -> Expr:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
-    kappa = S(kappa)
-    anorm = S(anorm)
-    lambda0 = S(lambda0)
+def RWC_expt(B: float, c1: float, c2: float, kappa: float,
+             anorm: float, lambda0: float
+             ) -> float:
+    if anorm == 0:
+        raise ValueError('anorm must not equal 0.')
+    if lambda0 == 1:
+        raise ValueError('lambda0 must not equal 1.')
 
-    aa: Expr = anorm ** 2
+    aa: float = anorm ** 2
     return aa * (4 + 9 / (lambda0 - 1)) / 8 / B + B * lambda0 * c1 / 2 / aa \
            + B * lambda0 * (lambda0 + 1) * c2 / 2 / aa ** 2 + kappa / 3
 
@@ -68,9 +67,9 @@ def RWC_expt(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloa
 #                           anorm::constant,$)
 #   RWC_expt(_passed,evalf(RWC_dav(c1,c2,anorm))):
 # end:
-def RWC_expt_link(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr, anorm: IntFloatExpr
-                  ) -> Expr:
-    return RWC_expt(B, c1, c2, kappa, anorm, RWC_dav(c1, c2, anorm).evalf())
+def RWC_expt_link(B: float, c1: float, c2: float, kappa: float, anorm: float
+                  ) -> float:
+    return RWC_expt(B, c1, c2, kappa, anorm, RWC_dav(c1, c2, anorm))
 
 
 # # The following procedure RWC_dav calculates lambda0 from anorm
@@ -79,8 +78,8 @@ def RWC_expt_link(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: In
 # RWC_dav:=proc(c1::constant,c2::constant,anorm::constant,v::nonnegint:=0,$)
 #   lam_dav(anorm,beta_dav(c1,c2),v)
 # end:
-def RWC_dav(c1: IntFloatExpr, c2: IntFloatExpr, anorm: IntFloatExpr, v: nonnegint = 0
-            ) -> Expr:
+def RWC_dav(c1: float, c2: float, anorm: float, v: nonnegint = 0
+            ) -> float:
     return lam_dav(anorm, beta_dav(c1, c2), v)
 
 
@@ -90,12 +89,9 @@ def RWC_dav(c1: IntFloatExpr, c2: IntFloatExpr, anorm: IntFloatExpr, v: nonnegin
 # lam_dav:=proc(a::constant,beta0::constant,v::nonnegint:=0,$)
 #     1+sqrt( (v+3/2)^2 + a^4*beta0^4 )
 # end:
-def lam_dav(a: IntFloatExpr, beta0: IntFloatExpr, v: nonnegint = 0
-            ) -> Expr:
-    a = S(a)
-    beta0 = S(beta0)
-
-    return 1 + sqrt((v + Rational(3, 2)) ** 2 + a ** 4 * beta0 ** 4)
+def lam_dav(a: float, beta0: float, v: nonnegint = 0
+            ) -> float:
+    return 1 + math.sqrt((v + 1.5) ** 2 + (a * beta0) ** 4)
 
 
 # # The following calculates beta_0 using (B15)
@@ -107,12 +103,9 @@ def lam_dav(a: IntFloatExpr, beta0: IntFloatExpr, v: nonnegint = 0
 #     sqrt(-c1/c2/2)
 #   fi;
 # end:
-def beta_dav(c1: IntFloatExpr, c2: IntFloatExpr
-             ) -> Expr:
-    c1 = S(c1)
-    c2 = S(c2)
-
-    return S.Zero if c1.evalf() >= 0 else sqrt(-c1 / c2 / 2)
+def beta_dav(c1: float, c2: float
+             ) -> float:
+    return 0 if c1 >= 0 else sqrt(-c1 / (c2 * 2))
 
 
 # # The following procedure RWC_alam returns values of the ACM parameters
@@ -162,18 +155,15 @@ def beta_dav(c1: IntFloatExpr, c2: IntFloatExpr
 #   fi:
 #
 # end:
-def RWC_alam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, v: nonnegint = 0
+def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
              ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
     require_nonnegint('v', v)
 
     vshft: int = (2 * v + 3) ** 2
 
     A: Symbol = symbols('A', real=True)
     aa0: float
-    if c1.evalf() < 0:
+    if c1 < 0:
 
         def muf(aa: Expr) -> Expr:
             return sqrt(vshft + (aa * c1 / c2) ** 2)

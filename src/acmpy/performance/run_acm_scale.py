@@ -1,3 +1,4 @@
+import math
 from time import process_time
 
 from sympy import sqrt, Rational
@@ -37,7 +38,7 @@ def run_ACM_Scale(nu_max: nonnegint = 5, v_max: nonnegint = 18, L_max: nonnegint
     print(f'nu_max: {nu_max}, v_max: {v_max}, L_max: {L_max}')
 
     start: float = process_time()
-    ACM_Scale(RWC_ham_fig5a, sqrt(B), Rational(5, 2), 0, nu_max, 0, v_max, 0, L_max)
+    ACM_Scale(RWC_ham_fig5a, math.sqrt(B), 2.5, 0, nu_max, 0, v_max, 0, L_max)
     finish: float = process_time()
 
     elapsed: float = finish - start

@@ -123,7 +123,7 @@ import acmpy.globals as g
 
 EigenValues = list[NDArrayFloat]
 EigenBases = list[NDArrayFloat]
-XParams = tuple[Expr, Expr, nonnegint, nonnegint, nonnegint, nonnegint]
+XParams = tuple[float, float, nonnegint, nonnegint, nonnegint, nonnegint]
 LValues = list[nonnegint]
 
 
@@ -141,15 +141,13 @@ def validate_Lvals(Lvals: LValues) -> None:
 
 
 def DigXspace(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
               ) -> tuple[EigenValues, EigenBases, XParams, LValues]:
     if L_max is None:
         L_max = L_min
-    require_algebraic('anorm', anorm)
-    require_algebraic('lambda_base', lambda_base)
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
@@ -1266,7 +1264,7 @@ def Show_Amps(Melements: LBlockNDFloatArray,
 # end;
 def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                      ham_op: OperatorSum,
-                     anorm: Expr, lambda_base: Expr,
+                     anorm: float, lambda_base: float,
                      nu_min: nonnegint, nu_max: nonnegint,
                      v_min: nonnegint, v_max: nonnegint,
                      L_min: nonnegint, L_max: Optional[nonnegint] = None
@@ -1374,7 +1372,7 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
 
 def ACM_Scale(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
@@ -1400,7 +1398,7 @@ def ACM_Scale(ham_op: OperatorSum,
 
 
 def ACM_Adapt(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None

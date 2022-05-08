@@ -662,7 +662,7 @@ Change scaling factor to be float - DONE
 * mypy - DONE
 * pytest - DONE
 
-Checkpoint current version of code
+Checkpoint current version of code - DONE
 * commit changes to numpy branch
 * create and approve PR
 * merge in master branch
@@ -670,4 +670,44 @@ Checkpoint current version of code
 
 Check code for all uses of evalf() - IN-PROGRESS
 * 52 results in code
-* Make anorm and lambda_base floats
+* Make anorm and lambda_base floats - DONE
+* measure performance - DONE
+```text
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+elapsed process time for ACM_Scale: 5.1183629999999996
+```
+
+There is no change in the displayed accuracy.
+
+Previous time:
+```text
+elapsed process time for ACM_Scale: 44.304010999999996
+```
+
+Speedup = 44.3/5.1 = 8.7x
+
+Maple time = 3.6 sec.
+
+Python/Maple = 5.1/3.6 = 1.4x.
+Therefore, Python is now only 40% slower than Maple.
+
+Check code for all uses of evalf() - IN-PROGRESS
+* 41 results in code
+* the remaining use of SymPy numerical computation is in the representation matrices of type Matrix
+* convert the representations to NumPy
+* try to also use NumPy vectorized computation
+* NumPy also has an api for creating an array via a lambda
+* However, the lambda is passed an array of indices which means it should be possible to vectorize

@@ -89,7 +89,7 @@ class TestRepRadial_bS_DS:
          (4, 1, -1.976423538)]
     )
     def test_KT000(self, K, T, expected):
-        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 0)
+        rep: Matrix = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 0)
         assert shape(rep) == (1, 1)
 
         result: float = float(rep[0, 0])
@@ -98,7 +98,7 @@ class TestRepRadial_bS_DS:
     def test_KT001(self):
         K: int = 0
         T: int = 2
-        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 1)
+        rep: Matrix = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 1)
         assert shape(rep) == (2, 2)
 
         expected: Matrix = Matrix([[-Rational(7, 6), 7 * sqrt(10) / 30],
@@ -121,7 +121,7 @@ class TestME_Radial_D2b:
          (1, 1, -Rational(19, 6))]
     )
     def test_fi(self, mu_f: nonnegint, mu_i: nonnegint, expected: Expr):
-        ME: Expr = ME_Radial_D2b(Rational(5, 2), mu_f, mu_i)
+        ME: Expr = ME_Radial_D2b(2.5, mu_f, mu_i)
         a: float = ME.evalf()
         b: float = expected.evalf()
         assert isclose(a, b)
