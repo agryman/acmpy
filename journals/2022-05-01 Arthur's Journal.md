@@ -666,7 +666,7 @@ Checkpoint current version of code
 * commit changes to numpy branch
 * create and approve PR
 * merge in master branch
-* tag as v-1-1-1
+* tag as v1-1-1
 
 Check code for all uses of evalf() - IN-PROGRESS
 * 52 results in code
