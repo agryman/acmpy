@@ -698,7 +698,8 @@ def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
     # NOTE: The Maple source is correct because it fails to define k.
     # NOTE: This function is not used anywhere.
     assert r + mu - nu >= 0
-    k: int = r + mu - nu + 1  # TODO: verify this is the correct value of k
+    # TODO: verify the following is the correct value of k
+    k: int = r + mu - nu + 1
     assert k >= 1
 
     res: Expr = sum((-1) ** j * binomial(r, j) * binomial(2 * r + mu - nu - j - 1, r + mu - nu)

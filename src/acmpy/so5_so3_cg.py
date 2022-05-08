@@ -25,6 +25,7 @@ from acmpy.spherical_space import dimSO5r3, dimSO5, dimSO3
 # # each a subdirectory of the directory specified in SO5CG_directory.
 # # There are no v2=0 files because the data is easily generated
 # # (and is done so in the procedure load_CG_table below).
+
 SO5Quintet = tuple[nonnegint, nonnegint, posint, nonnegint, nonnegint]
 """An SO5 quintet is a tuple (v1, v2, a2, L2, v3) of irrep label components."""
 
@@ -42,6 +43,24 @@ def require_SO5Triple(v: nonnegint, a: posint, L: nonnegint) -> None:
     require_posint('a', a)
     require_nonnegint('L', L)
 
+
+# # The SO(5)>SO(3) CG coefficients are initially obtained from external files.
+# # The value of the Maple variable SO5CG_directory determines the directory
+# # below which are to be found files containing SO(5)>SO(3) CG coefficients.
+# # It may be specified at the start of a worksheet.
+# # Or, if a acm-user.mpl file is used, it may be specified there.
+# # A sample definition is (the final "/" is necessary):
+# #     SO5CG_directory:="/home/username/maple/acm/so5cg-data/":  # sample
+#
+# # The procedure call
+# #     show_CG_file(2,3,1,0,5):   # test
+# # would test the directory specified in SO5CG_directory
+# # (it is used by the procedure show_CG_file), and, somewhat, the data
+# # therein (it should return two values: 0.522,0.431).
+#
+# # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
+# #   indices(CG_coeffs);
+# # Initially, of course, this table will be empty.
 
 class SO5CGConfig:
     """This class manages the configuration for the external SO5CG database."""

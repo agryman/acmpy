@@ -13,12 +13,14 @@ from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3
 from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
     RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem, Radial_Operators, Radial_Db, \
     Radial_bm, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, RepRadial_b2_sqrt, RepRadial_b2_sqrtInv
-from acmpy.internal_operators import OperatorSum, NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
+from acmpy.internal_operators import NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
     Convert_red, NumSO5r3_Prod, Qred_p1, Qred_m1, QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, \
-    QxQxQred_m1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi
+    QxQxQred_m1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi, \
+    OperatorSum, OperatorTerm, OperatorProduct
 from acmpy.so5_so3_cg import CG_SO5r3
 import acmpy.globals as g
 from acmpy.globals import glb_lam_fun
+
 
 # ###########################################################################
 # ####-------------- Representing operators on full Xspace --------------####
@@ -224,7 +226,8 @@ def lbsXspace(nu_min: nonnegint, nu_max: nonnegint,
 #
 #   Rmat;
 # end:
-def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
+def RepXspace(x_oplc: OperatorSum,
+              anorm: Expr, lambda_base: Expr,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L: nonnegint, L_max: Optional[nonnegint] = None
@@ -235,37 +238,15 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
         L_max = L
     require_nonnegint_range('L', L, L_max)
 
-    n: int = len(x_oplc)
-    Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
-    Rmat_np: NDArrayFloat
-    if n == 0:
+    Rmat: NDArrayFloat
+    if len(x_oplc) == 0:
         d: int = dimXspace(nu_min, nu_max, v_min, v_max, L, L_max)
-        Rmat_np = np.zeros((d, d), dtype=np.float64)
+        Rmat = np.zeros((d, d), dtype=np.float64)
     else:
-        coeff, prod = x_oplc[0]
-        Rmat_np = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
-        if coeff.is_constant():
-            Rmat_np = float(coeff) * Rmat_np
-        else:
-            coeffs = [coeff.subs({NUMBER: nu,
-                              SENIORITY: v,
-                              ALFA: a,
-                              ANGMOM: L}).evalf()
-                  for (nu, v, a, L) in Xlabels]
-            Rmat_np = Rmat_np * np.array([float(x) for x in coeffs])
-
-        for coeff, prod in x_oplc[1:]:
-            Pmat_np: NDArrayFloat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
-            if coeff.is_constant():
-                Rmat_np = Rmat_np + float(coeff) * Pmat_np
-            else:
-                coeffs = [coeff.subs({NUMBER: nu,
-                                      SENIORITY: v,
-                                      ALFA: a,
-                                      ANGMOM: L}).evalf()
-                          for (nu, v, a, L) in Xlabels]
-                Pmat_np = Pmat_np * np.array([float(c) for c in coeffs])
-                Rmat_np = Rmat_np + Pmat_np
+        Xlabels: list[XspaceLabel] = lbsXspace(nu_min, nu_max, v_min, v_max, L, L_max)
+        Rmat = RepXspace_Term(x_oplc[0], Xlabels, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+        for op_term in x_oplc[1:]:
+            Rmat = Rmat + RepXspace_Term(op_term, Xlabels, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
 
     RepRadial.cache_clear()
     RepRadial_param.cache_clear()
@@ -281,7 +262,29 @@ def RepXspace(x_oplc: OperatorSum, anorm: Expr, lambda_base: Expr,
     RepSO5_Y_rem.cache_clear()
     RepSO5r3_Prod_rem.cache_clear()
 
-    return Rmat_np
+    return Rmat
+
+
+def RepXspace_Term(op_term: OperatorTerm, Xlabels: list[XspaceLabel],
+                   anorm: Expr, lambda_base: Expr,
+                   nu_min: nonnegint, nu_max: nonnegint,
+                   v_min: nonnegint, v_max: nonnegint,
+                   L: nonnegint, L_max: nonnegint
+                   ) -> NDArrayFloat:
+    """Compute the matrix representation of the operator term acting on the truncated full Hilbert space."""
+    prod: OperatorProduct = op_term[1]
+    Rmat: NDArrayFloat = RepXspace_Prod(prod, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L, L_max)
+
+    coeff: Expr = op_term[0]
+    if coeff.is_constant():
+        return float(coeff) * Rmat
+
+    coeffs: list[Expr] = [coeff.subs({NUMBER: nu,
+                                      SENIORITY: v,
+                                      ALFA: a,
+                                      ANGMOM: L})
+                          for (nu, v, a, L) in Xlabels]
+    return np.array([float(c) for c in coeffs]) * Rmat
 
 
 # # The procedure RepXspace_Prod below returns the (alternative SO(3)-reduced)

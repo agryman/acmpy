@@ -236,7 +236,7 @@ def dimSO5r3_rngV(v_min: nonnegint, v_max: nonnegint, L: nonnegint) -> int:
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint('L', L)
 
-    return sum(dimSO5r3(i, L) for i in range(v_min, v_max + 1))
+    return sum(dimSO5r3(v, L) for v in range(v_min, v_max + 1))
 
 
 # # The following counts SO(3) irreps for a range of v and a range of L.
@@ -249,9 +249,9 @@ def dimSO5r3_rngVrngL(v_min: nonnegint, v_max: nonnegint,
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
 
-    return sum(dimSO5r3(i, j)
-               for i in range(v_min, v_max + 1)
-               for j in range(L_min, L_max + 1))
+    return sum(dimSO5r3(v, L)
+               for v in range(v_min, v_max + 1)
+               for L in range(L_min, L_max + 1))
 
 
 # # The following also counts SO(3) irreps for a range of v and a range of L,

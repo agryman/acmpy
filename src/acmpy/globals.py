@@ -3,8 +3,6 @@
 import math
 from typing import Callable, Optional
 
-from sympy import sqrt, Expr, S
-
 from acmpy.internal_operators import OperatorSum, Op_AM, quad_op
 from acmpy.spherical_space import dimSO3
 from acmpy.so5_so3_cg import CG_SO3
@@ -43,44 +41,42 @@ ACM_version: str = '1.4'
 #   Mel*CG_SO3(Li,Li,glb_rat_TRopAM,Lf-Li,Lf,Lf)
 # end;
 def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    global glb_rat_TRopAM
-
-    return float(Mel * CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf))
+    return Mel * float(CG_SO3(Li, Li, glb_rat_TRopAM, Lf - Li, Lf, Lf))
 
 
 # mel_amp_fun:=proc(Li,Lf,Mel)
 #   Mel*sqrt(2*Lf+1)
 # end;
 def mel_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    return float(Mel * sqrt(2 * Lf + 1))
+    return Mel * math.sqrt(2 * Lf + 1)
 
 
 # unit_amp_fun:=proc(Li,Lf,Mel)
 #   Mel
 # end;
 def unit_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    return float(Mel)
+    return Mel
 
 
 # quad_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)/dimSO3(Li)
 # end;
 def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    return float(Mel ** 2 * dimSO3(Lf) / dimSO3(Li))
+    return Mel ** 2 * dimSO3(Lf) / dimSO3(Li)
 
 
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;
 def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    return float(Mel ** 2 * dimSO3(Lf))
+    return Mel ** 2 * dimSO3(Lf)
 
 
 # unit_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2
 # end;
 def unit_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    return float(Mel**2)
+    return Mel**2
 
 
 # # The following was described in a previous version
@@ -90,9 +86,7 @@ def unit_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
 #   Mel*gen_amp_mul(Li,Lf,glb_rat_TRopAM)
 # end;
 def mix_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
-    global glb_rat_TRopAM
-
-    return float(Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM))
+    return Mel * gen_amp_mul(Li, Lf, glb_rat_TRopAM)
 
 
 # gen_amp_mul:=proc(Li,Lf,Lt,$)
@@ -104,7 +98,7 @@ def gen_amp_mul(Li: nonnegint, Lf: nonnegint, Lt: nonnegint) -> float:
     if Li == Lf:
         return float(CG_SO3(Lf, Lf, Lt, 0, Lf, Lf))
 
-    return float(sqrt(2 * Lf + 1))
+    return math.sqrt(2 * Lf + 1)
 
 
 # # The following procedure definitions determine functions used for
@@ -180,13 +174,16 @@ def lambda_jig_fun(v: nonnegint) -> nonnegint:
 #
 #    difffun:
 # end:
-def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
+LambdaFunction = Callable[[nonnegint], int]
+
+
+def lambda_davi_fun(C: float) -> LambdaFunction:
     def difffun(v: nonnegint) -> int:
         require_nonnegint('v', v)
 
         diffint: int = math.floor(math.sqrt((v + 1) ** 2 + C) - math.sqrt(2.25 + C))
 
-        return diffint + (1 if is_odd(diffint - v) else 0)
+        return diffint + 1 if is_odd(diffint - v) else diffint
 
     return difffun
 
@@ -199,27 +196,10 @@ def lambda_davi_fun(C: float) -> Callable[[nonnegint], int]:
 # sqrt_fun:=proc(sft)
 #   sqrt(evalf(sft)):
 # end;
-def sqrt_fun(sft: Expr) -> Expr:
-    return sqrt(sft.evalf())
+ScalingFactorFunction = Callable[[float], float]
 
+sqrt_fun: ScalingFactorFunction = math.sqrt
 
-# # The SO(5)>SO(3) CG coefficients are initially obtained from external files.
-# # The value of the Maple variable SO5CG_directory determines the directory
-# # below which are to be found files containing SO(5)>SO(3) CG coefficients.
-# # It may be specified at the start of a worksheet.
-# # Or, if a acm-user.mpl file is used, it may be specified there.
-# # A sample definition is (the final "/" is necessary):
-# #     SO5CG_directory:="/home/username/maple/acm/so5cg-data/":  # sample
-#
-# # The procedure call
-# #     show_CG_file(2,3,1,0,5):   # test
-# # would test the directory specified in SO5CG_directory
-# # (it is used by the procedure show_CG_file), and, somewhat, the data
-# # therein (it should return two values: 0.522,0.431).
-#
-# # To examine which (v1,v2,a2,L2,v3) have been loaded, we can use:
-# #   indices(CG_coeffs);
-# # Initially, of course, this table will be empty.
 
 # # The following determine values used to set the defaults for how the
 # # transition rates and amplitudes of the quadrupole operator are
@@ -332,7 +312,7 @@ glb_rat_2dx: int = 1
 # # This is a function which gives the value of lambda_v-lambda_0.
 #
 # glb_lam_fun:=lambda_acm_fun:
-glb_lam_fun: Callable[[nonnegint], nonnegint] = lambda_acm_fun
+glb_lam_fun: LambdaFunction = lambda_acm_fun
 
 
 # # The following store the current transition operator and its
@@ -361,8 +341,9 @@ glb_rat_TRopAM: nonnegint = 2
 # glb_rat_fun:=quad_rat_fun:
 # glb_rat_format:=def_rat_format:
 # glb_rat_desg:=def_rat_desg:
-MEFunction = Callable[[nonnegint, nonnegint, float], float]
-glb_rat_fun: MEFunction = quad_rat_fun
+MatrixElementFunction = Callable[[nonnegint, nonnegint, float], float]
+
+glb_rat_fun: MatrixElementFunction = quad_rat_fun
 glb_rat_format: str = def_rat_format
 glb_rat_desg: str = def_rat_desg
 
@@ -376,7 +357,7 @@ glb_rat_desg: str = def_rat_desg
 # glb_amp_fun:=quad_amp_fun:
 # glb_amp_format:=def_amp_format:
 # glb_amp_desg:=def_amp_desg:
-glb_amp_fun: Callable = quad_amp_fun
+glb_amp_fun: MatrixElementFunction = quad_amp_fun
 glb_amp_format: str = def_amp_format
 glb_amp_desg: str = def_amp_desg
 
@@ -386,7 +367,7 @@ glb_amp_desg: str = def_amp_desg
 # # (glb_rat_sft) for transition rates:
 #
 # glb_amp_sft_fun:=sqrt:
-glb_amp_sft_fun: Callable = sqrt
+glb_amp_sft_fun: ScalingFactorFunction = math.sqrt
 
 
 # # The following determines how the matrix element labels are displayed:
@@ -466,7 +447,7 @@ def ACM_set_scales(eig_sft: Optional[float] = None,
     if rat_sft is not None:
         glb_rat_sft = rat_sft
 
-    glb_amp_sft = glb_amp_sft_fun(S(glb_rat_sft))  # default is square root
+    glb_amp_sft = glb_amp_sft_fun(glb_rat_sft)  # default is square root
 
     ACM_show_scales(show)
 

@@ -9,7 +9,7 @@ def main():
     print(ACM_version)
     show_CG_file(2, 3, 1, 0, 5)
 
-    # 1.2 Setting th default output format
+    # 1.2 Setting the default output format
     ACM_set_output(2, 8, 5)
     ACM_set_datum(1)
     ACM_set_listln(6, 4)

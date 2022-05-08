@@ -6,8 +6,9 @@ from math import isclose
 
 from sympy import Matrix, Expr, S, Rational, shape, sqrt
 
-from acmpy.compat import nonnegint, is_close
-from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues
+from acmpy.compat import nonnegint, is_close, NDArrayFloat, ndarray_to_list
+from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues, \
+    LBlockFullSpace, LBlockNDFloatArray, LBlocks, validate_Lvals
 from acmpy.internal_operators import OperatorSum, ACM_Hamiltonian
 
 
@@ -86,7 +87,7 @@ class TestDigXspace:
         n: int = len(eigen_vals)
         assert n == 1
 
-        eigen_val: list[float] = eigen_vals[0]
+        eigen_val: NDArrayFloat = eigen_vals[0]
         m: int = len(eigen_val)
         assert m == 1
 
@@ -129,7 +130,7 @@ class TestDigXspace:
         n: int = len(eigen_vals)
         assert n == 1
 
-        eigen_val: list[float] = eigen_vals[0]
+        eigen_val: NDArrayFloat = eigen_vals[0]
         m: int = len(eigen_val)
         assert m == 2
 
@@ -156,7 +157,7 @@ class TestDigXspace:
         assert len(eigenvalues) == len(eigenbases) == len(Lvalues)
         assert Xparams == (anorm, lambda_base, 0, nu_max, 0, v_max)
         assert Lvalues == [0, 2, 3, 4, 5, 6]
-        eigenvalues0 = \
+        expected_eigenvalues0 = \
             [-6.34375707499380, -4.78545798998482, -4.35747748405318, -3.48850681486454, -2.73134974998671,
              -2.25842037137952, -1.73459666025923, -1.13462248733653, -0.736777010494252, 0.160419162784534,
              0.521734783125385, 0.970033490381626, 1.95787532379122, 2.42764405036288, 3.00581475182882,
@@ -166,5 +167,41 @@ class TestDigXspace:
              27.5820693590971, 27.8399026988631, 31.1136235176620, 55.3686357370119, 63.0177158483787,
              65.8797570627707, 79.8590667187793, 81.0625504949505, 129.522857254927, 196.283915332330,
              251.523252295420, 521.303008835543]
-        assert len(eigenvalues[0]) == len(eigenvalues0)
-        assert is_close(eigenvalues[0], eigenvalues0, abs_tol=1e-6)
+        eigenvalues0: list[float] = ndarray_to_list(eigenvalues[0])
+        assert len(eigenvalues0) == len(expected_eigenvalues0)
+        assert is_close(eigenvalues0, expected_eigenvalues0, abs_tol=1e-6)
+
+
+class TestLBlockFullSpace:
+    """Tests the LBlockFullSpace class."""
+
+    @pytest.mark.parametrize(
+        "nu_max,expected",
+        [(10, [(0, 33), (33, 77), (77, 99), (99, 154), (154, 176), (176, 231)]),
+         (18, [(0, 57), (57, 133), (133, 171), (171, 266), (266, 304), (304, 399)])]
+    )
+    def test_ok(self, nu_max, expected):
+        Lvals: list[nonnegint] = [0, 2, 3, 4, 5, 6]
+        full_space: LBlockFullSpace = LBlockFullSpace(0, nu_max, 0, 6, Lvals)
+        Lblocks: LBlocks = full_space.Lblocks
+        for i, L in enumerate(Lvals):
+            assert Lblocks[L] == expected[i]
+
+
+class TestValidateLvals:
+    """Tests the validate_Lvals() function."""
+
+    def test_ok(self):
+        validate_Lvals([0, 2, 3, 4, 5, 6])
+
+    def test_empty(self):
+        with pytest.raises(ValueError):
+            validate_Lvals([])
+
+    def test_negative(self):
+        with pytest.raises(ValueError):
+            validate_Lvals([-1])
+
+    def test_not_strictly_increasing(self):
+        with pytest.raises(ValueError):
+            validate_Lvals([0, 0])

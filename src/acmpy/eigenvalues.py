@@ -77,29 +77,6 @@ def Eigenfiddle(Hmatrix: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
     return eigenvalues, P
 
 
-def Eigenfiddle_sympy(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
-    """Legacy SymPy implementation of Eigenfiddle()."""
-
-    n, m = shape(Hmatrix)
-    if n != m:
-        raise ValueError(f'Matrix is not square: {n}, {m}')
-
-    H: Matrix = ((Hmatrix + Hmatrix.T) / 2).evalf()
-
-    eigen_values: list[float]
-    P: Matrix
-    eigen_values, P = Eigenvectors(H)
-
-    real_eigens: list[tuple[float, int]] = [(value, i) for i, value in enumerate(eigen_values)]
-    real_eigens.sort()
-
-    eigen_values = [p[0] for p in real_eigens]
-    eigen_order: list[int] = [p[1] for p in real_eigens]
-    eigen_vectors: Matrix = Matrix(n, n, lambda i, j: P[i, eigen_order[j]])
-
-    return eigen_values, eigen_vectors
-
-
 def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
     """Return the eigenvalues and eigenvectors as in Maple."""
     P: Matrix
