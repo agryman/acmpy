@@ -19,8 +19,9 @@ from acmpy.radial_space import Radial_b, Radial_b2, Radial_bm, Radial_bm2, \
     Radial_Db, Radial_D2b, \
     Radial_Sm, Radial_S0, Radial_Sp
 
-OperatorProduct = tuple[Expr, tuple[Symbol, ...]]
-OperatorSum = tuple[OperatorProduct, ...]
+OperatorProduct = tuple[Symbol, ...]
+OperatorTerm = tuple[Expr, OperatorProduct]
+OperatorSum = tuple[OperatorTerm, ...]
 
 # # The four operators
 # #       pi, [pi x pi]_{v=2,L=2}, [pi x pi]_{v=2,L=L}, [q x pi x pi]_{v=3,L=0}
@@ -751,7 +752,7 @@ def ACM_HamRigidBeta(cas: IntFloatExpr = 0,
 
     cas = S(cas)
     if cas != 0:
-        cas_op: OperatorProduct = (cas * SENIORITY * (SENIORITY + 3), ())
+        cas_op: OperatorTerm = (cas * SENIORITY * (SENIORITY + 3), ())
         if len(our_op) > 0:
             our_op = (cas_op,) + our_op
         else:

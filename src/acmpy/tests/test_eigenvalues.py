@@ -1,28 +1,27 @@
 """This module tests the eignevalues.py module."""
 import pytest
 import numpy as np
-from sympy import Matrix, shape, diag
-from acmpy.compat import is_zeros, is_close, is_sorted, ABS_TOL
-from acmpy.eigenvalues import Eigenvectors, Eigenfiddle, Matrix_to_ndarray, ndarray_to_Matrix
+from sympy import Matrix, shape
+from acmpy.compat import is_zeros, is_close, is_sorted, ABS_TOL, \
+    Matrix_to_ndarray, ndarray_to_Matrix, list_to_ndarray, lists_to_ndarrays, NDArrayFloat
+from acmpy.eigenvalues import Eigenvectors, Eigenfiddle
 
 
-def is_solution(M: Matrix, vals: list[float], P: Matrix, abs_tol: float = ABS_TOL) -> bool:
+def is_solution(M: NDArrayFloat, vals: NDArrayFloat, P: NDArrayFloat, abs_tol: float = ABS_TOL) -> bool:
     """Return True if and only if the eigenvalues and eigenvectors of M are vals and P."""
     n: int = len(vals)
-    if shape(M) == (n, n) == shape(P):
-        D: Matrix = diag(*vals)
+    if M.shape == (n, n) == P.shape:
+        D: NDArrayFloat = np.diag(vals)
 
         # a solution must satisfy MP = PD, therefore MP - PD = 0
-        return is_zeros(list(M * P - P * D))
+        return is_zeros(list((M @ P - P @ D).flat), abs_tol)
 
     return False
 
 
-def is_sorted_solution(M: Matrix, vals: list[float], P: Matrix, abs_tol: float = ABS_TOL) -> bool:
+def is_sorted_solution(M: NDArrayFloat, vals: NDArrayFloat, P: NDArrayFloat, abs_tol: float = ABS_TOL) -> bool:
     """Return True if and only if (M, vals, P) is a solution, and vals is in ascending order."""
-    if not is_sorted(vals):
-        return False
-    return is_solution(M, vals, P, abs_tol)
+    return is_sorted(list(vals)) and is_solution(M, vals, P, abs_tol)
 
 
 @pytest.fixture
@@ -40,19 +39,18 @@ def solution_4x4():
 
 
 def test_solution_4x4(solution_4x4):
-    M, vals, P = solution_4x4
-    assert is_solution(Matrix(M), vals, Matrix(P))
+    assert is_solution(*lists_to_ndarrays(solution_4x4))
 
 
 class TestMatrix_to_ndarray:
     """Tests the Matrix_to_ndarray() function."""
 
     def test_ok_solution_4x4(self, solution_4x4):
-        M: list[list[float]] = solution_4x4[0]
+        M: list[list[int]] = solution_4x4[0]
         A: Matrix = Matrix(M)
-        expected_B: np.ndarray = np.array(M)
+        expected_B: NDArrayFloat = np.array(M, dtype=np.float64)
 
-        B: np.ndarray = Matrix_to_ndarray(A)
+        B: NDArrayFloat = Matrix_to_ndarray(A)
         assert B.shape == expected_B.shape
         assert is_zeros((B - expected_B).flat)
 
@@ -61,8 +59,8 @@ class TestNdarray_to_Matrix:
     """Tests the ndarray_to_Matrix() function."""
 
     def test_ok_solution_4x4(self, solution_4x4):
-        M: list[list[float]] = solution_4x4[0]
-        A: np.ndarray = np.array(M)
+        M: list[list[int]] = solution_4x4[0]
+        A: NDArrayFloat = list_to_ndarray(M)
         expected_B: Matrix = Matrix(M)
 
         B: Matrix = ndarray_to_Matrix(A)
@@ -79,7 +77,10 @@ class TestEigenvectors:
         values: list[float]
         P: Matrix
         values, P = Eigenvectors(M)
-        assert is_solution(M, values, P)
+        M_np: NDArrayFloat = Matrix_to_ndarray(M)
+        values_np: NDArrayFloat = list_to_ndarray(values)
+        P_np: NDArrayFloat = Matrix_to_ndarray(P)
+        assert is_solution(M_np, values_np, P_np)
 
 
 @pytest.fixture
@@ -93,17 +94,14 @@ def c11_010101():
 
 
 def test_c11_010101(c11_010101):
-    M = Matrix(c11_010101[0])
-    vals = c11_010101[1]
-    P = Matrix(c11_010101[2])
-    assert is_sorted_solution(M, vals, P)
+    assert is_sorted_solution(*lists_to_ndarrays(c11_010101))
 
 
 class TestEigenfiddle:
     """Tests the Eigenfiddle() function."""
 
     def test_ok_c11_010101(self, c11_010101):
-        M: Matrix = Matrix(c11_010101[0])
+        M: NDArrayFloat = list_to_ndarray(c11_010101[0])
         eigenvalues, P = Eigenfiddle(M)
         assert is_sorted_solution(M, eigenvalues, P)
 

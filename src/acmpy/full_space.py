@@ -3,10 +3,12 @@
 diagonalising, basis transforming, and data displaying.
 """
 
+import numpy as np
 from typing import Optional, Callable
 from sympy import Expr, Matrix, shape, S
 
-from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo
+from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo, \
+    ndarray_to_Matrix, ndarray_to_list, NDArrayFloat
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
@@ -119,10 +121,23 @@ import acmpy.globals as g
 #   [eigen_vals, eigen_bases, Xparams, Lvals];
 # end;
 
-EigenValues = list[list[float]]
-EigenBases = list[Matrix]
+EigenValues = list[NDArrayFloat]
+EigenBases = list[NDArrayFloat]
 XParams = tuple[Expr, Expr, nonnegint, nonnegint, nonnegint, nonnegint]
 LValues = list[nonnegint]
+
+
+def validate_Lvals(Lvals: LValues) -> None:
+    """Validate Lvals and raise an exception if invalid."""
+    if len(Lvals) == 0:
+        raise ValueError('Lvals must not be empty.')
+
+    for L in Lvals:
+        require_nonnegint('L', L)
+
+    for i, L in enumerate(Lvals[:-1]):
+        if L >= Lvals[i + 1]:
+            raise ValueError(f'Lvals must be strictly increasing. Got {L} >= {Lvals[i + 1]} at index {i}.')
 
 
 def DigXspace(ham_op: OperatorSum,
@@ -149,9 +164,11 @@ def DigXspace(ham_op: OperatorSum,
 
     LL: int
     sph_dim: int
-    L_matrix: Matrix
-    eigen_vals_result: list[float]
-    eigen_bases_result: Matrix
+
+    L_matrix: NDArrayFloat
+    eigen_vals_result: NDArrayFloat
+    eigen_bases_result: NDArrayFloat
+
     if Op_Tame(ham_op):
 
         for LL in range(L_min, LLM + 1):
@@ -163,10 +180,9 @@ def DigXspace(ham_op: OperatorSum,
                 eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
 
                 eigen_vals.append(eigen_vals_result)
-
                 eigen_bases.append(eigen_bases_result)
     else:
-        rep_matrix: Matrix = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, LLM)
+        rep_matrix_np: NDArrayFloat = RepXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, LLM)
         rad_dim: int = dimRadial(nu_min, nu_max)
         Lstart: int = 1
 
@@ -176,13 +192,12 @@ def DigXspace(ham_op: OperatorSum,
             if sph_dim > 0:
                 Lvals.append(LL)
 
-                L_matrix = rep_matrix[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
-
+                L_matrix = rep_matrix_np[(Lstart - 1):Lstop, (Lstart - 1):Lstop]
                 eigen_vals_result, eigen_bases_result = Eigenfiddle(L_matrix)
 
                 eigen_vals.append(eigen_vals_result)
-
                 eigen_bases.append(eigen_bases_result)
+
                 Lstart = Lstop
 
     return eigen_vals, eigen_bases, Xparams, Lvals
@@ -250,31 +265,120 @@ def DigXspace(ham_op: OperatorSum,
 #   Matrix(L_count, (i,j)->eigen_invs[i].block_tran_mat[i,j].eigen_bases[j]);
 #
 # end;
-def AmpXspeig(tran_op: OperatorSum, eigen_bases: list[Matrix], Xparams: XParams, Lvals: list[nonnegint]
-              ) -> Optional[Matrix]:
-    L_count: int = len(Lvals)
+LBlock = tuple[nonnegint, nonnegint]
+LBlocks = dict[nonnegint, LBlock]
 
-    if L_count == 0:
-        return None
+
+class LBlockFullSpace:
+    """This class models the full space as a direct sum of subspaces with definite angular momentum L.
+
+    The full space is truncated to given ranges of the radial quantum number nu and seniority v.
+    """
+
+    nu_min: nonnegint
+    nu_max: nonnegint
+    v_min: nonnegint
+    v_max: nonnegint
+    Lvals: LValues
+    Lblocks: LBlocks
+
+    def __init__(self,
+                 nu_min: nonnegint, nu_max: nonnegint,
+                 v_min: nonnegint, v_max: nonnegint,
+                 Lvals: LValues) -> None:
+        require_nonnegint_range('nu', nu_min, nu_max)
+        require_nonnegint_range('v', v_min, v_max)
+
+        self.nu_min = nu_min
+        self.nu_max = nu_max
+        self.v_min = v_min
+        self.v_max = v_max
+        self.Lvals = Lvals
+
+        self.Lblocks = self.blocks()
+
+    def dimL(self, L: nonnegint) -> nonnegint:
+        """Return the dimension of the subspace with angular momentum L."""
+        return dimXspace(self.nu_min, self.nu_max, self.v_min, self.v_max, L) if L in self.Lvals else 0
+
+    def dim(self) -> nonnegint:
+        """Return the dimension of the full space."""
+        return sum(self.dimL(L) for L in self.Lvals)
+
+    def blocks(self) -> LBlocks:
+        """Return the dict of index pairs {L: (start, end)} of the matrix blocks for each L in Lvals."""
+        dims: list[nonnegint] = [self.dimL(L) for L in self.Lvals]
+        ends: list[nonnegint] = list(np.cumsum(dims))
+        starts: list[nonnegint] = [0] + ends[:-1]
+
+        return {L: (start, end) for L, start, end in zip(self.Lvals, starts, ends)}
+
+    def get_block_for_L(self, L: nonnegint) -> LBlock:
+        """Return the block corresponding to angular momentum L."""
+        if L not in self.Lblocks:
+            raise ValueError(f'Block not found for L = {L}')
+
+        return self.Lblocks[L]
+
+
+class LBlockNDFloatArray:
+    """This class models a matrix partitioned into blocks that have well-defined angular momentum L.
+
+    The matrix is expressed in terms of the standard basis of a truncated full space.
+    """
+
+    mat: NDArrayFloat
+    full_space: LBlockFullSpace
+
+    def __init__(self, mat: NDArrayFloat, full_space: LBlockFullSpace,
+                 ) -> None:
+
+        if mat.ndim != 2:
+            raise ValueError(f'Matrix must be 2-dimensional. Got ndim = {mat.ndim}')
+
+        r, c = mat.shape
+        if r != c:
+            raise ValueError(f'Matrix must be square. Got shape = {mat.shape}')
+
+        if mat.dtype != np.float64:
+            raise ValueError(f'Matrix must be float64. Got dtype = {mat.dtype}')
+
+        self.mat = mat
+        self.full_space = full_space
+
+    def get_block(self, L_row: nonnegint, L_col: nonnegint) -> NDArrayFloat:
+        """Return a view on the matrix corresponding to the (L_row, L_col) block."""
+        r0, r1 = self.full_space.get_block_for_L(L_row)
+        c0, c1 = self.full_space.get_block_for_L(L_col)
+        return self.mat[r0:r1, c0:c1]
+
+    def set_block(self, L_row: nonnegint, L_col: nonnegint, mat: NDArrayFloat) -> None:
+        """Set the (L_row, L_col) block of the matrix."""
+        r0, r1 = self.full_space.get_block_for_L(L_row)
+        c0, c1 = self.full_space.get_block_for_L(L_col)
+        self.mat[r0:r1, c0:c1] = mat
+
+
+def AmpXspeig(tran_op: OperatorSum, eigen_bases: EigenBases, Xparams: XParams, Lvals: LValues
+              ) -> LBlockNDFloatArray:
+    validate_Lvals(Lvals)
 
     anorm, lambda_base, nu_min, nu_max, v_min, v_max = Xparams
+    full_space: LBlockFullSpace = LBlockFullSpace(nu_min, nu_max, v_min, v_max, Lvals)
 
     L_min: nonnegint = Lvals[0]
     L_max: nonnegint = Lvals[-1]
+    tran_mat: NDArrayFloat = RepXspace(tran_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    tran: LBlockNDFloatArray = LBlockNDFloatArray(tran_mat, full_space)
 
-    tran_mat: Matrix = RepXspace(tran_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
+    result_mat: NDArrayFloat = np.empty(tran_mat.shape)
+    result: LBlockNDFloatArray = LBlockNDFloatArray(result_mat, full_space)
+    eigen_invs: list[NDArrayFloat] = [np.linalg.inv(P) for P in eigen_bases]
+    for P_inv, L_row in zip(eigen_invs, Lvals):
+        for P, L_col in zip(eigen_bases, Lvals):
+            result.set_block(L_row, L_col, P_inv @ tran.get_block(L_row, L_col) @ P)
 
-    L_dims: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, LL) for LL in Lvals]
-    L_ends: list[nonnegint] = [dimXspace(nu_min, nu_max, v_min, v_max, L_min, LL) for LL in Lvals]
-
-    block_tran_mat: Matrix = Matrix(L_count, L_count,
-                                    lambda i, j: tran_mat[
-                                                 (L_ends[i] - L_dims[i]):L_ends[i],
-                                                 (L_ends[j] - L_dims[j]):L_ends[j]])
-    eigen_invs: list[Matrix] = [P ** -1 for P in eigen_bases]
-
-    return Matrix(L_count, L_count,
-                  lambda i, j: eigen_invs[i] * block_tran_mat[i, j] * eigen_bases[j])
+    return result
 
 
 # ###########################################################################
@@ -369,7 +473,7 @@ L_MAX_DEFAULT: int = 1000000
 #
 #   eigen_low;   # return smallest eigenvalue (in case it's needed!)
 # end;
-def Show_Eigs(eigen_vals: list[list[float]], Lvals: list[nonnegint],
+def Show_Eigs(eigen_vals: list[NDArrayFloat], Lvals: list[nonnegint],
               toshow: nonnegint = g.glb_eig_num,
               L_min: Optional[nonnegint] = None, L_max: Optional[nonnegint] = None
               ) -> Optional[float]:
@@ -421,7 +525,7 @@ def Show_Eigs(eigen_vals: list[list[float]], Lvals: list[nonnegint],
 # # These procedures are only used within Show_Eigs above.
 #
 # min_head:=(alist)->min(op(map(fsel,alist)));
-def min_head(alist: list[list[float]]) -> float:
+def min_head(alist: list[NDArrayFloat]) -> float:
     return min(nlist[0] for nlist in alist if len(nlist) > 0)
 
 
@@ -669,7 +773,7 @@ glb_mel_f2: str = ''
 glb_item_format: str = ''
 
 
-def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
+def Show_Mels(Melements: LBlockNDFloatArray,
               mel_lst: Designators,
               toshow: int = g.glb_rat_num,
               mel_fun: Callable = g.glb_rat_fun,
@@ -683,8 +787,7 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
     if len(mel_lst) == 0:
         return
 
-    r, c = shape(Melements)
-    if c == 0:
+    if Melements.mat.shape[0] == 0:
         raise ValueError('No matrix elements available!')
 
     scale = S(scale)
@@ -718,10 +821,11 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
         Lmod: int
         L1_off: int
         L2_off: int
-        TR_matrix: Matrix
+        TR_matrix: NDArrayFloat
         TR_rows: int
         TR_cols: int
         mel: float
+        Lvals: LValues = Melements.full_space.Lvals
 
         if len(rate_ent) > 1:
             L1 = rate_ent[0]
@@ -734,10 +838,8 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
             assert L1 >= 0 and L2 >= 0
 
             if L1 in Lvals and L2 in Lvals:
-                L1_off = Lvals.index(L1)
-                L2_off = Lvals.index(L2)
-                TR_matrix = Melements[L2_off, L1_off]
-                TR_rows, TR_cols = shape(TR_matrix)
+                TR_matrix = Melements.get_block(L2, L1)
+                TR_rows, TR_cols = TR_matrix.shape
 
                 n1 = rate_ent[2]
                 n2 = rate_ent[3]
@@ -769,11 +871,8 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
             while Lcount >= 0:
 
                 if L1 in Lvals and L2 in Lvals:
-                    L1_off = Lvals.index(L1)
-                    L2_off = Lvals.index(L2)
-
-                    TR_matrix = Melements[L2_off, L1_off]
-                    TR_rows, TR_cols = shape(TR_matrix)
+                    TR_matrix = Melements.get_block(L2, L1)
+                    TR_rows, TR_cols = TR_matrix.shape
 
                     if n1 <= TR_cols and n2 <= TR_rows:
                         assert n1 > 0 and n2 > 0
@@ -786,12 +885,12 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
 
         elif len(rate_ent) == 3:
 
-            Show_Mels_Row(Melements, Lvals, L1, L2, rate_ent[2], toshow, mel_fun, scale)
+            Show_Mels_Row(Melements, L1, L2, rate_ent[2], toshow, mel_fun, scale)
 
         elif len(rate_ent) == 2:
 
             for n2 in range(1, toshow + 1):
-                if Show_Mels_Row(Melements, Lvals, L1, L2, n2, toshow, mel_fun, scale) <= 0:
+                if Show_Mels_Row(Melements, L1, L2, n2, toshow, mel_fun, scale) <= 0:
                     break
 
         elif len(rate_ent) == 1:
@@ -800,21 +899,21 @@ def Show_Mels(Melements: Matrix, Lvals: list[nonnegint],
             if L2 < 0:
                 continue
 
-            Show_Mels_Rows(Melements, Lvals, L2, toshow, mel_fun, scale)
+            Show_Mels_Rows(Melements, L2, toshow, mel_fun, scale)
 
         elif len(rate_ent) == 0:
             for L2 in Lvals:
 
-                Show_Mels_Rows(Melements, Lvals, L2, toshow, mel_fun, scale)
+                Show_Mels_Rows(Melements, L2, toshow, mel_fun, scale)
 
 
-def Show_Mels_Rows(Melements: Matrix, Lvals: list[nonnegint],
+def Show_Mels_Rows(Melements: LBlockNDFloatArray,
                    L2: nonnegint, toshow: int, mel_fun: Callable, scale: Expr) -> None:
     """Show matrix element rows for the values of L1 and n2 that correspond to L2."""
     TRopAM: nonnegint = g.glb_rat_TRopAM
     for L1 in range(max(0, L2 - TRopAM), L2 + TRopAM + 1):
         for n2 in range(1, toshow + 1):
-            if Show_Mels_Row(Melements, Lvals, L1, L2, n2, toshow, mel_fun, scale) <= 0:
+            if Show_Mels_Row(Melements, L1, L2, n2, toshow, mel_fun, scale) <= 0:
                 break
 
 
@@ -860,22 +959,21 @@ def Show_Mels_Rows(Melements: Matrix, Lvals: list[nonnegint],
 #   return 1:
 #
 # end:
-def Show_Mels_Row(Melements: Matrix, Lvals: list[nonnegint],
+def Show_Mels_Row(Melements: LBlockNDFloatArray,
                   L1: nonnegint, L2: nonnegint, n2: int,
                   toshow: nonnegint,
                   mel_fun: Callable,
                   scale: Expr) -> int:
 
+    Lvals: LValues = Melements.full_space.Lvals
     if L1 not in Lvals or L2 not in Lvals:
         return 0
 
-    L1_off: int = Lvals.index(L1)
-    L2_off: int = Lvals.index(L2)
+    TR_matrix: NDArrayFloat = Melements.get_block(L2, L1)
 
-    TR_matrix: Matrix = Melements[L2_off - 1, L1_off - 1]
     TR_rows: int
     TR_cols: int
-    TR_rows, TR_cols = shape(TR_matrix)
+    TR_rows, TR_cols = TR_matrix.shape
 
     if n2 > TR_rows or TR_cols == 0:
         return 0
@@ -932,10 +1030,10 @@ def Show_Mels_Row(Melements: Matrix, Lvals: list[nonnegint],
 #                glb_rat_format,
 #                glb_rat_desg):
 # end:
-def Show_Rats(Melements: Matrix, Lvals: list[nonnegint],
+def Show_Rats(Melements: LBlockNDFloatArray,
               rat_lst: Designators = g.glb_rat_lst,
               toshow: int = g.glb_rat_num) -> None:
-    Show_Mels(Melements, Lvals,
+    Show_Mels(Melements,
               rat_lst,
               toshow,
               g.glb_rat_fun,
@@ -958,10 +1056,10 @@ def Show_Rats(Melements: Matrix, Lvals: list[nonnegint],
 #                glb_amp_format,
 #                glb_amp_desg):
 # end:
-def Show_Amps(Melements: Matrix, Lvals: list[nonnegint],
+def Show_Amps(Melements: LBlockNDFloatArray,
               amp_lst: Designators = g.glb_amp_lst,
               toshow: int = g.glb_amp_num) -> None:
-    Show_Mels(Melements, Lvals,
+    Show_Mels(Melements,
               amp_lst,
               toshow,
               g.glb_amp_fun,
@@ -1172,7 +1270,7 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                      nu_min: nonnegint, nu_max: nonnegint,
                      v_min: nonnegint, v_max: nonnegint,
                      L_min: nonnegint, L_max: Optional[nonnegint] = None
-                     ) -> tuple[EigenValues, Matrix, LValues]:
+                     ) -> tuple[EigenValues, NDArrayFloat, LValues]:
     require_nonnegint('fit_eig', fit_eig)
     require_nonnegint('fit_rat', fit_rat)
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -1195,12 +1293,12 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                 g.glb_rat_2dx > dimXspace(nu_min, nu_max, v_min, v_max, g.glb_rat_L2):
             raise ValueError(f'Reference state {g.glb_rat_L2}({g.glb_rat_2dx}) not available')
 
-    eigen_quin: tuple[EigenValues, EigenBases, XParams, LValues] = \
+    eigen_tuple: tuple[EigenValues, EigenBases, XParams, LValues] = \
         DigXspace(ham_op, anorm, lambda_base, nu_min, nu_max, v_min, v_max, L_min, L_max)
-    eigen_vals: EigenValues = eigen_quin[0]
-    eigen_bases: EigenBases = eigen_quin[1]
-    Xparams: XParams = eigen_quin[2]
-    Lvals: LValues = eigen_quin[3]
+    eigen_vals: EigenValues = eigen_tuple[0]
+    eigen_bases: EigenBases = eigen_tuple[1]
+    Xparams: XParams = eigen_tuple[2]
+    Lvals: LValues = eigen_tuple[3]
 
     if g.glb_eig_num > 0:
 
@@ -1218,10 +1316,14 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
         Show_Eigs(eigen_vals, Lvals, g.glb_eig_num)
 
-    trans_mat: Matrix
+    trans: LBlockNDFloatArray
+    trans_mat: NDArrayFloat
+    full_space: LBlockFullSpace
+    Lblocks: LBlocks
     if len(g.glb_rat_lst) > 0 or len(g.glb_amp_lst) > 0:
 
-        trans_mat = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
+        trans = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
+        trans_mat = trans.mat
 
         if fit_rat > 0:
             L1: int = g.glb_rat_L1
@@ -1231,13 +1333,12 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
             if L1 not in Lvals:
                 raise ValueError(f'glb_rat_L1 ({L1}) is not in list of L values.')
-            L1_off: int = Lvals.index(L1)
 
             if L2 not in Lvals:
                 raise ValueError(f'glb_rat_L2 ({L2}) is not in list of L values.')
-            L2_off: int = Lvals.index(L2)
 
-            mel: float = trans_mat[L2_off, L1_off][i2 - 1, i1 - 1]
+            trans_block: NDArrayFloat = trans.get_block(L2, L1)
+            mel: float = trans_block[i2 - 1, i1 - 1]
             g.glb_rat_sft = abs(g.glb_rat_fun(L1, L2, mel)) / g.glb_rat_fit
 
             if g.glb_rat_sft == 0:
@@ -1245,12 +1346,12 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
             g.glb_amp_sft = g.glb_amp_sft_fun(g.glb_rat_sft)
 
-        Show_Rats(trans_mat, Lvals, g.glb_rat_lst, g.glb_rat_num)
-        Show_Amps(trans_mat, Lvals, g.glb_amp_lst, g.glb_amp_num)
+        Show_Rats(trans, g.glb_rat_lst, g.glb_rat_num)
+        Show_Amps(trans, g.glb_amp_lst, g.glb_amp_num)
 
     else:
 
-        trans_mat = Matrix()
+        trans_mat = np.empty((0, 0))
 
     return eigen_vals, trans_mat, Lvals
 
@@ -1277,7 +1378,7 @@ def ACM_Scale(ham_op: OperatorSum,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, Matrix, LValues]:
+              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
     return ACM_ScaleOrAdapt(0, 0, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)
 
@@ -1303,6 +1404,6 @@ def ACM_Adapt(ham_op: OperatorSum,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, Matrix, LValues]:
+              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
     return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)

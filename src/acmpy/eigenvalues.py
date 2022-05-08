@@ -2,33 +2,7 @@
 
 import numpy as np
 from sympy import Matrix, shape
-
-
-def Matrix_to_ndarray(M: Matrix) -> np.ndarray:
-    """Creates an NumPy ndarray of floats from a SymPy Matrix."""
-    return np.array([float(m) for m in M]).reshape(*shape(M))
-
-
-def ndarray_to_Matrix(M: np.ndarray) -> Matrix:
-    """Creates a SymPy Matrix from an NumPy ndarray of floats."""
-    return Matrix(*M.shape, lambda i, j: M[i, j])
-
-
-def ndarray_to_list(vals: np.ndarray) -> list[float]:
-    """Creates a list of floats from an NumPy ndarray of floats."""
-    return [float(val) for val in vals.flat]
-
-
-def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
-    """Return the eigenvalues and eigenvectors as in Maple."""
-    P: Matrix
-    D: Matrix
-    P, D = M.diagonalize()
-    # M*P = P*D
-
-    eigenvalues: list[float] = [float(D[i, i]) for i in range(D.shape[0])]
-
-    return eigenvalues, P
+from acmpy.compat import NDArrayFloat
 
 
 # # The following procedure Eigenfiddle diagonalises the Matrix which is
@@ -89,40 +63,27 @@ def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
 #
 #   [ map2(op,1,real_eigens), Matrix([Column(eigenstuff[2],eigen_order)]) ];
 # end:
-def Eigenfiddle(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
-    M: np.ndarray = Matrix_to_ndarray(Hmatrix)
-
-    n, m = M.shape
+def Eigenfiddle(Hmatrix: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
+    n, m = Hmatrix.shape
     if n != m:
         raise ValueError(f'Matrix is not square: {n}, {m}')
 
-    H: np.ndarray = (M + M.T) / 2
+    H: NDArrayFloat = (Hmatrix + Hmatrix.T) / 2
 
-    eigenvalues: np.ndarray
-    P: np.ndarray
+    eigenvalues: NDArrayFloat
+    P: NDArrayFloat
     eigenvalues, P = np.linalg.eigh(H)
 
-    return ndarray_to_list(eigenvalues), ndarray_to_Matrix(P)
+    return eigenvalues, P
 
 
-def Eigenfiddle_sympy(Hmatrix: Matrix) -> tuple[list[float], Matrix]:
-    """Legacy SymPy implementation of Eigenfiddle()."""
-
-    n, m = shape(Hmatrix)
-    if n != m:
-        raise ValueError(f'Matrix is not square: {n}, {m}')
-
-    H: Matrix = ((Hmatrix + Hmatrix.T) / 2).evalf()
-
-    eigen_values: list[float]
+def Eigenvectors(M: Matrix) -> tuple[list[float], Matrix]:
+    """Return the eigenvalues and eigenvectors as in Maple."""
     P: Matrix
-    eigen_values, P = Eigenvectors(H)
+    D: Matrix
+    P, D = M.diagonalize()
+    # M*P = P*D
 
-    real_eigens: list[tuple[float, int]] = [(value, i) for i, value in enumerate(eigen_values)]
-    real_eigens.sort()
+    eigenvalues: list[float] = [float(D[i, i]) for i in range(D.shape[0])]
 
-    eigen_values = [p[0] for p in real_eigens]
-    eigen_order: list[int] = [p[1] for p in real_eigens]
-    eigen_vectors: Matrix = Matrix(n, n, lambda i, j: P[i, eigen_order[j]])
-
-    return eigen_values, eigen_vectors
+    return eigenvalues, P

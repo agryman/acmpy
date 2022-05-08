@@ -1,13 +1,15 @@
 """2. Procedures that pertain only to the radial (beta) space."""
 
+import numpy as np
 from typing import Callable
 from functools import cache
 from abc import ABC, abstractmethod
 
 from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, \
-    diag, eye, zeros
+    eye, zeros
 
-from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, irem
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, \
+    irem, Matrix_to_ndarray, ndarray_to_Matrix, NDArrayFloat
 from acmpy.eigenvalues import Eigenfiddle
 
 Nu = nonnegint
@@ -301,7 +303,7 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
     elif mu_f == mu_i + 1:
         stuff = sqrt((lambdaa + mu_i) * (mu_i + 1))
     else:
-        stuff = 0
+        stuff = S.Zero
 
     mu_1: nonnegint = max(mu_f, mu_i)
     mu_2: nonnegint = min(mu_f, mu_i)
@@ -696,7 +698,8 @@ def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
     # NOTE: The Maple source is correct because it fails to define k.
     # NOTE: This function is not used anywhere.
     assert r + mu - nu >= 0
-    k: int = r + mu - nu + 1 # TODO: verify this is the correct value of k
+    # TODO: verify the following is the correct value of k
+    k: int = r + mu - nu + 1
     assert k >= 1
 
     res: Expr = sum((-1) ** j * binomial(r, j) * binomial(2 * r + mu - nu - j - 1, r + mu - nu)
@@ -914,13 +917,33 @@ def RepRadial_param(ME: Callable, lambdaa: Expr,
 # #end:
 @cache
 def RepRadial_sq(ME: Callable, lambdaa: Expr,
-                    nu_min: nonnegint, nu_max: nonnegint
-                    ) -> Matrix:
+                 nu_min: nonnegint, nu_max: nonnegint
+                 ) -> Matrix:
     require_nonnegint_range('nu', nu_min, nu_max)
 
     M: Matrix = RepRadial(ME, lambdaa, nu_min, nu_max).evalf()
 
     return M ** Rational(1, 2)
+
+
+@cache
+def RepRadial_b2_sqrt(lambdaa: Expr,
+                      nu_min: nonnegint, nu_max: nonnegint
+                      ) -> Matrix:
+    Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
+    Mat_sqrt_np: NDArrayFloat = Matrix_sqrt(Mat_np)
+    return ndarray_to_Matrix(Mat_sqrt_np)
+
+
+@cache
+def RepRadial_b2_sqrtInv(lambdaa: Expr,
+                         nu_min: nonnegint, nu_max: nonnegint
+                         ) -> Matrix:
+    Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
+    Mat_sqrtInv_np: NDArrayFloat = Matrix_sqrtInv(Mat_np)
+    return ndarray_to_Matrix(Mat_sqrtInv_np)
 
 
 # # The following returns the positive definite square root of a
@@ -943,16 +966,15 @@ def RepRadial_sq(ME: Callable, lambdaa: Expr,
 #
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
-@cache
-def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
+def Matrix_sqrt(Amatrix: NDArrayFloat) -> NDArrayFloat:
+    eigen_vals: NDArrayFloat
+    P: NDArrayFloat
+    eigen_vals, P = Eigenfiddle(Amatrix)
+    if not all(eigen_vals >= 0.0):
+        raise ValueError(f'All eigenvalues must be nonnegative: {eigen_vals}')
 
-    eigen_vals: list[float]
-    P: Matrix
-    eigen_vals, P = Eigenfiddle(Amatrix.evalf())
-
-    Diag_sq: Matrix = diag(*[sqrt(val) for val in eigen_vals])
-
-    return P * Diag_sq * P ** -1
+    Diag_sqrt: NDArrayFloat = np.diag(np.sqrt(eigen_vals))
+    return P @ Diag_sqrt @ np.linalg.inv(P)
 
 
 # # The following is similar to the above to produce the inverse of
@@ -974,14 +996,15 @@ def Matrix_sqrt(Amatrix: Matrix) -> Matrix:
 #
 #     Edata[2].Diag_sq.MatrixInverse(Edata[2])
 # end:
-@cache
-def Matrix_sqrtInv(Amatrix: Matrix) -> Matrix:
+def Matrix_sqrtInv(Amatrix: NDArrayFloat) -> NDArrayFloat:
+    eigen_vals: NDArrayFloat
+    P: NDArrayFloat
+    eigen_vals, P = Eigenfiddle(Amatrix)
+    if not all(eigen_vals > 0.0):
+        raise ValueError(f'All eigenvalues must be positive: {eigen_vals}')
 
-    eigen_vals, P = Eigenfiddle(Amatrix.evalf())
-
-    Diag_sq: Matrix = diag(*[1 / sqrt(val) for val in eigen_vals])
-
-    return P * Diag_sq * P ** -1
+    Diag_sqrtInv: NDArrayFloat = np.diag(1.0 / np.sqrt(eigen_vals))
+    return P @ Diag_sqrtInv @ np.linalg.inv(P)
 
 
 # ###########################################################################
@@ -1240,8 +1263,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
     Mat: Matrix
     if K == 0 and T == 0 and is_odd(R):
         if R < 0:
-            Mat_product = RepRadial(ME_Radial_b2, lambdaa + R, nu_min, nu_max)
-            Mat_product = Matrix_sqrt(Mat_product)
+            Mat_product = RepRadial_b2_sqrt(lambdaa + R, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_ml, lambdaa + R + 1, nu_min, nu_max)
             Mat_product *= Mat
@@ -1252,8 +1274,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
 
         else:
 
-            Mat_product = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
-            Mat_product = Matrix_sqrt(Mat_product)
+            Mat_product = RepRadial_b2_sqrt(lambdaa, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_pl, lambdaa, nu_min, nu_max)
             Mat_product = Mat * Mat_product
@@ -1357,20 +1378,18 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
 
             if i <= K:
                 assert K > 0
-                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                Mat = Matrix_sqrt(Mat)
+                Mat = RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
                 Mat *= 1 / anorm
 
             elif i <= -K:
                 assert K < 0
-                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                Mat = Matrix_sqrtInv(Mat)
+                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
                 Mat *= anorm
 
             else:
                 assert i > abs(K)
-                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                Mat = Matrix_sqrtInv(Mat) * RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max).evalf()
+                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
+                Mat = Mat * RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max).evalf()
                 Mat *= anorm
 
             imm = 1
@@ -1773,8 +1792,8 @@ def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: Expr,
     RepRadial_param.cache_clear()
     RepRadialshfs_Prod.cache_clear()
     RepRadial_bS_DS.cache_clear()
-    Matrix_sqrt.cache_clear()
-    Matrix_sqrtInv.cache_clear()
+    RepRadial_b2_sqrt.cache_clear()
+    RepRadial_b2_sqrtInv.cache_clear()
 
     return rep
 
@@ -2252,8 +2271,8 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
     RepRadialshfs_Prod.cache_clear()
     RepRadial.cache_clear()
     RepRadial_param.cache_clear()
-    Matrix_sqrt.cache_clear()
-    Matrix_sqrtInv.cache_clear()
+    RepRadial_b2_sqrt.cache_clear()
+    RepRadial_b2_sqrtInv.cache_clear()
 
     return M
 
