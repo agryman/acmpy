@@ -27,6 +27,7 @@
       <w>nonnegative</w>
       <w>nonnegint</w>
       <w>nops</w>
+      <w>pochhammer</w>
       <w>posint</w>
       <w>qred</w>
       <w>readdata</w>

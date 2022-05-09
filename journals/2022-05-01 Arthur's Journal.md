@@ -707,7 +707,168 @@ Therefore, Python is now only 40% slower than Maple.
 Check code for all uses of evalf() - IN-PROGRESS
 * 41 results in code
 * the remaining use of SymPy numerical computation is in the representation matrices of type Matrix
-* convert the representations to NumPy
-* try to also use NumPy vectorized computation
+* convert the representations to NumPy - TODO
+* try to also use NumPy vectorized computation - TODO
 * NumPy also has an api for creating an array via a lambda
-* However, the lambda is passed an array of indices which means it should be possible to vectorize
+* However, the lambda is passed two arrays of indices which means it should be possible to vectorize
+
+
+## 2022-05-08
+
+### 10:50 am
+
+Check code for all uses of evalf() and replace with NumPy where appropriate - IN-PROGRESS
+* convert the representations to NumPy - TODO
+* try to also use NumPy vectorized computation - TODO
+* NumPy also has an api for creating an array via a lambda: np.fromfunction()
+  * see https://numpy.org/doc/stable/reference/generated/numpy.fromfunction.html
+* However, the lambda is passed two arrays of indices which means it should be possible to vectorize
+  * define ufunc classes to compute matrix elements from indicies
+  * see https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html
+
+evalf() is applied to the results of the following functions:
+* NumSO5r3_Prod
+* CG_SO5r3
+* RepRadial_Prod_rem
+* RepRadial_LC_rem
+* Qred_p1
+* Qred_m1
+* QxQred_0
+* QxQred_p2
+* QxQxQred_p3
+* QxQxQred_m3
+* QmxQxQred_p1
+* QixQxQred
+* QxQxQred_m1
+* mel_fun: MatrixElementFunction - DONE
+
+break 12:20 pm
+
+### 1:50 pm
+
+evalf() is applied to the results of the following functions:
+* RepSO5_sqLdim
+* RepSO5_sqLdiv
+* NumSO5r3_Prod
+* CG_SO5r3
+* ME_SO5r3
+* RepRadial - IN-PROGRESS
+* RepRadial_Prod_rem
+* RepRadial_LC_rem
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_D2b
+* Qred_p1
+* Qred_m1
+* QxQred_0
+* QxQred_p2
+* QxQxQred_p3
+* QxQxQred_m3
+* QmxQxQred_p1
+* QixQxQred
+* QxQxQred_m1
+* mel_fun: MatrixElementFunction - DONE
+
+Analyse RepRadial
+```text
+def RepRadial(ME: Callable, lambdaa: float,
+              nu_min: nonnegint, nu_max: nonnegint
+              ) -> Matrix:
+```
+ME is used as:
+```text
+M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
+```
+Example ME function is:
+```text
+def ME_Radial_b2(lambdaa: float, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+```
+* it doesn't make sense for the return value to be Expr
+* change return value to float - IN-PROGRESS
+* define new type - DONE
+```text
+RadialMatrixElementFunction = Callable[[float, nonnegint, nonnegint], float]
+```
+* create test cases for each matrix element function - IN-PROGRESS
+  * testing has so far revealed a difference in behaviour - DONE
+    * Maple: binomial(-1, -1) = 1
+    * SymPy: binomial(-1, -1) = 0
+* ME_Radial_id_ml(2.5, 1, 0, 2) gave an imaginary value -1.632993162*I - TODO
+
+
+break 7:15 pm
+
+### 9:15 pm
+
+* change ME function return value to float - DONE
+* create a test case for each ME function
+  * ME_Radial_S0 - DONE
+  * ME_Radial_Sp - DONE
+  * ME_Radial_Sm - DONE
+  * ME_Radial_b2 - DONE
+  * ME_Radial_bm2 - DONE
+  * ME_Radial_pt - DONE
+  * ME_Radial_D2b - DONE
+  * ME_Radial_bDb - DONE
+  * ME_Radial_b_pl - DONE
+  * ME_Radial_bm_pl - DONE
+  * ME_Radial_Db_pl - DONE
+  * ME_Radial_b_ml - DONE
+  * ME_Radial_bm_ml - DONE
+  * ME_Radial_Db_ml - DONE
+  * ME_Radial_id_pl - DONE
+  * ME_Radial_id_ml - IN-PROGRESS
+  * MF_Radial_id_poly
+  * MF_Radial_id_pl
+
+* ME_Radial_id_ml: 17 of 27 failed
+```text
+acmpy/tests/test_radial_me.py:357 (TestME_Radial_id_ml.test_ok[0-1-1--0.3760507166])
+self = <acmpy.tests.test_radial_me.TestME_Radial_id_ml object at 0x129437ca0>
+mu_f = 0, mu_i = 1, r = 1, expected = -0.3760507166
+
+    @pytest.mark.parametrize(
+        "mu_f,mu_i,r,expected", [
+            (0, 0, 0, 1.0000000000),
+            (0, 0, 1, 0.8819171036), -> 0.5773502691896257
+            (0, 0, 2, 0.4879500364), -> 1.0
+            (0, 1, 0, 0.0000000000),
+            (0, 1, 1, -0.3760507166), -> -0.3651483716701107
+            (0, 1, 2, -0.4161251894), -> -1.2649110640673518
+            (0, 2, 0, 0.0000000000),
+            (0, 2, 1, 0.2085954062), -> 0.2760262237369417
+            (0, 2, 2, 0.3462370863), -> 1.434274331201272
+            (1, 0, 0, 0.0000000000),
+            (1, 0, 1, 0.4714045209), -> 0.816496580927726
+            (1, 0, 2, 0.7968190730), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (1, 1, 0, 1.0000000000),
+            (1, 1, 1, 0.7035264708), -> 0.2581988897471611
+            (1, 1, 2, -0.0849411986), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (1, 2, 0, 0.0000000000),
+            (1, 2, 1, -0.3902462714), -> -0.19518001458970663
+            (1, 2, 2, -0.0942337990), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (2, 0, 0, 0.0000000000),
+            (2, 0, 1, 0.0000000000),
+            (2, 0, 2, 0.3563483226), -> 1.632993161855452
+            (2, 1, 0, 0.0000000000),
+            (2, 1, 1, 0.6030226892), -> 0.8944271909999159
+            (2, 1, 2, 0.7597371764), -> -1.0327955589886444
+            (2, 2, 0, 1.0000000000),
+            (2, 2, 1, 0.5853694070), -> 0.1690308509457033
+            (2, 2, 2, -0.2633914755) -> 1.0734900802433864
+        ]
+    )
+    def test_ok(self, mu_f, mu_i, r, expected):
+        ME: float = ME_Radial_id_ml(2.5, mu_f, mu_i, r)
+>       assert math.isclose(ME, expected)
+E       assert False
+E        +  where False = <built-in function isclose>(-0.3651483716701107, -0.3760507166)
+E        +    where <built-in function isclose> = math.isclose
+```
+
+* the 0 or 1 case is correct
+* there are two types of errors for the other cases
+  * numeric value wrong
+  * math domain error - probably taking the square root of a negative number
+
+break 10:45 pm

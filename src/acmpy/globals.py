@@ -47,14 +47,14 @@ def quad_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
 # mel_amp_fun:=proc(Li,Lf,Mel)
 #   Mel*sqrt(2*Lf+1)
 # end;
-def mel_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+def mel_amp_fun(_Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
     return Mel * math.sqrt(2 * Lf + 1)
 
 
 # unit_amp_fun:=proc(Li,Lf,Mel)
 #   Mel
 # end;
-def unit_amp_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+def unit_amp_fun(_Li: nonnegint, _Lf: nonnegint, Mel: float) -> float:
     return Mel
 
 
@@ -68,14 +68,14 @@ def quad_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
 # mel_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2*dimSO3(Lf)
 # end;
-def mel_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+def mel_rat_fun(_Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
     return Mel ** 2 * dimSO3(Lf)
 
 
 # unit_rat_fun:=proc(Li,Lf,Mel)
 #   Mel^2
 # end;
-def unit_rat_fun(Li: nonnegint, Lf: nonnegint, Mel: float) -> float:
+def unit_rat_fun(_Li: nonnegint, _Lf: nonnegint, Mel: float) -> float:
     return Mel**2
 
 

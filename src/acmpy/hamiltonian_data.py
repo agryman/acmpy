@@ -1,13 +1,12 @@
 """8. Procedures that aid the production of the data for the particular Hamiltonians considered in [RWC2009]."""
 
 import math
-from typing import Callable
 
-from sympy import S, Expr, sqrt, Rational, Symbol, symbols, solveset
+from sympy import S, Expr, sqrt, Symbol, symbols, solveset
 
 from acmpy.compat import IntFloatExpr, nonnegint, require_nonnegint
 from acmpy.internal_operators import ACM_Hamiltonian, OperatorSum
-from acmpy.globals import lambda_davi_fun, lambda_sho_fun
+from acmpy.globals import lambda_davi_fun, lambda_sho_fun, LambdaFunction
 
 
 # ###########################################################################
@@ -174,16 +173,16 @@ def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
                    + aa ** 3 * (2 * mu + vshft) \
                    - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
 
-        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf()
+        aa0 = max(float(aa) for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
+        return math.sqrt(aa0), float(1 + muf(S(aa0)) / 2)
 
     else:
 
         def RWC1(aa: Expr) -> Expr:
             return aa ** 3 - B ** 2 * c1 * aa - (2 * v + 7) * B ** 2 * c2
 
-        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), 2.5
+        aa0 = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
+        return math.sqrt(aa0), 2.5
 
 
 # # The following procedure RWC_alam36 is a simplified algorithm
@@ -205,19 +204,15 @@ def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
 #   fi:
 #
 # end:
-def RWC_alam36(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+def RWC_alam36(B: float, c1: float, c2: float
                ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
+    if c1 < 0:
 
-    if c1.evalf() < 0:
-
-        return sqrt(sqrt(-B ** 2 * c2 / 2)).evalf(), (1 + sqrt(36 + B ** 2 * c1 ** 4 / c2 ** 2) / 4).evalf()
+        return math.sqrt(math.sqrt(-B ** 2 * c1 / 2)), (1 + math.sqrt(36 + B ** 2 * c1 ** 4 / c2 ** 2) / 4)
 
     else:
 
-        return sqrt(sqrt(B * c1 / 4)).evalf(), 2.5
+        return math.sqrt(math.sqrt(B * c1 / 4)), 2.5
 
 
 # # The following procedure RWC_alam_clam is another alternative that
@@ -243,9 +238,9 @@ def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
         return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
 
     A: Symbol = symbols('A', real=True)
-    aa0: float = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
+    aa0: float = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
 
-    return sqrt(aa0).evalf(), 2.5
+    return math.sqrt(aa0), 2.5
 
 
 # # The following procedure RWC_alam_fun returns a triple
@@ -291,15 +286,11 @@ def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
 #   fi:
 #
 # end:
-def RWC_alam_fun(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
-                 ) -> tuple[float, float, Callable]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
-
+def RWC_alam_fun(B: float, c1: float, c2: float
+                 ) -> tuple[float, float, LambdaFunction]:
     A: Symbol = symbols('A', real=True)
     aa0: float
-    if c1.evalf() < 0:
+    if c1 < 0:
 
         def muf(aa: Expr) -> Expr:
             return sqrt(9 + (aa * c1 / c2) ** 2)
@@ -310,13 +301,13 @@ def RWC_alam_fun(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
                    + aa ** 3 * (2 * mu + 9) \
                    - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
 
-        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf(), lambda_davi_fun(((aa0 * c1 / c2 / 2) ** 2).evalf())
+        aa0 = max(float(aa) for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
+        return math.sqrt(aa0), float(1 + muf(S(aa0)) / 2), lambda_davi_fun((aa0 * c1 / (c2 * 2)) ** 2)
 
     else:
 
         def RWC1(aa: Expr) -> Expr:
             return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
 
-        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), 2.5, lambda_sho_fun
+        aa0 = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
+        return math.sqrt(aa0), 2.5, lambda_sho_fun
