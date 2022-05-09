@@ -801,7 +801,7 @@ break 7:15 pm
 ### 9:15 pm
 
 * change ME function return value to float - DONE
-* create a test case for each ME function
+* create a test case for each ME function - IN-PROGRESS
   * ME_Radial_S0 - DONE
   * ME_Radial_Sp - DONE
   * ME_Radial_Sm - DONE
@@ -872,3 +872,50 @@ E        +    where <built-in function isclose> = math.isclose
   * math domain error - probably taking the square root of a negative number
 
 break 10:45 pm
+
+## 2022-05-09
+
+### 11:30 am
+
+Debug test case failure:
+```text
+acmpy/tests/test_radial_me.py:357 (TestME_Radial_id_ml.test_ok[0-1-1--0.3760507166])
+```
+* Test case used lambda = 2.5 but expected data used 5.5 - DONE
+  * all tests now pass
+
+* create a test case for each ME function - IN-PROGRESS
+  * ME_Radial_id_ml - DONE
+  * MF_Radial_id_poly - TODO
+  * MF_Radial_id_pl - TODO
+
+The function:
+```text
+MF_Radial_id_poly(mu: Nu, nu: Nu, r: nonnegint)
+```
+is always called with nu <= mu + 2.
+
+break 12:35 pm
+
+### 3:00 pm
+
+* create a test case for each ME function - DONE
+  * MF_Radial_id_poly - DONE
+  * MF_Radial_id_pl - DONE
+
+It does appear the symbolic computation improves the accuracy of ME_Radial_id_pl and ME_Radial_id_ml.
+This is because the matrix elements are ratios of Gamma functions and therefore cancellation occurs
+making the results polynomials in lambda.
+Both Maple and SymPy can simplify expressions.
+Accuracy improves if the expressions are simplified before evaluation.
+
+However, the Gamma functions appear in ratios that are expression as Pochhammer symbols.
+SciPy provides an implementation, sc.poch. 
+It is therefore plausible that SciPy uses a more accurate algorithm for evaluating Pochhammer symbols
+that avoids first computing the Gamma functions and then dividing.
+
+Compare the accuracy of the SymPy MF_Radial_id_poly implementation versus a ScipPy implementation using sc.poch. - TODO
+
+Measure performance using the current version v1-1-2.
+
+In the radial space, replace Matrix with ndarray. - TODO

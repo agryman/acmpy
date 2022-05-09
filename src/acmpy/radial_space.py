@@ -227,10 +227,10 @@ def ME_Radial_b2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #   fi:
 # end:
 def ME_Radial_bm2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
-    # if lambdaa == -1.0:
-    #     raise ValueError('Singular 1/beta^2 for lambda=1')
-    # if lambdaa.is_integer() and (lambdaa <= -mu_i or lambdaa <= -mu_f):
-    #     raise ValueError('cannot evaluate Gamma function at non-positive integer')
+    if lambdaa == -1.0:
+        raise ValueError('Singular 1/beta^2 for lambda=1')
+    if lambdaa.is_integer() and (lambdaa <= -mu_i or lambdaa <= -mu_f):
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     mu_1: Nu = max(mu_f, mu_i)
     mu_2: Nu = min(mu_f, mu_i)
@@ -243,8 +243,8 @@ def ME_Radial_bm2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #                   / (lambda-1);
 # end:
 def ME_Radial_pt(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
-    # if lambdaa == 1.0:
-    #     raise ValueError(f'lambdaa must not be 1: {lambdaa}')
+    if lambdaa == 1.0:
+        raise ValueError(f'lambdaa must not be 1: {lambdaa}')
 
     # the Pochhammer function (rising factorial) scipy.special.poch(z,m) = Gamma(z+m)/Gamma(z)
     # n! = Gamma(n+1)
@@ -353,8 +353,8 @@ def ME_Radial_b_pl(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #   fi:
 # end:
 def ME_Radial_bm_pl(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
-    # if lambdaa.is_integer() and lambdaa <= -mu_i:
-    #     raise ValueError('cannot evaluate Gamma function at non-positive integer')
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f < mu_i:
         return 0.0
@@ -439,8 +439,8 @@ def ME_Radial_b_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #   fi:
 # end:
 def ME_Radial_bm_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
-    # if lambdaa.is_integer() and lambdaa <= -mu_i:
-    #     raise ValueError('cannot evaluate Gamma function at non-positive integer')
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f > mu_i:
         return 0.0
@@ -506,8 +506,8 @@ def ME_Radial_Db_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #   fi:
 # end:
 def ME_Radial_id_pl(lambdaa: float, mu_f: Nu, mu_i: Nu, r: nonnegint) -> float:
-    # if lambdaa.is_integer() and lambdaa <= -mu_i:
-    #     raise ValueError('cannot evaluate Gamma function at non-positive integer')
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_i <= mu_f + r:
         poly: Expr = MF_Radial_id_poly(mu_f, mu_i, r)
@@ -538,8 +538,8 @@ def ME_Radial_id_pl(lambdaa: float, mu_f: Nu, mu_i: Nu, r: nonnegint) -> float:
 #   fi:
 # end:
 def ME_Radial_id_ml(lambdaa: float, mu_f: Nu, mu_i: Nu, r: nonnegint) -> float:
-    # if lambdaa.is_integer() and lambdaa <= -mu_f + 2 * r:
-    #     raise ValueError('cannot evaluate Gamma function at non-positive integer')
+    if lambdaa.is_integer() and lambdaa <= -mu_f + 2 * r:
+        raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f <= mu_i + r:
         poly: Expr = MF_Radial_id_poly(mu_i, mu_f, r)
@@ -572,6 +572,7 @@ lamvar: Symbol = symbols('lamvar', real=True)
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
 def MF_Radial_id_poly(mu: Nu, nu: Nu, r: nonnegint) -> Expr:
+    assert nu <= mu + r
     return MF_Radial_id_pl(lamvar, mu, nu, r)
 
 
