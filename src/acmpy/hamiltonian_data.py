@@ -169,7 +169,7 @@ def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
 
         def RWC2(aa: Expr, mu: Expr) -> Expr:
             return (c1 / c2) ** 2 * (-vshft * aa ** 5 / mu ** 2
-                                     + aa ** 3 * B ** 2 * c2 * (mu + 3)) \
+                                     + aa ** 3 * B ** 2 * c1  + aa **2 * B ** 2 * c2 * (mu + 3)) \
                    + aa ** 3 * (2 * mu + vshft) \
                    - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
 

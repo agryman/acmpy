@@ -892,7 +892,7 @@ def ACM_show_rat_lst(show: int = 1) -> Designators:
 #   glb_amp_lst:=[];
 #   ACM_add_amp_lst(amp_lst):
 # end;
-def ACM_set_amp_lst(amp_list: Designators) -> int:
+def ACM_set_amp_lst(amp_list: Designators = ()) -> int:
     global glb_amp_lst
 
     glb_amp_lst = ()

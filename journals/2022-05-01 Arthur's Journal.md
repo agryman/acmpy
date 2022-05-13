@@ -919,3 +919,246 @@ Compare the accuracy of the SymPy MF_Radial_id_poly implementation versus a Scip
 Measure performance using the current version v1-1-2.
 
 In the radial space, replace Matrix with ndarray. - TODO
+
+Current Python performance on Ex 2.3 a:
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+elapsed process time for ACM_Scale: 3.6990489999999996
+```
+
+Previous Python time:
+```text
+elapsed process time for ACM_Scale: 5.1183629999999996
+```
+
+Speedup = 5.12/3.70 = 1.38x. This is a worthwhile speedup.
+
+Maple time = 3.6 sec.
+
+Python/Maple = 3.7/3.6 = 1.03. The Python code is now only 3% slower.
+
+Measure performance of Ex 2.3b.
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+  B(E2: 2(1) -> 2(1)) =     0.18
+  B(E2: 4(1) -> 4(1)) =     0.14
+  B(E2: 6(1) -> 6(1)) =     0.12
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+  Amp( 2(2) -> 2(2) ) =     0.22
+elapsed process time for ACM_Scale: 3.675498
+```
+
+Increase v_max to 18.
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 18, L_max: 6
+Lowest eigenvalue is -6.33961. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.57,    2.12,    2.89,    3.61,    4.23]
+  At L= 2: [    0.10,    0.97,    1.78,    2.25,    2.39,    3.16]
+  At L= 3: [    1.11,    2.75,    3.37,    4.57,    5.07,    5.67]
+  At L= 4: [    0.31,    1.24,    1.92,    2.11,    2.52,    2.82]
+  At L= 5: [    1.43,    2.20,    3.24,    3.76,    3.94,    4.57]
+  At L= 6: [    0.61,    1.58,    2.38,    2.54,    2.88,    2.91]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.13
+  B(E2: 4(1) -> 2(1)) =     0.19
+  B(E2: 6(1) -> 4(1)) =     0.22
+  B(E2: 2(1) -> 2(1)) =     0.17
+  B(E2: 4(1) -> 4(1)) =     0.15
+  B(E2: 6(1) -> 6(1)) =     0.13
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.22
+  Amp( 2(2) -> 2(2) ) =     0.22
+elapsed process time for ACM_Scale: 11.021412
+```
+
+* Example 2.2
+  * 5, 18, 6: Maple = 8.509, Python = 3.425
+  * 10, 18, 6: Maple = 20.165, Python = 6.649
+  * 15, 18, 6: Maple = 44.735, Python = 11.102
+  * 10, 6, 6: Maple = 3.620, Python = 2.883
+* Example 2.3a
+  * 10, 6, 6: Maple = 3.616, Python = 3.68
+  * 10, 18, 6: Maple = 20.810, Python = 10.368
+* Example 2.3b
+  * 10, 18, 6: Maple = 20.751, Python = 10.406
+* Example 2.3c
+  * 10, 18, 6: Maple = 20.604, Python = 10.445
+* Example 2.4a
+  * ACM_Scale: 10, 18, 6: Maple = 20.272, Python = 10.434
+  * ACM_Adapt: 10, 18, 6: Maple = 20.140, Python = 10.343
+* Example 2.4b
+  * ACM_Adapt: 10, 18, 6: Maple = 20.409, Python = 10.385
+* Example 2.4c
+  * ACM_Adapt: 10, 12, 12: Maple = 25.934, Python = 18.947
+
+break 6:05 pm
+
+### 7:40 pm
+
+* Example 2.5a
+  * ACM_Adapt: 10, 18, 6: Maple = 20.709, Python = 10.358
+* Example 2.5b
+  * ACM_Adapt: 10, 18, 6: Maple = 21.162, Python = 10.600
+* Example 2.5c
+  * ACM_Adapt: 10, 18, 6: Maple = 21.001, Python = 10.372
+
+* Example 3 - TODO
+* Create example running framework - DONE
+* Port examples into framework - IN_PROGRESS
+  * port set_example_2_4_a() next
+
+break 10:05 pm
+
+## 2022-05-10
+
+### 3:35 pm
+
+* Port examples into framework - IN_PROGRESS
+  * port set_example_2_4_a() next - DONE
+* Improve design of Example class - DONE
+  * Each example should optionally follow some other example the leaves the ACM global variables in the required state
+  * A typical example does these steps:
+    * set
+    * exec
+    * unset
+  * Change this to:
+    * prepare(predecessor example) - if one exists
+    * set(this example)
+    * exec(this example)
+    * unset(this example)
+  * Define prepare(this example) as follows - DONE
+    * prepare(predecessor example)
+    * set(this example)
+    * unset(this example)
+* Example 3 - TODO
+
+break 6:55 pm
+
+* Port examples into framework - IN_PROGRESS
+  * Section 3 - IN-PROGRESS
+
+
+## 2022-05-11
+
+### 2:40 pm
+
+* Port examples into framework - IN_PROGRESS
+  * Section 3 - IN-PROGRESS
+    * Show_Eigs() and Show_Rats() are used in the examples so keep their APIs as-is
+    * Show_Amps() also is part of the API
+    * I can preserve the API on the understanding that instead of returning a Matrix of Matrix, I return LBlockNDFloatArray
+    * I need to define an empty LBlockNDFloatArray, or maybe just a union type for this edge case, or Optional?
+
+break 6:10 pm
+
+### 8:40 pm
+
+* Port examples into framework - DONE
+* Section 3 - DONE
+  * Show_Eigs() and Show_Rats() are used in the examples so keep their APIs as-is
+  * Show_Amps() also is part of the API
+  * I can preserve the API on the understanding that instead of returning a Matrix of Matrix, I return LBlockNDFloatArray
+  * I need to define an empty LBlockNDFloatArray, or maybe just a union type for this edge case, or Optional?
+    * use Optional[LBlockNDFloatArray] - DONE
+* Section 4 - IN-PROGRESS
+  * completed 4.3
+  * next 4.4
+
+break 10:20 pm
+
+## 2022-05-12
+
+### 10:30 am
+
+Create Maple workbook with each example section as a worksheet so they can be re-executed individually. - DONE
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - TODO
+
+break 12:20 pm
+
+### 3:30 pm
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - IN-PROGRESS
+  * RWC_alam(B, -3, 2) fails for B >= 15
+    * the translation to Python is correct since the code work for certain inputs
+    * the problem is in `solveset()` which fails to find any solution as B increases past 14
+    * try using an older SymPy solver - not obvious what to use
+    * do the math
+
+break 6:40 pm
+
+## 2022-05-13
+
+### 8:25 am
+
+* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+
+break 8:50 am
+
+### 10:35 am
+
+* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+
+break 12:55 pm
+
+### 3:20 pm
+
+* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+

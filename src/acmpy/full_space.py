@@ -469,7 +469,7 @@ L_MAX_DEFAULT: int = 1000000
 #
 #   eigen_low;   # return smallest eigenvalue (in case it's needed!)
 # end;
-def Show_Eigs(eigen_vals: list[NDArrayFloat], Lvals: list[nonnegint],
+def Show_Eigs(eigen_vals: list[NDArrayFloat], Lvals: LValues,
               toshow: nonnegint = g.glb_eig_num,
               L_min: Optional[nonnegint] = None, L_max: Optional[nonnegint] = None
               ) -> Optional[float]:
@@ -771,8 +771,8 @@ glb_item_format: str = ''
 
 def Show_Mels(Melements: LBlockNDFloatArray,
               mel_lst: Designators,
-              toshow: int = g.glb_rat_num,
-              mel_fun: MatrixElementFunction = g.glb_rat_fun,
+              toshow: int,
+              mel_fun: MatrixElementFunction,
               scale: float = 1.0,
               mel_format: str = g.def_mel_format,
               mel_desg: str = g.def_mel_desg
@@ -1025,6 +1025,7 @@ def Show_Mels_Row(Melements: LBlockNDFloatArray,
 #                glb_rat_desg):
 # end:
 def Show_Rats(Melements: LBlockNDFloatArray,
+              _Lvals: LValues,
               rat_lst: Designators = g.glb_rat_lst,
               toshow: int = g.glb_rat_num) -> None:
     Show_Mels(Melements,
@@ -1051,6 +1052,7 @@ def Show_Rats(Melements: LBlockNDFloatArray,
 #                glb_amp_desg):
 # end:
 def Show_Amps(Melements: LBlockNDFloatArray,
+              _Lvals: LValues,
               amp_lst: Designators = g.glb_amp_lst,
               toshow: int = g.glb_amp_num) -> None:
     Show_Mels(Melements,
@@ -1066,10 +1068,10 @@ def Show_Amps(Melements: LBlockNDFloatArray,
 #
 # # The following procedure ACM_ScaleOrAdapt combines many of those
 # # previously described to provide a versatile user-friendly
-# # means of analysing Hamlitonians, displaying their eigenvalues,
+# # means of analysing Hamiltonians, displaying their eigenvalues,
 # # and calculating and displaying transition rates and amplitudes
 # # of the operator in the global variable glb_rat_TRop (which is
-# # the quadrapole operator in the default implementation).
+# # the quadrupole operator in the default implementation).
 # # This procedure is conveniently used through the procedures ACM_Scale
 # # and ACM_Adapt, given below, which simply set the arguments fit_eig
 # # and fit_rat, and thus work in the same way.
@@ -1258,13 +1260,16 @@ def Show_Amps(Melements: LBlockNDFloatArray,
 #   [eigen_quin[1],tran_mat,Lvals]:
 #
 # end;
+EigAmpL = tuple[EigenValues, Optional[LBlockNDFloatArray], LValues]
+
+
 def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                      ham_op: OperatorSum,
                      anorm: float, lambda_base: float,
                      nu_min: nonnegint, nu_max: nonnegint,
                      v_min: nonnegint, v_max: nonnegint,
                      L_min: nonnegint, L_max: Optional[nonnegint] = None
-                     ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+                     ) -> EigAmpL:
     require_nonnegint('fit_eig', fit_eig)
     require_nonnegint('fit_rat', fit_rat)
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -1310,14 +1315,13 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
         Show_Eigs(eigen_vals, Lvals, g.glb_eig_num)
 
-    trans: LBlockNDFloatArray
+    trans: Optional[LBlockNDFloatArray]
     trans_mat: NDArrayFloat
     full_space: LBlockFullSpace
     Lblocks: LBlocks
     if len(g.glb_rat_lst) > 0 or len(g.glb_amp_lst) > 0:
 
         trans = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
-        trans_mat = trans.mat
 
         if fit_rat > 0:
             L1: int = g.glb_rat_L1
@@ -1340,14 +1344,14 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
             g.glb_amp_sft = g.glb_amp_sft_fun(g.glb_rat_sft)
 
-        Show_Rats(trans, g.glb_rat_lst, g.glb_rat_num)
-        Show_Amps(trans, g.glb_amp_lst, g.glb_amp_num)
+        Show_Rats(trans, Lvals, g.glb_rat_lst, g.glb_rat_num)
+        Show_Amps(trans, Lvals, g.glb_amp_lst, g.glb_amp_num)
 
     else:
 
-        trans_mat = np.empty((0, 0))
+        trans = None
 
-    return eigen_vals, trans_mat, Lvals
+    return eigen_vals, trans, Lvals
 
 
 # # The following procedure ACM_Scale invokes the procedure ACM_ScaleOrAdapt
@@ -1372,7 +1376,7 @@ def ACM_Scale(ham_op: OperatorSum,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+              ) -> EigAmpL:
     return ACM_ScaleOrAdapt(0, 0, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)
 
@@ -1398,6 +1402,6 @@ def ACM_Adapt(ham_op: OperatorSum,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+              ) -> EigAmpL:
     return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)
