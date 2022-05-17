@@ -24,7 +24,7 @@ def require_algebraic(name: str, value: Expr) -> None:
     """Raise an exception if value is not algebraic."""
     if not isinstance(value, Expr):
         raise TypeError(f'type of {name} is not Expr: {value}')
-    if not value.is_algebraic:
+    if not value.is_algebraic_expr():
         raise ValueError(f'value of {name} is not algebraic: {value}')
 
 

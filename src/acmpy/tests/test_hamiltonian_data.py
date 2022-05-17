@@ -2,7 +2,7 @@
 
 import pytest
 from math import isclose
-from acmpy.hamiltonian_data import RWC_alam
+from acmpy.hamiltonian_data import RWC_alam, RWC_alam_clam
 
 
 class TestRWC_alam:
@@ -65,3 +65,36 @@ class TestRWC_alam:
         alam: tuple[float, float] = RWC_alam(B, -3.0, 2.0)
         assert isclose(alam[0], expected[0])
         assert isclose(alam[1], expected[1])
+
+
+class TestRWC_alam_clam:
+    """Tests the RWC_alam_clam() function."""
+
+    @pytest.mark.parametrize(
+        "B,expected", [
+            (1, 1.414213562),
+            (2, 1.677073391),
+            (3, 1.821015022),
+            (4, 1.911011443),
+            (5, 1.971014648),
+            (6, 2.012729611),
+            (7, 2.042670180),
+            (8, 2.064734587),
+            (9, 2.081368768),
+            (10, 2.094162138),
+            (11, 2.104177355),
+            (12, 2.112142508),
+            (13, 2.118567416),
+            (14, 2.123816133),
+            (15, 2.128153304),
+            (16, 2.131774475),
+            (17, 2.134826310),
+            (18, 2.137420334),
+            (19, 2.139642428),
+            (20, 2.141559504)
+        ]
+    )
+    def test_c1_neg(self, B, expected):
+        alam: tuple[float, float] = RWC_alam_clam(B, -3.0, 2.0)
+        assert isclose(alam[0], expected)
+        assert isclose(alam[1], 2.5)

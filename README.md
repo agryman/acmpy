@@ -51,16 +51,17 @@ pip install -U pip
 Next install the Python packages required to run, test, type check, and document the code:
 
 ```shell script
-pip install numpy
-pip install sympy
-pip install Sphinx
-pip install sphinx-math-dollar
-pip install pytest
-pip install mypy
-pip install pytest-mypy
-pip install matplotlib
-pip install numpydoc
-pip install jupyter
+pip install numpy pandas matplotlib jupyter mypy pytest pytest-mypy
+pip install Sphinx sphinx-math-dollar numpydoc
+pip install sympy==1.9
+pip install scipy==1.8
+```
+
+Install the source code as an editable package.
+
+```shell
+cd src
+pip install -e .
 ```
 
 Finally, save the exact version information, so you can reliably reproduce the environment:

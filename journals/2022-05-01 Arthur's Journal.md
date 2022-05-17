@@ -1160,5 +1160,145 @@ break 12:55 pm
 
 ### 3:20 pm
 
-* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+* plot the function of `anorm` that `RWC_alam` is minimising - DONE
+  * plotting failed to reveal any clue
 
+## 2022-05-14
+
+### 11:00 am
+
+* clean up visualization notebook - IN-PROGRESS
+* report SymPy bugs - TODO
+  * `binomial(-1, -1) = 0`
+  * `solveset` returns the empty set
+
+break 11:40 am
+
+### 2:25 pm
+* clean up visualization notebook - DONE
+* report SymPy bugs - IN-PROGRESS
+  * `binomial(-1, -1) = 0` - DONE
+    * see https://github.com/sympy/sympy/issues/23497
+  * `solveset` returns the empty set - IN-PROGRESS
+
+break 6:40 pm
+
+## 2022-05-15
+
+### 10:45 am
+
+* report SymPy bugs - IN-PROGRESS
+  * `solveset` returns the empty set - IN-PROGRESS
+  * create standalone, simplified test case - IN-PROGRESS
+  
+break 12:35 pm
+
+## 2022-05-16
+
+### 11:00 am
+
+* report SymPy `solveset` bug - IN-PROGRESS
+  * `solveset` returns the empty set - IN-PROGRESS
+  * create standalone, simplified test case - IN-PROGRESS
+  * I'm getting unexpected results from `solveset()` for `RWC_alam()`
+  * Derive the math in `RWC_alam_clam()` which is simpler - DONE
+  * Derive the math in `RWC_alam()` - DONE
+
+break 12:05 pm
+
+### 3:10 pm
+
+* report SymPy `solveset` bug - IN-PROGRESS
+  * `solveset` returns the empty set
+  * create standalone, simplified test case - IN-PROGRESS
+  * I'm getting unexpected results from `solveset()` for `RWC_alam()` - IN-PROGRESS
+
+break 6:25 pm
+
+### 8:30 pm
+
+* report SymPy `solveset` bug - DONE
+  * create standalone, simplified test case - DONE
+  * see https://github.com/sympy/sympy/issues/23510
+
+* use nsolve instead of solveset - TODO
+  * add a parameter to the initial guess
+
+* I upgraded to the latest SymPy and now mypy reports errors
+  * fix mypy - TODO
+
+## 2022-05-17
+
+### 11:25 am
+
+* try workaround for solveset from Issue #23510
+```text
+Note that 3/2 results in a float 1.5, which may lead to further inaccuracy and solver failure.
+If you use Rational(3, 2) or S(3)/2 your example will work fine.
+
+==========Solving equation for B = 14 ==========
+Success: nsolve solution = 19.676355436230185
+Success: first solveset solution = 19.676355436230185
+Success: first solveset solution after simplification = 19.676355436230185
+==========Solving equation for B = 15 ==========
+Success: nsolve solution = 20.911495067823516
+Success: first solveset solution = 20.911495067823516
+Success: first solveset solution after simplification = 20.911495067823516
+```
+* using `S(3)/2` lets `solveset()` succeed, but in actual use the parameters $c_1$ and $c_2$ may be floats
+* to fix the issue use `nsolve()`
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - TODO
+  * Note: the Maple code selects that maximum root.
+    * Shouldn't it pick the root that minimizes the expectation value? - understand why this behavior - IN-PROGRESS
+
+break 12:25 pm
+
+### 2:00 pm
+
+* Note: the Maple code for `RWC_alam()` selects that maximum root!!!
+  * Shouldn't it pick the root that minimizes the expectation value? - understand why this behavior - DONE
+  * create Issue in Maple code repo - DONE
+    * see https://github.com/agryman/acm16/issues/6
+
+* I upgraded to the latest SymPy and now mypy reports errors
+  * fix mypy - DONE (reverted to sympy 1.9)
+  * mypy                          0.950
+With sympy==1.10.1
+```text
+mypy acmpy
+
+acmpy/compat.py:171: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/compat.py:171: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+acmpy/compat.py:173: error: Argument 1 to "array" has incompatible type "List[float]"; expected "Union[_SupportsArray[dtype[<nothing>]], Sequence[_SupportsArray[dtype[<nothing>]]], Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]], Sequence[Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]]], Sequence[Sequence[Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]]]]]"
+acmpy/compat.py:173: error: Matrix? has no attribute "__iter__" (not iterable)
+acmpy/compat.py:176: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/compat.py:176: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+...
+acmpy/tests/test_full_space.py:99: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/tests/test_full_space.py:99: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Found 121 errors in 8 files (checked 50 source files)
+```
+
+Back off to sympy==1.9
+
+```text
+pip uninstall sympy
+pip install sympy==1.9
+```
+
+Now no mypy errors.
+
+```text
+(venv) riemann:src arthurryman$ mypy acmpy
+Success: no issues found in 50 source files
+```
+
+I've joined the sympy mailing list and asked the question.
+* stay with sympy 1.9 until I understand the *correct* way to use mypy with sympy 1.10.1 - DONE
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess for nsolve 
+    * hard code 20 to start - TODO
+    * rerun pytest
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+  * check notebooks that describe behaviour of expectation value for small and large values
