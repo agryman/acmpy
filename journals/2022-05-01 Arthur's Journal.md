@@ -1296,9 +1296,132 @@ Success: no issues found in 50 source files
 I've joined the sympy mailing list and asked the question.
 * stay with sympy 1.9 until I understand the *correct* way to use mypy with sympy 1.10.1 - DONE
 
+Commit a snapshot of the code BEFORE switching to `nsolve()`. - DONE
+* tagged as v1-1-2
+
 * to fix the issue use `nsolve()` - IN-PROGRESS
-  * need an initial guess for nsolve 
-    * hard code 20 to start - TODO
-    * rerun pytest
+  * need an initial guess for nsolve
+    * hard code 20 to start - DONE
+    * rerun pytest - DONE
   * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
-  * check notebooks that describe behaviour of expectation value for small and large values
+    * check notebooks that describe behaviour of expectation value for small and large values
+
+break 5:55 pm
+
+### 8:40 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - IN-PROGRESS
+
+break 10:25 pm
+
+## 2022-05-18
+
+### 11:00 am
+
+Look into SymPy PR to add type hints in 1.10.1. - DONE
+
+break 12:00 pm
+
+### 2:15 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - IN-PROGRESS
+
+break 6:00 pm
+
+### 7:35 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - DONE
+    * I also did the other two cases but lost the work due to a Jupyter server crash :-(
+      * watch for error messages in the future to avoid lost work!!!
+    * recreate the lost work - TODO
+    * I used `limit()` to find asymptotic behaviour for large and small A
+    * I approximated the objective function as the sum of the large and small limits, showing that a zero exists
+    * I used the chain rule for differentiation instead of directly substituting the expression for `lambda0`
+      * I used the differential equation for lambda0 to avoid substituting radicals
+      * I should define coordinate systems more carefully and model the functions as multivariate rather than hand code the chain rule
+    * the three cases correspond to three non-overlapping subsets of the parameter space (c1, c2)
+    * the functions are defined piecewise on these three subsets
+    * I defined parameters for each case and have them the corresponding assumptions
+      * this allowed SymPy to get signs right
+    * understand big O notation in SymPy, e.g. can it compute germs? - TODO
+    * understand multivariate calculus in SymPy - TODO
+    * create minimal example for Matrix mypy bug - TODO
+      * see https://github.com/sympy/sympy/issues/17945
+    * try workaround suggested in https://groups.google.com/g/sympy/c/765HE8UenpE - TODO
+
+break 11:00 am
+
+## 2022-05-19
+
+### 11:00 am
+
+* understand big O notation in SymPy, e.g. can it compute germs? - DONE
+  * See: https://docs.sympy.org/latest/modules/series/series.html#order-terms
+  * SymPy can compute the order of a multivariate function
+  * You can compute the germ by dividing by the order and taking the limit
+* recreate the lost work - DONE
+* clean up notebook - TODO
+  * move definitions into new Python module `acmpy\papers\wr2015.py` - TODO
+  * remove redundant LaTeX formulas - TODO
+
+break 12:45 pm
+
+### 3:10 pm
+
+* clean up notebook - DONE
+  * move definitions into new Python module `acmpy\papers\wr2015.py` - DONE
+  * remove redundant LaTeX formulas - DONE
+* I derived the formulas for the initial guess A0
+  * see notebook `analysis-of-revised-rwc-alam`
+  * implement initial guesses in Python and test - TODO
+
+break 6:25 pm
+
+### 9:40 pm
+
+* I derived the formulas for the initial guess A0
+  * see notebook `analysis-of-revised-rwc-alam`
+  * implement initial guesses in Python and test - IN-PROGRESS
+    * two test cases fail, `nsolve()` fails to converge fast enough
+```text
+acmpy/tests/test_hamiltonian_data.py:10 (TestRWC_alam.test_c1_pos[15-5.297005523])
+self = <acmpy.tests.test_hamiltonian_data.TestRWC_alam object at 0x129bc1900>
+B = 15, expected = 5.297005523
+
+acmpy/tests/test_hamiltonian_data.py:10 (TestRWC_alam.test_c1_pos[16-5.459266423])
+self = <acmpy.tests.test_hamiltonian_data.TestRWC_alam object at 0x129bc1990>
+B = 16, expected = 5.459266423
+```
+* IDEA: maybe use Lagrange multipliers? - won't help because c1 >= 0 uses clam
+* However, the case can be solved exactly since it is a cubic polynomial
+* implement A0_case2 exact solution using `solve()` and use it as the initial guess - TODO
+  * should result in convergence of `nsolve()`
+  * failing that, look into numerical solvers in SciPy
+
+break 11:20 pm
+
+## 2022-05-20
+
+* investigate SciPy optimization - DONE
+  * See https://realpython.com/python-scipy-cluster-optimize/ 
+  * Very straightforward to call `minimize_scalar(objective_function)`
+* `RWC_alam()` is currently set up to find zeros of the derivative, so try to make that work
+
+* try to implement A0_case2 exact solution using `solve()` and use it as the initial guess - DONE
+  * should result in convergence of `nsolve()`
+  * I used `solveset()` in `RWC_alam_clam()` because the function is simply a cubic polynomial
+  * Note: `solve()` returned an empty list in some cases so submit a bug report - TODO
+
+* run mypy - DONE
+* run pytest - DONE
+* commit fixes - 
+

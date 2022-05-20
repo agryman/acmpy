@@ -2,11 +2,11 @@
 
 import pytest
 from math import isclose
-from acmpy.hamiltonian_data import RWC_alam, RWC_alam_clam
+from acmpy.hamiltonian_data import RWC_alam, RWC_alam_clam, A0_case1, A0_case2_approx
 
 
 class TestRWC_alam:
-    """Tests the RWC_alam() function."""
+    """Tests the function RWC_alam()."""
 
     @pytest.mark.parametrize(
         "B,expected", [
@@ -68,7 +68,36 @@ class TestRWC_alam:
 
 
 class TestRWC_alam_clam:
-    """Tests the RWC_alam_clam() function."""
+    """Tests the function RWC_alam_clam()."""
+
+    @pytest.mark.parametrize(
+        "B,expected", [
+            (1, 1.679773843),
+            (2, 2.202720480),
+            (3, 2.599308117),
+            (4, 2.933304638),
+            (5, 3.228085199),
+            (6, 3.495276885),
+            (7, 3.741657387),
+            (8, 3.971589562),
+            (9, 4.188080238),
+            (10, 4.393307804),
+            (11, 4.588911801),
+            (12, 4.776163871),
+            (13, 4.956074575),
+            (14, 5.129463264),
+            (15, 5.297005523),
+            (16, 5.459266423),
+            (17, 5.616724464),
+            (18, 5.769789201),
+            (19, 5.918814489),
+            (20, 6.064108623)
+        ]
+    )
+    def test_c1_pos(self, B, expected):
+        alam: tuple[float, float] = RWC_alam_clam(B, 3.0, 2.0)
+        assert isclose(alam[0], expected)
+        assert isclose(alam[1], 2.5)
 
     @pytest.mark.parametrize(
         "B,expected", [
@@ -98,3 +127,63 @@ class TestRWC_alam_clam:
         alam: tuple[float, float] = RWC_alam_clam(B, -3.0, 2.0)
         assert isclose(alam[0], expected)
         assert isclose(alam[1], 2.5)
+
+
+class TestA0_case1:
+    """Tests the function A0_case1()."""
+
+    @pytest.mark.parametrize(
+        "B, c1, expected", [
+            (10, 1, 10.0),
+            (10, 2, 14.142135623730951),
+            (10, 3, 17.32050807568877),
+            (20, 1, 20.0),
+            (20, 2, 28.284271247461902),
+            (20, 3, 34.64101615137754),
+            (30, 1, 30.0),
+            (30, 2, 42.42640687119285),
+            (30, 3, 51.96152422706631)
+        ]
+    )
+    def test_ok(self, B, c1, expected):
+        A0: float = A0_case1(B, c1)
+        assert isclose(A0, expected)
+
+
+class TestA0_case2_approx:
+    """Tests the function A0_case2_approx()."""
+
+    @pytest.mark.parametrize(
+        "B,c2,v,expected", [
+            (10, 1, 0, 8.879040017426005),
+            (10, 1, 1, 9.654893846056297),
+            (10, 1, 2, 10.32280115456367),
+            (10, 2, 0, 11.186889420813966),
+            (10, 2, 1, 12.164403991146798),
+            (10, 2, 2, 13.005914468513868),
+            (10, 3, 0, 12.80579164987494),
+            (10, 3, 1, 13.924766500838334),
+            (10, 3, 2, 14.888055529538272),
+            (20, 1, 0, 14.094597464129782),
+            (20, 1, 1, 15.32618864787106),
+            (20, 1, 2, 16.386425412012915),
+            (20, 2, 0, 17.75808003485201),
+            (20, 2, 1, 19.309787692112593),
+            (20, 2, 2, 20.64560230912734),
+            (20, 3, 0, 20.327927136297067),
+            (20, 3, 1, 22.104188991842317),
+            (20, 3, 2, 23.63331500935002),
+            (30, 1, 0, 18.469147504478332),
+            (30, 1, 1, 20.08298850246508),
+            (30, 1, 2, 21.472291690189408),
+            (30, 2, 0, 23.269667714505616),
+            (30, 2, 1, 25.30297995905247),
+            (30, 2, 2, 27.0533922899524),
+            (30, 3, 0, 26.637120052278018),
+            (30, 3, 1, 28.964681538168886),
+            (30, 3, 2, 30.968403463691008)
+        ]
+    )
+    def test_ok(self, B, c2, v, expected):
+        A0: float = A0_case2_approx(B, c2, v)
+        assert isclose(A0, expected)

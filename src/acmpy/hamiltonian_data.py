@@ -2,7 +2,7 @@
 
 import math
 
-from sympy import S, Expr, sqrt, Symbol, symbols, solveset
+from sympy import S, Expr, sqrt, Symbol, nsolve, solveset, Reals, Set, FiniteSet
 
 from acmpy.compat import IntFloatExpr, nonnegint, require_nonnegint
 from acmpy.internal_operators import ACM_Hamiltonian, OperatorSum
@@ -154,35 +154,44 @@ def beta_dav(c1: float, c2: float
 #   fi:
 #
 # end:
+def vshftf(v: nonnegint) -> int:
+    return (2 * v + 3) ** 2
+
+
+def muf(A: Expr, c1: float, c2: float, v: nonnegint) -> Expr:
+    vshft: int = vshftf(v)
+    return sqrt(vshft + (A * c1 / c2) ** 2)
+
+
+def RWC1(A: Expr, B: float, c1: float, c2: float, v: nonnegint = 0) -> Expr:
+    return A ** 3 - B ** 2 * c1 * A - (2 * v + 7) * B ** 2 * c2
+
+
+def RWC2(A: Expr, mu: Expr, B: float, c1: float, c2: float, v: nonnegint = 0) -> Expr:
+    vshft: int = vshftf(v)
+    return (c1 / c2) ** 2 * (-vshft * A ** 5 / mu ** 2
+                             + A ** 3 * B ** 2 * c1
+                             + A ** 2 * B ** 2 * c2 * (mu + 3)) \
+           + A ** 3 * (2 * mu + vshft) \
+           - B ** 2 * mu * (mu + 2) * (A * c1 + c2 * (mu + 4))
+
+
 def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
              ) -> tuple[float, float]:
     require_nonnegint('v', v)
 
-    vshft: int = (2 * v + 3) ** 2
+    if c1 >= 0:
+        return RWC_alam_clam(B, c1, c2, v)
 
-    A: Symbol = symbols('A', real=True)
-    aa0: float
-    if c1 < 0:
+    assert c1 < 0
+    A: Symbol = Symbol('A', real=True)
+    mu: Expr = muf(A, c1, c2, v)
+    F2: Expr = RWC2(A, mu, B, c1, c2, v)
 
-        def muf(aa: Expr) -> Expr:
-            return sqrt(vshft + (aa * c1 / c2) ** 2)
+    aa_initial: float = (35 * B ** 2 * c2 / 2) ** (1 / 3)
+    aa0: float = float(nsolve(F2, A, aa_initial))
 
-        def RWC2(aa: Expr, mu: Expr) -> Expr:
-            return (c1 / c2) ** 2 * (-vshft * aa ** 5 / mu ** 2
-                                     + aa ** 3 * B ** 2 * c1 + aa **2 * B ** 2 * c2 * (mu + 3)) \
-                   + aa ** 3 * (2 * mu + vshft) \
-                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
-
-        aa0 = max(float(aa) for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return math.sqrt(aa0), float(1 + muf(S(aa0)) / 2)
-
-    else:
-
-        def RWC1(aa: Expr) -> Expr:
-            return aa ** 3 - B ** 2 * c1 * aa - (2 * v + 7) * B ** 2 * c2
-
-        aa0 = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return math.sqrt(aa0), 2.5
+    return math.sqrt(aa0), float(1 + muf(S(aa0), c1, c2, v) / 2)
 
 
 # # The following procedure RWC_alam36 is a simplified algorithm
@@ -228,17 +237,35 @@ def RWC_alam36(B: float, c1: float, c2: float
 #     return [sqrt(aa0),2.5]:
 #
 # end:
-def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+def A0_case1(B: float, c1: float) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c1 <= 0:
+        raise ValueError(f'c1 must be positive: {c1}')
+    return B * math.sqrt(c1)
+
+
+def A0_case2_approx(B: float, c2: float, v: nonnegint) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c2 <= 0:
+        raise ValueError(f'c2 must be positive: {c2}')
+    require_nonnegint('v', v)
+
+    return (c2 * B ** 2 * (2 * v + 7)) ** (1 / 3)
+
+
+def RWC_alam_clam(B: float, c1: float, c2: float, v: nonnegint = 0
                   ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
 
-    def RWC1(aa: Expr) -> Expr:
-        return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
+    A: Symbol = Symbol('A', real=True, positive=True)
+    F1: Expr = RWC1(A, B, c1, c2, v)
+    A0_set: Set = solveset(F1, A, domain=Reals)
+    assert isinstance(A0_set, FiniteSet)
+    A0_pos = [float(A0) for A0 in A0_set if A0 > 0]
 
-    A: Symbol = symbols('A', real=True)
-    aa0: float = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
+    # assume that the smallest positive zero if the one that minimizes energy
+    aa0: float = A0_pos[0]
 
     return math.sqrt(aa0), 2.5
 
@@ -288,26 +315,13 @@ def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
 # end:
 def RWC_alam_fun(B: float, c1: float, c2: float
                  ) -> tuple[float, float, LambdaFunction]:
-    A: Symbol = symbols('A', real=True)
-    aa0: float
-    if c1 < 0:
+    a0: float
+    lam: float
+    a0, lam = RWC_alam(B, c1, c2)
 
-        def muf(aa: Expr) -> Expr:
-            return sqrt(9 + (aa * c1 / c2) ** 2)
+    if c1 >= 0:
+        return a0, lam, lambda_sho_fun
 
-        def RWC2(aa: Expr, mu: Expr) -> Expr:
-            return (c1 / c2) ** 2 * (-9 * aa ** 5 / mu ** 2
-                                     + aa ** 3 * B ** 2 * c1 + aa ** 2 * B ** 2 * c2 * (mu + 3)) \
-                   + aa ** 3 * (2 * mu + 9) \
-                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
-
-        aa0 = max(float(aa) for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return math.sqrt(aa0), float(1 + muf(S(aa0)) / 2), lambda_davi_fun((aa0 * c1 / (c2 * 2)) ** 2)
-
-    else:
-
-        def RWC1(aa: Expr) -> Expr:
-            return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
-
-        aa0 = max(float(aa) for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return math.sqrt(aa0), 2.5, lambda_sho_fun
+    assert c1 < 0
+    aa0: float = a0 ** 2
+    return a0, lam, lambda_davi_fun((aa0 * c1 / (c2 * 2)) ** 2)
