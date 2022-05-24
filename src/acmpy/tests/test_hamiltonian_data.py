@@ -2,7 +2,7 @@
 
 import pytest
 from math import isclose
-from acmpy.hamiltonian_data import RWC_alam, RWC_alam_clam, A0_case1, A0_case2_approx
+from acmpy.hamiltonian_data import RWC_alam, RWC_alam_clam, A0_case1, A0_case2_approx, A0_case3_approx
 
 
 class TestRWC_alam:
@@ -62,6 +62,25 @@ class TestRWC_alam:
         ]
     )
     def test_c1_neg(self, B, expected):
+        alam: tuple[float, float] = RWC_alam(B, -3.0, 2.0)
+        assert isclose(alam[0], expected[0])
+        assert isclose(alam[1], expected[1])
+
+    @pytest.mark.parametrize(
+        "B,expected", [
+            (10, (3.835914290, 12.137154360)),
+            (20, (5.202970609, 21.358512010)),
+            (30, (6.273136767, 30.552276360)),
+            (40, (7.184399229, 39.740744290)),
+            (50, (7.992004307, 48.927578310)),
+            (60, (8.724988555, 58.113769900)),
+            (70, (9.400900525, 67.299668600)),
+            (80, (10.031318620, 76.485420000)),
+            (90, (10.624362200, 85.671091900)),
+            (100, (11.185987180, 94.856719000))
+        ]
+    )
+    def test_c1_neg_large_B(self, B, expected):
         alam: tuple[float, float] = RWC_alam(B, -3.0, 2.0)
         assert isclose(alam[0], expected[0])
         assert isclose(alam[1], expected[1])
@@ -186,4 +205,26 @@ class TestA0_case2_approx:
     )
     def test_ok(self, B, c2, v, expected):
         A0: float = A0_case2_approx(B, c2, v)
+        assert isclose(A0, expected)
+
+
+class TestA0_case3_approx:
+    """Tests the A0_case3_approx() function."""
+
+    @pytest.mark.parametrize(
+        "B,expected", [
+            (10, 9.146912192286944),
+            (20, 12.935687276168014),
+            (30, 15.84291664941221),
+            (40, 18.293824384573888),
+            (50, 20.453117446175234),
+            (60, 22.40526759314526),
+            (70, 24.20045492493587),
+            (80, 25.87137455233603),
+            (90, 27.440736576860832),
+            (100, 28.925076085190778)
+        ]
+    )
+    def test_ok(self, B, expected):
+        A0: float = A0_case3_approx(B, -3.0, 2.0, 0)
         assert isclose(A0, expected)

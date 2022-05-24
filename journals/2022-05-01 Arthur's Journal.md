@@ -1255,7 +1255,7 @@ break 12:25 pm
 
 ### 2:00 pm
 
-* Note: the Maple code for `RWC_alam()` selects that maximum root!!!
+* Note: the Maple code for `RWC_alam()` selects the maximum root!!!
   * Shouldn't it pick the root that minimizes the expectation value? - understand why this behavior - DONE
   * create Issue in Maple code repo - DONE
     * see https://github.com/agryman/acm16/issues/6
@@ -1364,7 +1364,7 @@ break 11:00 am
 
 ### 11:00 am
 
-* understand big O notation in SymPy, e.g. can it compute germs? - DONE
+* understand big O notation in SymPy, e.g. can it compute germs? No. - DONE
   * See: https://docs.sympy.org/latest/modules/series/series.html#order-terms
   * SymPy can compute the order of a multivariate function
   * You can compute the germ by dividing by the order and taking the limit
@@ -1423,5 +1423,42 @@ break 11:20 pm
 
 * run mypy - DONE
 * run pytest - DONE
-* commit fixes - 
+* commit fixes - DONE
 
+Now I can resume reproducing the Maple examples.
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - TODO
+  * Example 4.4.1 still fails
+```text
+    B: ClassVar[int] = 50
+    c2: ClassVar[float] = 2.0
+    c1: ClassVar[float] = 1 - 2 * c2
+```
+  * add a test case - DONE
+  * `solveset()` returns `EmptySet` when `B` gets large, even though I can prove there is a positive root
+  * try to use Lagrange multipliers - TODO
+
+
+## 2022-05-21
+
+### 2:15 pm
+
+* try to use Lagrange multipliers - DONE
+  * did not result in solution
+
+break 6:30 pm
+
+## 2022-05-23
+
+### 2:30 pm
+
+* create presentation for symposium
+
+break 6:20 pm
+
+### 7:40 pm
+
+* continue work on presentation
+
+break 9:45 pm

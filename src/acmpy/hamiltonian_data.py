@@ -184,12 +184,18 @@ def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
         return RWC_alam_clam(B, c1, c2, v)
 
     assert c1 < 0
-    A: Symbol = Symbol('A', real=True)
+    A: Symbol = Symbol('A', real=True, positive=True)
     mu: Expr = muf(A, c1, c2, v)
     F2: Expr = RWC2(A, mu, B, c1, c2, v)
 
-    aa_initial: float = (35 * B ** 2 * c2 / 2) ** (1 / 3)
-    aa0: float = float(nsolve(F2, A, aa_initial))
+    # aa_initial: float = (35 * B ** 2 * c2 / 2) ** (1 / 3)
+    # aa_initial: float = A0_case3_approx(B, c1, c2, v)
+    # aa_initial: float = 20.0
+    # aa0: float = float(nsolve(F2, A, aa_initial))
+    A0_set: Set = solveset(F2, A, domain=Reals)
+    # assert isinstance(A0_set, FiniteSet)
+    A0_pos: list[float] = [float(A0) for A0 in A0_set if A0 > 0]
+    aa0: float = A0_pos[0]
 
     return math.sqrt(aa0), float(1 + muf(S(aa0), c1, c2, v) / 2)
 
@@ -253,6 +259,18 @@ def A0_case2_approx(B: float, c2: float, v: nonnegint) -> float:
     require_nonnegint('v', v)
 
     return (c2 * B ** 2 * (2 * v + 7)) ** (1 / 3)
+
+
+def A0_case3_approx(B: float, c1: float, c2: float, v: nonnegint) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c1 >= 0:
+        raise ValueError(f'c1 must be negative: {c1}')
+    if c2 <= 0:
+        raise ValueError(f'c2 must be positive: {c2}')
+    require_nonnegint('v', v)
+
+    return math.sqrt(B * c2) * ((2 * v + 3) * (2 * v + 5) * (2 * v + 7) / (-2 * c1)) ** (1 / 4)
 
 
 def RWC_alam_clam(B: float, c1: float, c2: float, v: nonnegint = 0

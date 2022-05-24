@@ -21,6 +21,7 @@ def lambdav_61(lambda0, v):
 
 Eq_61 = Eq(lambdav, lambdav_61(lambda0, v))
 
+
 def lambdav_62(lambda0, v):
     lambdav = lambda0 + v % 2
 
@@ -35,6 +36,7 @@ def lambdav_63(lambda0, v):
 
 
 Eq_63 = Eq(lambdav, lambdav_63(lambda0, v))
+
 
 def lambda0_B11(a, beta0):
     lambda0 = 1 + sqrt(Rational(9, 4) + (a * beta0) ** 4)
