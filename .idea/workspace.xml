@@ -4,37 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/acmpy-demo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/github-agryman-acm16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/github-agryman-acmpy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/jetbrains-pycharm.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/jupyter-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/matplotlib-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/mpmath-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/mypy-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/numpy-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/pandas-pydata-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/pypi-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/pytest-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/python-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/python-psf.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/scipy-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/sympy-github.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/sympy-org.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/wildlife-trusts-starling-murmuration-dusk-david-tipling-2020vision.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/presentations/towardsDS/Presentation Slides with Jupyter Notebook.slides.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/journals/2022-05-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-05-01 Arthur's Journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/GettyImages-466221663-24bc935.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/GettyImages-466221663-24bc935.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/acm-maple-demo.png" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/images/acm-maple-demo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.slides.html" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.slides.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/towardsDS" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/towardsDS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/presentations/towardsDS/Presentation Slides with Jupyter Notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/towardsDS/Presentation Slides with Jupyter Notebook.ipynb" afterDir="false" />
-    </list>
+    <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -484,7 +454,7 @@
       <workItem from="1653332057396" duration="4204000" />
       <workItem from="1653590826361" duration="2534000" />
       <workItem from="1653622737356" duration="51000" />
-      <workItem from="1653672523999" duration="4111000" />
+      <workItem from="1653672523999" duration="4290000" />
     </task>
     <servers />
   </component>
