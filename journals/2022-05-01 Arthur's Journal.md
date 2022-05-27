@@ -1462,3 +1462,30 @@ break 6:20 pm
 * continue work on presentation
 
 break 9:45 pm
+
+## 2022-05-26
+
+### 2:45 pm
+
+* continue work on presentation
+
+break 6:45 pm
+
+### 8:30 pm
+
+* finished first draft of presentation
+  * proofread it
+  * add list of past ACM-related codes and their languages: C, Mathematica, Maple
+  * add some live examples, e.g. 
+    * exact integer math
+    * numeric example of quadrupole moment
+    * use pandas and matplotlib
+    * show some typeset SymPy expressions
+
+break 11:30 pm
+
+## 2022-05-27
+
+### 1:30 pm
+
+* proofread presentation - 

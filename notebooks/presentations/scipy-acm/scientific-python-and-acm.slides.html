@@ -14671,17 +14671,20 @@ div.jp-OutputPrompt {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Abstract">Abstract<a class="anchor-link" href="#Abstract">&#182;</a></h2><ul>
-<li>Computers have become indispensible for deriving experimental predications from theoretical models</li>
-<li>Advances in theory, such as the Algebraic Collective Model (ACM), extend the scope of what computers can handle</li>
-<li>Historically, a wide variety of computer languages have been used,<ul>
-<li>e.g. Fortran, APL, Pascal, C, Mathematica, Maple, ...</li>
+<li>Advances in theory, such as The Algebraic Collective Model (ACM) of the Atomic Nucleus, extend the range of physical systems that computers can model</li>
+<li>Historically, many computer languages have been used for implementing physical models<ul>
+<li>e.g. Fortran, APL, Pascal, C, C++, Mathematica, Maple, Matlab, ...</li>
 </ul>
 </li>
 <li>The recent explosion of Internet data has stimulated the development of a powerful software and hardware stack for efficiently processing it</li>
 <li>Python has emerged as the dominant platform for Data Science and Machine Learning</li>
-<li>Python has a rich set of scientific capabilities that also make it well-suited for physics</li>
-<li>this presentation reports on my experience converting the Welsh-Rowe ACM code from Maple to Python</li>
-<li>based on this exercise, I conclude that Python is a very appropriate platform for the ACM and has many advantages over the alternatives</li>
+<li>Python now has a rich set of scientific capabilities that also make it well-suited for physics</li>
+<li>This presentation reports on my experience converting the Welsh-Rowe ACM code from Maple to Python</li>
+<li>Based on this exercise, I argue that:<ul>
+<li>Python is a very appropriate platform for the ACM and for quantum mechanics in general </li>
+<li>Python has many engineering and economic advantages over special purpose computer algebra systems such as Maple, Mathematica, and Matlab</li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -14696,9 +14699,10 @@ div.jp-OutputPrompt {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Outline">Outline<a class="anchor-link" href="#Outline">&#182;</a></h2><ul>
 <li>Background</li>
-<li>The Algebraic Collective Model</li>
-<li>The Scientific Python Ecosystem</li>
+<li>The Algebraic Collective Model (ACM) of the Atomic Nucleus</li>
+<li>Python and its Scientific Ecosystem</li>
 <li>Next Steps</li>
+<li>Conclusion</li>
 </ul>
 
 </div>
@@ -14713,27 +14717,26 @@ div.jp-OutputPrompt {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Background">Background<a class="anchor-link" href="#Background">&#182;</a></h2><ul>
 <li>1977: met David and George Rosensteel at Mathematical Physics conference in Tubingen, Germany<ul>
-<li>argued with George about bases of separable Hibert spaces</li>
+<li>argued with George about bases of separable Hibert spaces :-)</li>
 </ul>
 </li>
 <li>1978-79: joined David's research team at U. of Toronto<ul>
-<li>worked with George and Julianna Carvahlo</li>
+<li>worked with George and Julianna Carvalho</li>
 </ul>
 </li>
-<li>1980-2021: left Academia and went over to the <em>Dark Side</em> (software engineering)<ul>
+<li>1980-2021: I become a professional software engineer, but ...<ul>
 <li>maintained close friendship with David</li>
 <li>discussed math, physics, computing</li>
-<li>squash, badminton, sushi, scotch</li>
+<li>played squash, badminton</li>
+<li>enjoyed sushi, scotch</li>
 </ul>
 </li>
-<li>2019-06-24: BBQ lunch with David and family<ul>
-<li>David is dissappointed with slow adoption of ACM code, citing Maple as an obstacle</li>
-<li>Arthur suggests conversion to Python, and volunteers</li>
+<li>2019-06-24: hosted lunch with David and family<ul>
+<li>David is dissappointed with low adoption rate of ACM code :-(<ul>
+<li>cites Maple as an obstacle</li>
 </ul>
 </li>
-<li>2019-2022: <em>Dark Side</em> distractions prevent progress</li>
-<li>2022-03-04: Only three months left before symposium!<ul>
-<li>focus on creating the Python code, aka <code>acmpy</code></li>
+<li>I suggest conversion to Python and start <code>acmpy</code> project</li>
 </ul>
 </li>
 </ul>
@@ -14750,10 +14753,9 @@ div.jp-OutputPrompt {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="2019-06-25-Email">2019-06-25 Email<a class="anchor-link" href="#2019-06-25-Email">&#182;</a></h2><p>Hi Arthur</p>
 <p>...</p>
-<p>What is my objective?   Experimentalists continue to use the old Bohr-Mottelson model, which is an adiabatic approximation to the full ACM (algebraic collective model) which, in turn, is an algebraic extension (which I introduced and for which Trevor’s code was written) of the more phenomenological liquid-drop Bohr model (which was hardly, if ever, used in practice).</p>
 <p>Thus, we are optimistic that with a readily available computer code, the ACM, which can easily handle the full ACM with a variety of Hamiltonians, including its adiabatic and other approximations, would become a generally used tool.  But, no doubt I am being overly optimistic.  <strong>That was our original hope but the use of Maple proved (I am assuming) to be the obstacle to this happening.</strong></p>
 <p>My guess is that the most widely used computer languages are C, fortran, and python (but really I am only guessing).  It would seem to make most sense, if we consulted the journal Comput. Phys. Commun.
-and if, for example, they would want to publish a short note with the inclusion of the more useable code <strong>(I recall that, when we first submitted the code, they mentioned that the language would be a barrier to its usage, but at that point we were already committed)</strong>.  I had no idea that Maple is now offering conversion possibilities.  It does seem like the way to go.</p>
+and if, for example, they would want to publish a short note with the inclusion of the more useable code <strong>(I recall that, when we first submitted the code, they mentioned that the language would be a barrier to its usage, but at that point we were already committed)</strong>.</p>
 <p>...</p>
 <p>David</p>
 
@@ -14767,8 +14769,27 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Background-cont'd">Background cont'd<a class="anchor-link" href="#Background-cont'd">&#182;</a></h2><ul>
+<li>2019-2021: professional obligations delay <code>acmpy</code> progress</li>
+<li>2022-03-04: symposium date locked in<ul>
+<li>push to complete <code>acmpy</code> development</li>
+</ul>
+</li>
+<li>2022-04-12: initial version complete!</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Collective-Motion">Collective Motion<a class="anchor-link" href="#Collective-Motion">&#182;</a></h2><ul>
-<li><em>Collective Motion</em> is a phenomenon that may emerge when many individuals interact</li>
+<li><em>Collective Motion</em> is a phenomenon that sometimes emerges when many individuals interact with each other in simple ways</li>
 <li><a href="https://www.sciencefocus.com/nature/how-do-schools-of-fish-swim-in-perfect-unison/">schools of fish</a></li>
 <li><a href="https://birdwatchireland.ie/have-you-seen-this-bird-and-tens-of-thousands-of-its-friends-murmuration-records-wanted/">murmurations of starlings</a></li>
 <li>protons and neutrons in an atomic nucleus<ul>
@@ -14788,7 +14809,7 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="GettyImages-466221663-24bc935.jpeg" alt="How do schools of fish swim in perfect unison?"></p>
+<h2 id="Collective-Motion-in-a-School-of-Fish">Collective Motion in a School of Fish<a class="anchor-link" href="#Collective-Motion-in-a-School-of-Fish">&#182;</a></h2><p><img src="images/GettyImages-466221663-24bc935.jpeg" alt="How do schools of fish swim in perfect unison?"></p>
 
 </div>
 </div>
@@ -14800,7 +14821,7 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" alt="Have you seen this bird"></p>
+<h2 id="Collective-Motion-in-a-Murmuration-of-Starlings">Collective Motion in a Murmuration of Starlings<a class="anchor-link" href="#Collective-Motion-in-a-Murmuration-of-Starlings">&#182;</a></h2><p><img src="images/wildlife-trusts-starling-murmuration-dusk-david-tipling-2020vision.jpeg" alt="starling murmuration"></p>
 
 </div>
 </div>
@@ -14813,15 +14834,22 @@ and if, for example, they would want to publish a short note with the inclusion 
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Algebraic-Models">Algebraic Models<a class="anchor-link" href="#Algebraic-Models">&#182;</a></h2><ul>
-<li>quantum mechanics is normally formulated in terms of the Schrödinger equation</li>
-<li>the Schrödinger equation is a differential equation that the wave function satisfies</li>
-<li>most differential equations do not have "simple" solutions, but can, in principle, be solved numerically by a sufficiently powerful computer</li>
-<li>often (always?) the existence of a simple solution traces its origin to an underlying symmetry<ul>
-<li>e.g. rotational symmetry</li>
+<li>quantum mechanics is normally formulated in terms of the Schrödinger differential equation for the wave function of a system<ul>
+<li>e.g. an atomic nucleus</li>
 </ul>
 </li>
-<li>in this case, the differential equation can be expressed in terms of the symmetry operators and the solutions can be found algebraically</li>
+<li>most differential equations do not have "simple" solutions, but can, in principle, be solved numerically by a sufficiently powerful computer</li>
+<li>often (always?) the existence of a simple solution owes its existence to an underlying symmetry group<ul>
+<li>e.g. rotations in space</li>
+</ul>
+</li>
+<li>in this case, the differential equation can be expressed in terms of the group operators<ul>
+<li>the solutions can be found algebraically</li>
+<li>i.e. "without" solving the differential equation</li>
+</ul>
+</li>
 <li>the most well-known example is the harmonic oscillator<ul>
+<li>e.g. a weight on a spring</li>
 <li>the underlying symmetry is symplectic</li>
 </ul>
 </li>
@@ -14837,22 +14865,60 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="The-Algebraic-Collective-Model-of-the-Atomic-Nucleus">The Algebraic Collective Model of the Atomic Nucleus<a class="anchor-link" href="#The-Algebraic-Collective-Model-of-the-Atomic-Nucleus">&#182;</a></h2><ul>
-<li>consider a nucleus that contains $N$ nucleons<ul>
-<li>$N &gt; 200$ for the heaviest elements, e.g. $^{235}U$</li>
+<h2 id="Quantum-Mechanics-of-the-Atomic-Nucleus">Quantum Mechanics of the Atomic Nucleus<a class="anchor-link" href="#Quantum-Mechanics-of-the-Atomic-Nucleus">&#182;</a></h2><ul>
+<li>consider a nucleus that contains $N$ nucleons (protons and neutrons)<ul>
+<li>e.g. $N = 235$ for $^{235}U$ </li>
 </ul>
 </li>
-<li>the position of each nucleon is given by three coordinates</li>
-<li>the state of a quantum system is given by a wave function defined on its configuration space</li>
-<li>the total dimension of the configuration space for the atomic nucleus is $3N$<ul>
-<li>no conceivable classical computer could ever directly solve the Schrödinger for large $N$</li>
+<li>the position of each nucleon is given by three spatial coordinates: $x, y, z$</li>
+<li>the configuration of the nucleus is given by the position of each nucleon</li>
+<li>the total dimension of the configuration space for the nucleus is therefore $3N$</li>
+<li>the quantum state of a system is given by a complex wave function defined on its configuration space</li>
+<li>therefore the wave function of the nucleus is given by a complex function of $3N$ real variables</li>
+<li><strong>no conceivable classical computer could ever directly solve the Schrödinger equation for large $N$</strong><ul>
 <li>a future quantum computer <em>might</em> be able to solve it</li>
 </ul>
 </li>
-<li>the ACM dramatically reduces the number of coordinates to just <em>five</em> known as the <em>quadrupole moments</em></li>
-<li>the ACM has two underlying symmetries that enable an algebraic solution of the Schrödinger equation<ul>
-<li>$SO(5)$ which is associated with the orientation of the quadrupole moment</li>
-<li>$SU(1,1)$ which is associated with the magnitude of the quadrupole moment</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="The-Algebraic-Collective-Model-(ACM)-of-the-Atomic-Nucleus">The Algebraic Collective Model (ACM) of the Atomic Nucleus<a class="anchor-link" href="#The-Algebraic-Collective-Model-(ACM)-of-the-Atomic-Nucleus">&#182;</a></h2><ul>
+<li>the ACM dramatically reduces the dimension of the configuration space to just <em>five</em> </li>
+<li>together these five coordinates form the <em>quadrupole moment tensor</em></li>
+<li>the ACM has two underlying symmetry groups that enable an algebraic solution of the Schrödinger equation</li>
+<li>$SO(5)$ is associated with the <em>orientation</em> of the quadrupole moment</li>
+<li>$SU(1,1)$ is associated with the <em>magnitude</em> of the quadrupole moment</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Quadrupole-Moments">Quadrupole Moments<a class="anchor-link" href="#Quadrupole-Moments">&#182;</a></h2><ul>
+<li>think of the swarm of $N$ nucleons as being approximated by a continuous mass distribution in space</li>
+<li>the quadrupole moment measures how far the distribution differs from perfect spherical symmetry<ul>
+<li>there are five independent components of the quadrupole moment</li>
+<li>an $SO(3)$ rotation in position space induces an $SO(5)$ rotation in quadrupole moment space</li>
+</ul>
+</li>
+<li>the quadrupole moment is mathematically related to the <em>covariance</em> of a data set in Statistics</li>
+<li>the quadrupole moment is mathematically related to the <em>volativity</em> or <em>beta</em> of an asset in Finance <ul>
+<li>by coincidence (?) the ACM uses the variable <em>beta</em> ($\beta$) for the magnitude of the quadrupole moment!</li>
 </ul>
 </li>
 </ul>
@@ -14869,15 +14935,16 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="The-2015-Welsh-Rowe-ACM-Code">The 2015 Welsh-Rowe ACM Code<a class="anchor-link" href="#The-2015-Welsh-Rowe-ACM-Code">&#182;</a></h2><ul>
 <li><a href="https://doi.org/10.1016/j.cpc.2015.10.017">A computer code for calculations in the algebraic collective model of the atomic nucleus</a><ul>
-<li>available online 2015, published 2016 in Computer Physics Communications</li>
-<li>5571 lines of commented Maple source code</li>
-<li>data files containing precomputed $SO(5)$-$SO(3)$ Clebsch-Gordan coefficients</li>
+<li>2015: available online</li>
+<li>2016: published in Computer Physics Communications</li>
+<li>5571 lines of extensively commented Maple source code</li>
+<li>data files containing precomputed $SO(5) &gt; SO(3)$ Clebsch-Gordan coefficients</li>
 <li>large Maple worksheet containing examples of use and tests</li>
 </ul>
 </li>
-<li>allows the user to define a Hamiltonian based on the $SU(1,1)$ and $SO(5)$ operators and solve it<ul>
-<li>find the lowest energy levels and states</li>
-<li>compute the electric dipole transition amplitudes and rates</li>
+<li>allows the user to define and solve very general Hamiltonians composed from the $SU(1,1)$ and $SO(5)$ operators<ul>
+<li>find the lowest energy levels and corresponding quantum states</li>
+<li>compute electric dipole transition amplitudes and rates between the quantum states</li>
 </ul>
 </li>
 </ul>
@@ -14892,7 +14959,758 @@ and if, for example, they would want to publish a short note with the inclusion 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Demo-of-ACM-Maple-Code">Demo of ACM Maple Code<a class="anchor-link" href="#Demo-of-ACM-Maple-Code">&#182;</a></h2><p><img src="acm-maple-demo.png" alt="ACM Maple Demo"></p>
+<h2 id="Demo-of-ACM-Maple-Code">Demo of ACM Maple Code<a class="anchor-link" href="#Demo-of-ACM-Maple-Code">&#182;</a></h2><p><img src="images/acm-maple-demo.png" alt="ACM Maple Demo"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="acm16-on-GitHub"><code>acm16</code> on GitHub<a class="anchor-link" href="#acm16-on-GitHub">&#182;</a></h2><p><img src="images/github-agryman-acm16.png" alt="acm16"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Demo-of-acmpy">Demo of <code>acmpy</code><a class="anchor-link" href="#Demo-of-acmpy">&#182;</a></h2><p><img src="images/acmpy-demo.png" alt="acmpy Demo"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="acmpy-on-GitHub"><code>acmpy</code> on GitHub<a class="anchor-link" href="#acmpy-on-GitHub">&#182;</a></h2><p><img src="images/github-agryman-acmpy.png" alt="acmpy"></p>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Programming-Languages-Previously-Used-ACM-Work">Programming Languages Previously Used ACM Work<a class="anchor-link" href="#Programming-Languages-Previously-Used-ACM-Work">&#182;</a></h2><table>
+<thead><tr>
+<th>Year</th>
+<th>Language</th>
+<th>Authors</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2008</td>
+<td>C++</td>
+<td>T.A. Welsh</td>
+<td>Calculation of SO(5) &gt; SO(3) Clebsch-Gordan coefficients</td>
+</tr>
+<tr>
+<td>2009</td>
+<td>Mathematica</td>
+<td>M.A.Caprio, D.J.Rowe, T.A.Welsh</td>
+<td>Construction of SO(5) &gt; SO(3) spherical harmonics and Clebsch–Gordan coefficients</td>
+</tr>
+<tr>
+<td>2015</td>
+<td>Maple</td>
+<td>T.A.Welsh, D.J.Rowe</td>
+<td>A computer code for calculations in the algebraic collective model of the atomic nucleus</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>I suggest that standardizing on a common programming language would <ul>
+<li>reduce training, </li>
+<li>promote reuse, and </li>
+<li>increase productivity</li>
+</ul>
+</li>
+<li>I argue that Python is currently the best choice</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Python">Python<a class="anchor-link" href="#Python">&#182;</a></h2><ul>
+<li><a href="https://python.org">Python</a> is a well-designed, general purpose programming language<ul>
+<li>dynamically typed</li>
+<li>object-oriented</li>
+<li>functional programming features</li>
+</ul>
+</li>
+<li>interpretted (not compiled)<ul>
+<li>but performance-critical parts are coded in C</li>
+<li>existing libraries (e.g. LAPACK) written in any compiled language can be called from Python</li>
+</ul>
+</li>
+<li>built-in high-level mathematical features<ul>
+<li>exact integer arithmetic</li>
+<li>high precision real and complex numbers</li>
+<li>sets, lists, tuples, and maps (dictionaries)</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Python-cont'd">Python cont'd<a class="anchor-link" href="#Python-cont'd">&#182;</a></h2><ul>
+<li>free and open source<ul>
+<li>governed by the <a href="https://python.org/psf-landing/">Python Software Foundation</a></li>
+</ul>
+</li>
+<li>huge collection of third-party packages, e.g.<ul>
+<li>matplotlib, mpmath, NumPy, SciPy, SymPy, pandas, ...</li>
+<li><a href="https://pytest.org/">pytest</a> for test case development and automation</li>
+<li><a href="http://mypy-lang.org">mypy</a> for static type checking based on type hints</li>
+</ul>
+</li>
+<li><a href="https://pypi.org">PyPi</a> Python Package Index</li>
+<li>many excellent integrated development environments<ul>
+<li>I use <a href="https://www.jetbrains.com/pycharm/">JetBrains PyCharm</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Python">Python<a class="anchor-link" href="#Python">&#182;</a></h2><p><img src="images/python-org.png" alt="python.org"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Python-Software-Foundation">Python Software Foundation<a class="anchor-link" href="#Python-Software-Foundation">&#182;</a></h2><p><img src="images/python-psf.png" alt="PSF"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="mypy">mypy<a class="anchor-link" href="#mypy">&#182;</a></h2><p><img src="images/mypy-org.png" alt="mypy"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="pytest">pytest<a class="anchor-link" href="#pytest">&#182;</a></h2><p><img src="images/pytest-org.png" alt="pytest"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="PyPI">PyPI<a class="anchor-link" href="#PyPI">&#182;</a></h2><p><img src="images/pypi-org.png" alt="PyPI"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="PyCharm">PyCharm<a class="anchor-link" href="#PyCharm">&#182;</a></h2><p><img src="images/jetbrains-pycharm.png" alt="PyCharm"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="The-Scientific-Python-Ecosystem">The Scientific Python Ecosystem<a class="anchor-link" href="#The-Scientific-Python-Ecosystem">&#182;</a></h2><ul>
+<li><a href="https://mpmath.org">mpmath</a> - arbitrary precision real and complex floating-point math</li>
+<li><a href="https://matplotlib.org">matplotlib</a> - data visualization</li>
+<li><a href="https://numpy.org">NumPy</a> - vectorized n-dimensional array operations</li>
+<li><a href="https://pandas.pydata.org">pandas</a> - data analysis</li>
+<li><a href="https://jupyter.org">Jupyter</a> - interactive notebooks for Python and other languages</li>
+<li><a href="https://scipy.org">SciPy</a> - numerical analysis, optimization, machine learning, special functions</li>
+<li><a href="https://sympy.org">SymPy</a> - symbolic math (aka computer algebra)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="mpmath">mpmath<a class="anchor-link" href="#mpmath">&#182;</a></h2><p><img src="images/mpmath-org.png" alt="mpmath"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="matplotlib">matplotlib<a class="anchor-link" href="#matplotlib">&#182;</a></h2><p><img src="images/matplotlib-org.png" alt="matplotlib"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="NumPy">NumPy<a class="anchor-link" href="#NumPy">&#182;</a></h2><p><img src="images/numpy-org.png" alt="numpy"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="pandas">pandas<a class="anchor-link" href="#pandas">&#182;</a></h2><p><img src="images/pandas-pydata-org.png" alt="pandas"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Jupyter">Jupyter<a class="anchor-link" href="#Jupyter">&#182;</a></h2><p><img src="images/jupyter-org.png" alt="jupyter"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="SciPy">SciPy<a class="anchor-link" href="#SciPy">&#182;</a></h2><p><img src="images/scipy-org.png" alt="scipy"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="SymPy">SymPy<a class="anchor-link" href="#SymPy">&#182;</a></h2><p><img src="images/sympy-org.png" alt="sympy"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Scientific-Python-Distributions">Scientific Python Distributions<a class="anchor-link" href="#Scientific-Python-Distributions">&#182;</a></h2><ul>
+<li><a href="https://www.sagemath.org">SageMath</a><ul>
+<li>"Mission: Creating a viable free open source alternative to Magma, Maple, Mathematica and Matlab."</li>
+<li>includes many scientific computing applications</li>
+<li>aimed at interactive users</li>
+</ul>
+</li>
+<li><a href="https://www.anaconda.com">Anaconda</a><ul>
+<li>"Anaconda offers the easiest way to perform Python/R data science and machine learning on a single machine."</li>
+<li>package manager for Python and other languages<ul>
+<li>manages dependencies</li>
+<li>generates compiled code for many platforms</li>
+</ul>
+</li>
+<li>aimed at data scientists and others who need to analyse data but not necessarily develop code</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="SageMath">SageMath<a class="anchor-link" href="#SageMath">&#182;</a></h2><p><img src="images/sagemath-org.png" alt="SageMath"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Anaconda">Anaconda<a class="anchor-link" href="#Anaconda">&#182;</a></h2><p><img src="images/anaconda-com.png" alt="Anaconda"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="More-About-Jupyter-Notebooks">More About Jupyter Notebooks<a class="anchor-link" href="#More-About-Jupyter-Notebooks">&#182;</a></h2><ul>
+<li>evolved from IPython<ul>
+<li>Julia, Python, and R</li>
+</ul>
+</li>
+<li>supports many other languages via plug-in <a href="https://github.com/jupyter/jupyter/wiki/Jupyter-kernels">kernels</a></li>
+<li>"<a href="https://jupyter.org/try-jupyter/lab/">JupyterLab</a> is the latest web-based interactive development environment for notebooks, code, and data."</li>
+<li>"<a href="https://jupyter.org/hub">JupyterHub</a> brings the power of notebooks to groups of users."</li>
+<li>several <a href="https://www.dataschool.io/cloud-services-for-jupyter-notebook/">websites</a> host Jupyter notebooks<ul>
+<li><a href="https://mybinder.org">Binder</a></li>
+<li><a href="https://www.kaggle.com/code">Kaggle</a></li>
+<li><a href="https://colab.research.google.com">Google Colab</a></li>
+<li><a href="https://cocalc.com">CoCalc</a></li>
+<li><a href="https://datalore.jetbrains.com">JetBrains Datalore</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="JupyterLab">JupyterLab<a class="anchor-link" href="#JupyterLab">&#182;</a></h2><p><img src="images/jupyterlab.png" alt="JupyterLab"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="JupyterHub">JupyterHub<a class="anchor-link" href="#JupyterHub">&#182;</a></h2><p><img src="images/jupyterhub.png" alt="JupyterHub"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Binder">Binder<a class="anchor-link" href="#Binder">&#182;</a></h2><p><img src="images/mybinder-org.png" alt="Binder"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Kaggle">Kaggle<a class="anchor-link" href="#Kaggle">&#182;</a></h2><p><img src="images/kaggle-com.png" alt="Kaggle"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Google-Colab">Google Colab<a class="anchor-link" href="#Google-Colab">&#182;</a></h2><p><img src="images/google-colaboratory.png" alt="Colaboratory"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="CoCalc">CoCalc<a class="anchor-link" href="#CoCalc">&#182;</a></h2><p><img src="images/cocalc-com.png" alt="CoCalc"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="JetBrains-Datalore">JetBrains Datalore<a class="anchor-link" href="#JetBrains-Datalore">&#182;</a></h2><p><img src="images/datalore-jetbrains-com.png" alt="Datalore"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="My-Experience-Converting-the-ACM-Code-from-Maple-to-Python">My Experience Converting the ACM Code from Maple to Python<a class="anchor-link" href="#My-Experience-Converting-the-ACM-Code-from-Maple-to-Python">&#182;</a></h2><ul>
+<li>Maple and Python have many language similarities<ul>
+<li>high-level</li>
+<li>mathematical</li>
+<li>interpretted</li>
+</ul>
+</li>
+<li>the initial conversion was very direct<ul>
+<li>used SymPy for all symbolic and matrix functions</li>
+<li>however, the code is actually a hybrid of symbolic and numeric computation</li>
+</ul>
+</li>
+<li>initially Python was 80x slower than Maple :-(<ul>
+<li>used Python profiling tools to identify bottlenecks</li>
+<li>selectively replaced slow SymPy functions with much faster NumPy and SciPy functions</li>
+</ul>
+</li>
+<li>currently Python is 3x faster than Maple :-)<ul>
+<li>can improve performance even more using vectorized NumPy and SciPy functions</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Some-SymPy-Issues">Some SymPy Issues<a class="anchor-link" href="#Some-SymPy-Issues">&#182;</a></h2><ul>
+<li>found a couple of SymPy issues</li>
+<li>reported these to <a href="https://github.com/sympy/sympy">SymPy project on GitHub</a><ul>
+<li>rapid reply from development team</li>
+</ul>
+</li>
+<li><a href="https://github.com/sympy/sympy/issues/23497">Issue 23497</a>: different value for <code>binomial(-1, -1)</code></li>
+<li><a href="https://github.com/sympy/sympy/issues/23510">Issue 23510</a>: sometimes<code>solveset()</code> failed to find solution</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="SymPy-on-GitHub">SymPy on GitHub<a class="anchor-link" href="#SymPy-on-GitHub">&#182;</a></h2><p><img src="images/sympy-github.png" alt="SymPy Project"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Advantages-of-Python-versus-Maple,-Mathematica,-Matlab,-etc.">Advantages of Python versus Maple, Mathematica, Matlab, etc.<a class="anchor-link" href="#Advantages-of-Python-versus-Maple,-Mathematica,-Matlab,-etc.">&#182;</a></h2><ul>
+<li>Python is a well-designed, modern, general purpose programming language<ul>
+<li>several excellent integrated development environments</li>
+<li>great tools for debugging, testing, execution profiling</li>
+<li>supports object-oriented design</li>
+</ul>
+</li>
+<li>Python has proven infrastructure, PyPI, for publishing code</li>
+<li>Python is free and open software<ul>
+<li>no licence fees</li>
+<li>ability to fix bugs and add enhancements</li>
+<li>future-proofs your work</li>
+</ul>
+</li>
+<li>Python has a large developer base<ul>
+<li>undergraduates are more likely to have Python skills</li>
+<li>graduates who use Python will have enhanced employment opportunities</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Stack-Overflow-2021-Developer-Survey">Stack Overflow 2021 Developer Survey<a class="anchor-link" href="#Stack-Overflow-2021-Developer-Survey">&#182;</a></h2><ul>
+<li>80,000 developers responded to the <a href="https://insights.stackoverflow.com/survey/2021">survey</a></li>
+<li>"Which programming, scripting, and markup languages have you done extensive development work in over the past year, and which do you want to work in over the next year? (If you both worked with the language and want to continue to do so, please check both boxes in that row.)"<ul>
+<li>Python ranked #3 at 48.24% of developers</li>
+<li>Matlab ranked #23 at 4.66% of developers</li>
+<li>Maple, Mathematica did not appear in the ranking</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Top-Ranked-Programming-Languages">Top-Ranked Programming Languages<a class="anchor-link" href="#Top-Ranked-Programming-Languages">&#182;</a></h2><p><img src="images/survey-top-ranked.png" alt="Top-Ranked Programming Languages"></p>
+
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Bottom-Ranked-Programming-Languages">Bottom-Ranked Programming Languages<a class="anchor-link" href="#Bottom-Ranked-Programming-Languages">&#182;</a></h2><p><img src="images/survey-bottom-ranked.png" alt="Bottom-Ranked Programming Languages"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Next-Steps">Next Steps<a class="anchor-link" href="#Next-Steps">&#182;</a></h2><ul>
+<li><code>acmpy</code> version 1.0<ul>
+<li>finish testing</li>
+<li>reproduce all results from the Maple worksheet</li>
+<li>release code on GitHub</li>
+<li>ask interested researchers to provide feedback</li>
+</ul>
+</li>
+<li><code>acmpy</code> version 2.0<ul>
+<li>rewrite all numeric code using vectorized NumPy and SciPy functions</li>
+<li>refactor code using object-oriented design to improve API and extensibility</li>
+<li>bring code documentation up to SymPy standards (Sphinx)</li>
+<li>identify portions of code that are suitable as contributions to SymPy</li>
+<li>publish code on PyPI</li>
+<li>write article for Computer Physics Communications</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Future-Thoughts">Future Thoughts<a class="anchor-link" href="#Future-Thoughts">&#182;</a></h2><ul>
+<li>What if in the future, scientific papers contained more than just informal mathematical prose?</li>
+<li>Formal Specifications<ul>
+<li>What if scientific papers contained formal specifications?</li>
+<li>formal software specification languages exist and have been used on a limited basis</li>
+<li>the use of formal languages enables some forms of automated correctness checking<ul>
+<li>type checking</li>
+<li>model checking</li>
+</ul>
+</li>
+<li>I like <a href="https://en.wikipedia.org/wiki/Z_notation">Z Notation</a> and have used it professionally</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Future-Thoughts-cont'd">Future Thoughts cont'd<a class="anchor-link" href="#Future-Thoughts-cont'd">&#182;</a></h2><ul>
+<li>Proof Checkers<ul>
+<li>What if the mathematical derivations in scientific papers could be checked for correctness?</li>
+<li>this first requires that all definitions be formally specified</li>
+<li>the <a href="https://leanprover.github.io">Lean Theorem Prover</a> is gaining some adherents in the mathematics community</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Future-Thoughts-cont'd">Future Thoughts cont'd<a class="anchor-link" href="#Future-Thoughts-cont'd">&#182;</a></h2><ul>
+<li>by including formal specifications and proofs in scientific papers, mathematics and physics could take advantage of many of the tools that have powered the software revolution<ul>
+<li>greater reuse of results</li>
+<li>better indexing and search</li>
+<li>improved correctness of software implementations</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><ul>
+<li>Python is now a viable alternative to traditional special purpose computer algebra systems</li>
+<li>Python is being used daily for large scale, numeric-intensive machine learning tasks</li>
+<li>Python language features make it more suitable for developing large, complex applications</li>
+<li>Python is free and open software which makes Python applications more future-proof</li>
+<li>Python has a large and active developer community which means Python skills are more readily available for new research projects</li>
+<li>Python skills are in high demand by industry, thereby enhancing the future employment prospects of graduates who acquire those skills</li>
+<li>By standardizing on Python, the physics community should be able to more easily build on past work thereby accelerating progress</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="References">References<a class="anchor-link" href="#References">&#182;</a></h2><ul>
+<li>T.A. Welsh and D.J. Rowe, "A computer code for calculations in the algebraic collective model of the atomic nucleus", in Computer Physics Communications 200 (2016) 220-253, <a href="https://doi.org/10.1016/j.cpc.2015.10.017">https://doi.org/10.1016/j.cpc.2015.10.017</a></li>
+<li>J. Hunter, F. Pérez and B. Granger, "Python: An Ecosystem for Scientific Computing" in Computing in Science &amp; Engineering, vol. 13, no. 02, pp. 13-21, 2011, <a href="https://doi.ieeecomputersociety.org/10.1109/MCSE.2010.119">https://doi.ieeecomputersociety.org/10.1109/MCSE.2010.119</a></li>
+</ul>
 
 </div>
 </div>
