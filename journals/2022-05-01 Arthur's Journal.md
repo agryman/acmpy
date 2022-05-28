@@ -1488,4 +1488,22 @@ break 11:30 pm
 
 ### 1:30 pm
 
-* proofread presentation - 
+* proofread presentation - DONE
+* add list of past ACM-related codes and their languages: C, Mathematica, Maple - DONE
+
+First draft of presentation is complete.
+
+break 5:30 pm
+
+## 2022-05-28
+
+### 2:40 pm
+
+Deploy presentation to my GitHub Pages site. - DONE
+* site is down
+```text
+We're having a really bad day.
+
+The Unicorns have taken over. We're doing our best to get them under control and get GitHub back up and running.
+```
+* don't rely on GitHub Pages to host presentation.
