@@ -1507,3 +1507,8 @@ We're having a really bad day.
 The Unicorns have taken over. We're doing our best to get them under control and get GitHub back up and running.
 ```
 * don't rely on GitHub Pages to host presentation.
+* merged latest numpy branch into master
+* tagged master as v1-1-3 for symposium
+* delete numpy branch
+* continue debugging Example 4.4.1
+* create new branch example-4-4-1
