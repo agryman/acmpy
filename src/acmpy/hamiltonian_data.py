@@ -1,12 +1,12 @@
 """8. Procedures that aid the production of the data for the particular Hamiltonians considered in [RWC2009]."""
 
-from typing import Callable
+import math
 
-from sympy import S, Expr, sqrt, Rational, Symbol, symbols, solveset
+from sympy import S, Expr, sqrt, Symbol, nsolve, solveset, Reals, Set, FiniteSet
 
 from acmpy.compat import IntFloatExpr, nonnegint, require_nonnegint
 from acmpy.internal_operators import ACM_Hamiltonian, OperatorSum
-from acmpy.globals import lambda_davi_fun, lambda_sho_fun
+from acmpy.globals import lambda_davi_fun, lambda_sho_fun, LambdaFunction
 
 
 # ###########################################################################
@@ -45,17 +45,15 @@ def RWC_Ham(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, chi: IntFloatEx
 #   aa*(4+9/(lambda0-1))/8/B + B*lambda0*c1/2/aa
 #               + B*lambda0*(lambda0+1)*c2/2/aa^2 + kappa/3:
 # end:
-def RWC_expt(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr,
-             anorm: IntFloatExpr, lambda0: IntFloatExpr
-             ) -> Expr:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
-    kappa = S(kappa)
-    anorm = S(anorm)
-    lambda0 = S(lambda0)
+def RWC_expt(B: float, c1: float, c2: float, kappa: float,
+             anorm: float, lambda0: float
+             ) -> float:
+    if anorm == 0:
+        raise ValueError('anorm must not equal 0.')
+    if lambda0 == 1:
+        raise ValueError('lambda0 must not equal 1.')
 
-    aa: Expr = anorm ** 2
+    aa: float = anorm ** 2
     return aa * (4 + 9 / (lambda0 - 1)) / 8 / B + B * lambda0 * c1 / 2 / aa \
            + B * lambda0 * (lambda0 + 1) * c2 / 2 / aa ** 2 + kappa / 3
 
@@ -68,9 +66,9 @@ def RWC_expt(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloa
 #                           anorm::constant,$)
 #   RWC_expt(_passed,evalf(RWC_dav(c1,c2,anorm))):
 # end:
-def RWC_expt_link(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: IntFloatExpr, anorm: IntFloatExpr
-                  ) -> Expr:
-    return RWC_expt(B, c1, c2, kappa, anorm, RWC_dav(c1, c2, anorm).evalf())
+def RWC_expt_link(B: float, c1: float, c2: float, kappa: float, anorm: float
+                  ) -> float:
+    return RWC_expt(B, c1, c2, kappa, anorm, RWC_dav(c1, c2, anorm))
 
 
 # # The following procedure RWC_dav calculates lambda0 from anorm
@@ -79,8 +77,8 @@ def RWC_expt_link(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, kappa: In
 # RWC_dav:=proc(c1::constant,c2::constant,anorm::constant,v::nonnegint:=0,$)
 #   lam_dav(anorm,beta_dav(c1,c2),v)
 # end:
-def RWC_dav(c1: IntFloatExpr, c2: IntFloatExpr, anorm: IntFloatExpr, v: nonnegint = 0
-            ) -> Expr:
+def RWC_dav(c1: float, c2: float, anorm: float, v: nonnegint = 0
+            ) -> float:
     return lam_dav(anorm, beta_dav(c1, c2), v)
 
 
@@ -90,12 +88,9 @@ def RWC_dav(c1: IntFloatExpr, c2: IntFloatExpr, anorm: IntFloatExpr, v: nonnegin
 # lam_dav:=proc(a::constant,beta0::constant,v::nonnegint:=0,$)
 #     1+sqrt( (v+3/2)^2 + a^4*beta0^4 )
 # end:
-def lam_dav(a: IntFloatExpr, beta0: IntFloatExpr, v: nonnegint = 0
-            ) -> Expr:
-    a = S(a)
-    beta0 = S(beta0)
-
-    return 1 + sqrt((v + Rational(3, 2)) ** 2 + a ** 4 * beta0 ** 4)
+def lam_dav(a: float, beta0: float, v: nonnegint = 0
+            ) -> float:
+    return 1 + math.sqrt((v + 1.5) ** 2 + (a * beta0) ** 4)
 
 
 # # The following calculates beta_0 using (B15)
@@ -107,12 +102,9 @@ def lam_dav(a: IntFloatExpr, beta0: IntFloatExpr, v: nonnegint = 0
 #     sqrt(-c1/c2/2)
 #   fi;
 # end:
-def beta_dav(c1: IntFloatExpr, c2: IntFloatExpr
-             ) -> Expr:
-    c1 = S(c1)
-    c2 = S(c2)
-
-    return S.Zero if c1.evalf() >= 0 else sqrt(-c1 / c2 / 2)
+def beta_dav(c1: float, c2: float
+             ) -> float:
+    return 0 if c1 >= 0 else sqrt(-c1 / (c2 * 2))
 
 
 # # The following procedure RWC_alam returns values of the ACM parameters
@@ -162,38 +154,50 @@ def beta_dav(c1: IntFloatExpr, c2: IntFloatExpr
 #   fi:
 #
 # end:
-def RWC_alam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, v: nonnegint = 0
+def vshftf(v: nonnegint) -> int:
+    return (2 * v + 3) ** 2
+
+
+def muf(A: Expr, c1: float, c2: float, v: nonnegint) -> Expr:
+    vshft: int = vshftf(v)
+    return sqrt(vshft + (A * c1 / c2) ** 2)
+
+
+def RWC1(A: Expr, B: float, c1: float, c2: float, v: nonnegint = 0) -> Expr:
+    return A ** 3 - B ** 2 * c1 * A - (2 * v + 7) * B ** 2 * c2
+
+
+def RWC2(A: Expr, mu: Expr, B: float, c1: float, c2: float, v: nonnegint = 0) -> Expr:
+    vshft: int = vshftf(v)
+    return (c1 / c2) ** 2 * (-vshft * A ** 5 / mu ** 2
+                             + A ** 3 * B ** 2 * c1
+                             + A ** 2 * B ** 2 * c2 * (mu + 3)) \
+           + A ** 3 * (2 * mu + vshft) \
+           - B ** 2 * mu * (mu + 2) * (A * c1 + c2 * (mu + 4))
+
+
+def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
              ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
     require_nonnegint('v', v)
 
-    vshft: int = (2 * v + 3) ** 2
+    if c1 >= 0:
+        return RWC_alam_clam(B, c1, c2, v)
 
-    A: Symbol = symbols('A', real=True)
-    aa0: float
-    if c1.evalf() < 0:
+    assert c1 < 0
+    A: Symbol = Symbol('A', real=True, positive=True)
+    mu: Expr = muf(A, c1, c2, v)
+    F2: Expr = RWC2(A, mu, B, c1, c2, v)
 
-        def muf(aa: Expr) -> Expr:
-            return sqrt(vshft + (aa * c1 / c2) ** 2)
+    # aa_initial: float = (35 * B ** 2 * c2 / 2) ** (1 / 3)
+    # aa_initial: float = A0_case3_approx(B, c1, c2, v)
+    # aa_initial: float = 20.0
+    # aa0: float = float(nsolve(F2, A, aa_initial))
+    A0_set: Set = solveset(F2, A, domain=Reals)
+    # assert isinstance(A0_set, FiniteSet)
+    A0_pos: list[float] = [float(A0) for A0 in A0_set if A0 > 0]
+    aa0: float = A0_pos[0]
 
-        def RWC2(aa: Expr, mu: Expr) -> Expr:
-            return (c1 / c2) ** 2 * (-vshft * aa ** 5 / mu ** 2
-                                     + aa ** 3 * B ** 2 * c2 * (mu + 3)) \
-                   + aa ** 3 * (2 * mu + vshft) \
-                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
-
-        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf()
-
-    else:
-
-        def RWC1(aa: Expr) -> Expr:
-            return aa ** 3 - B ** 2 * c1 * aa - (2 * v + 7) * B ** 2 * c2
-
-        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), 2.5
+    return math.sqrt(aa0), float(1 + muf(S(aa0), c1, c2, v) / 2)
 
 
 # # The following procedure RWC_alam36 is a simplified algorithm
@@ -215,19 +219,15 @@ def RWC_alam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr, v: nonnegint =
 #   fi:
 #
 # end:
-def RWC_alam36(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+def RWC_alam36(B: float, c1: float, c2: float
                ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
+    if c1 < 0:
 
-    if c1.evalf() < 0:
-
-        return sqrt(sqrt(-B ** 2 * c2 / 2)).evalf(), (1 + sqrt(36 + B ** 2 * c1 ** 4 / c2 ** 2) / 4).evalf()
+        return math.sqrt(math.sqrt(-B ** 2 * c1 / 2)), (1 + math.sqrt(36 + B ** 2 * c1 ** 4 / c2 ** 2) / 4)
 
     else:
 
-        return sqrt(sqrt(B * c1 / 4)).evalf(), 2.5
+        return math.sqrt(math.sqrt(B * c1 / 4)), 2.5
 
 
 # # The following procedure RWC_alam_clam is another alternative that
@@ -243,19 +243,49 @@ def RWC_alam36(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
 #     return [sqrt(aa0),2.5]:
 #
 # end:
-def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
+def A0_case1(B: float, c1: float) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c1 <= 0:
+        raise ValueError(f'c1 must be positive: {c1}')
+    return B * math.sqrt(c1)
+
+
+def A0_case2_approx(B: float, c2: float, v: nonnegint) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c2 <= 0:
+        raise ValueError(f'c2 must be positive: {c2}')
+    require_nonnegint('v', v)
+
+    return (c2 * B ** 2 * (2 * v + 7)) ** (1 / 3)
+
+
+def A0_case3_approx(B: float, c1: float, c2: float, v: nonnegint) -> float:
+    if B <= 0:
+        raise ValueError(f'B must be positive: {B}')
+    if c1 >= 0:
+        raise ValueError(f'c1 must be negative: {c1}')
+    if c2 <= 0:
+        raise ValueError(f'c2 must be positive: {c2}')
+    require_nonnegint('v', v)
+
+    return math.sqrt(B * c2) * ((2 * v + 3) * (2 * v + 5) * (2 * v + 7) / (-2 * c1)) ** (1 / 4)
+
+
+def RWC_alam_clam(B: float, c1: float, c2: float, v: nonnegint = 0
                   ) -> tuple[float, float]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
 
-    def RWC1(aa: Expr) -> Expr:
-        return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
+    A: Symbol = Symbol('A', real=True, positive=True)
+    F1: Expr = RWC1(A, B, c1, c2, v)
+    A0_set: Set = solveset(F1, A, domain=Reals)
+    assert isinstance(A0_set, FiniteSet)
+    A0_pos = [float(A0) for A0 in A0_set if A0 > 0]
 
-    A: Symbol = symbols('A', real=True)
-    aa0: float = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
+    # assume that the smallest positive zero if the one that minimizes energy
+    aa0: float = A0_pos[0]
 
-    return sqrt(aa0).evalf(), 2.5
+    return math.sqrt(aa0), 2.5
 
 
 # # The following procedure RWC_alam_fun returns a triple
@@ -301,32 +331,15 @@ def RWC_alam_clam(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
 #   fi:
 #
 # end:
-def RWC_alam_fun(B: IntFloatExpr, c1: IntFloatExpr, c2: IntFloatExpr
-                 ) -> tuple[float, float, Callable]:
-    B = S(B)
-    c1 = S(c1)
-    c2 = S(c2)
+def RWC_alam_fun(B: float, c1: float, c2: float
+                 ) -> tuple[float, float, LambdaFunction]:
+    a0: float
+    lam: float
+    a0, lam = RWC_alam(B, c1, c2)
 
-    A: Symbol = symbols('A', real=True)
-    aa0: float
-    if c1.evalf() < 0:
+    if c1 >= 0:
+        return a0, lam, lambda_sho_fun
 
-        def muf(aa: Expr) -> Expr:
-            return sqrt(9 + (aa * c1 / c2) ** 2)
-
-        def RWC2(aa: Expr, mu: Expr) -> Expr:
-            return (c1 / c2) ** 2 * (-9 * aa ** 5 / mu ** 2
-                                     + aa ** 3 * B ** 2 * c1 + aa ** 2 * B ** 2 * c2 * (mu + 3)) \
-                   + aa ** 3 * (2 * mu + 9) \
-                   - B ** 2 * mu * (mu + 2) * (aa * c1 + c2 * (mu + 4))
-
-        aa0 = max(aa.evalf() for aa in solveset(RWC2(A, muf(A)), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), (1 + muf(S(aa0)) / 2).evalf(), lambda_davi_fun(((aa0 * c1 / c2 / 2) ** 2).evalf())
-
-    else:
-
-        def RWC1(aa: Expr) -> Expr:
-            return aa ** 3 - B ** 2 * c1 * aa - 7 * B ** 2 * c2
-
-        aa0 = max(aa.evalf() for aa in solveset(RWC1(A), A, domain=S.Reals))
-        return sqrt(aa0).evalf(), 2.5, lambda_sho_fun
+    assert c1 < 0
+    aa0: float = a0 ** 2
+    return a0, lam, lambda_davi_fun((aa0 * c1 / (c2 * 2)) ** 2)

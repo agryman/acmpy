@@ -1,10 +1,10 @@
 """This module tests the radial_space.py module."""
+import math
 
 import pytest
 import numpy as np
-from math import isclose
-from sympy import S, Expr, Rational, Matrix, shape, sqrt
-from acmpy.compat import nonnegint, NDArrayFloat, list_to_ndarray, Matrix_to_ndarray, ndarray_to_Matrix, \
+from sympy import Expr, Rational, Matrix, shape, sqrt
+from acmpy.compat import nonnegint, NDArrayFloat, list_to_ndarray, Matrix_to_ndarray, \
     is_nd_square, is_nd_zeros
 from acmpy.radial_space import Radial_Operators, Radial_Sm, Parse_RadialOp_List, Radial_D2b, KTSOps, KTSOp, KTOp, \
     RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, ME_Radial_D2b, Matrix_sqrt, Matrix_sqrtInv, \
@@ -89,42 +89,25 @@ class TestRepRadial_bS_DS:
          (4, 1, -1.976423538)]
     )
     def test_KT000(self, K, T, expected):
-        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 0)
+        rep: Matrix = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 0)
         assert shape(rep) == (1, 1)
 
         result: float = float(rep[0, 0])
-        assert isclose(result, expected)
+        assert math.isclose(result, expected)
 
     def test_KT001(self):
         K: int = 0
         T: int = 2
-        rep: Matrix = RepRadial_bS_DS(K, T, S.One, Rational(5, 2), 0, 0, 1)
+        rep: Matrix = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 1)
         assert shape(rep) == (2, 2)
 
         expected: Matrix = Matrix([[-Rational(7, 6), 7 * sqrt(10) / 30],
                                    [7 * sqrt(10) / 30, -Rational(19, 6)]])
         for i in range(2):
             for j in range(2):
-                a: float = rep[i, j].evalf()
-                b: float = expected[i, j].evalf()
-                assert isclose(a, b)
-
-
-class TestME_Radial_D2b:
-    """Tests ME_Radial_D2b() function."""
-
-    @pytest.mark.parametrize(
-        "mu_f,mu_i,expected",
-        [(0, 0, -Rational(7, 6)),
-         (0, 1, 7 * sqrt(10) / 30),
-         (1, 0, 7 * sqrt(10) / 30),
-         (1, 1, -Rational(19, 6))]
-    )
-    def test_fi(self, mu_f: nonnegint, mu_i: nonnegint, expected: Expr):
-        ME: Expr = ME_Radial_D2b(Rational(5, 2), mu_f, mu_i)
-        a: float = ME.evalf()
-        b: float = expected.evalf()
-        assert isclose(a, b)
+                a: float = float(rep[i, j])
+                b: float = float(expected[i, j])
+                assert math.isclose(a, b)
 
 
 def is_sqrt(A: NDArrayFloat, B: NDArrayFloat) -> bool:

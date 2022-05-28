@@ -4,17 +4,15 @@ diagonalising, basis transforming, and data displaying.
 """
 
 import numpy as np
-from typing import Optional, Callable
-from sympy import Expr, Matrix, shape, S
+from typing import Optional
 
-from acmpy.compat import nonnegint, require_nonnegint, require_algebraic, require_nonnegint_range, iquo, \
-    ndarray_to_Matrix, ndarray_to_list, NDArrayFloat
+from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, iquo, NDArrayFloat
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
 from acmpy.radial_space import dimRadial
 from acmpy.eigenvalues import Eigenfiddle
-from acmpy.globals import Designators
+from acmpy.globals import Designators, MatrixElementFunction
 import acmpy.globals as g
 
 # ###########################################################################
@@ -123,7 +121,7 @@ import acmpy.globals as g
 
 EigenValues = list[NDArrayFloat]
 EigenBases = list[NDArrayFloat]
-XParams = tuple[Expr, Expr, nonnegint, nonnegint, nonnegint, nonnegint]
+XParams = tuple[float, float, nonnegint, nonnegint, nonnegint, nonnegint]
 LValues = list[nonnegint]
 
 
@@ -141,15 +139,13 @@ def validate_Lvals(Lvals: LValues) -> None:
 
 
 def DigXspace(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
               ) -> tuple[EigenValues, EigenBases, XParams, LValues]:
     if L_max is None:
         L_max = L_min
-    require_algebraic('anorm', anorm)
-    require_algebraic('lambda_base', lambda_base)
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
@@ -473,7 +469,7 @@ L_MAX_DEFAULT: int = 1000000
 #
 #   eigen_low;   # return smallest eigenvalue (in case it's needed!)
 # end;
-def Show_Eigs(eigen_vals: list[NDArrayFloat], Lvals: list[nonnegint],
+def Show_Eigs(eigen_vals: list[NDArrayFloat], Lvals: LValues,
               toshow: nonnegint = g.glb_eig_num,
               L_min: Optional[nonnegint] = None, L_max: Optional[nonnegint] = None
               ) -> Optional[float]:
@@ -775,9 +771,9 @@ glb_item_format: str = ''
 
 def Show_Mels(Melements: LBlockNDFloatArray,
               mel_lst: Designators,
-              toshow: int = g.glb_rat_num,
-              mel_fun: Callable = g.glb_rat_fun,
-              scale: float | Expr = 1.0,
+              toshow: int,
+              mel_fun: MatrixElementFunction,
+              scale: float = 1.0,
               mel_format: str = g.def_mel_format,
               mel_desg: str = g.def_mel_desg
               ) -> None:
@@ -790,11 +786,9 @@ def Show_Mels(Melements: LBlockNDFloatArray,
     if Melements.mat.shape[0] == 0:
         raise ValueError('No matrix elements available!')
 
-    scale = S(scale)
-
     low_pre: int = g.glb_low_pre
     print(f'Selected {mel_desg} follow' +
-          f' (each divided by {scale.evalf():.{low_pre}f}):')
+          f' (each divided by {scale:.{low_pre}f}):')
 
     rel_wid: int = g.glb_rel_wid
     rel_pre: int = g.glb_rel_pre
@@ -845,7 +839,7 @@ def Show_Mels(Melements: LBlockNDFloatArray,
                 n2 = rate_ent[3]
 
                 if 0 < n1 <= TR_cols and 0 < n2 <= TR_rows:
-                    mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
+                    mel = mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale
                     print(glb_mel_f1.format(L1, n1, L2, n2, mel))
 
         elif len(rate_ent) == 5:
@@ -876,7 +870,7 @@ def Show_Mels(Melements: LBlockNDFloatArray,
 
                     if n1 <= TR_cols and n2 <= TR_rows:
                         assert n1 > 0 and n2 > 0
-                        mel = (mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf()
+                        mel = mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale
                         print(glb_mel_f1.format(L1, n1, L2, n2, mel))
 
                 L1 += Lmod
@@ -908,7 +902,7 @@ def Show_Mels(Melements: LBlockNDFloatArray,
 
 
 def Show_Mels_Rows(Melements: LBlockNDFloatArray,
-                   L2: nonnegint, toshow: int, mel_fun: Callable, scale: Expr) -> None:
+                   L2: nonnegint, toshow: int, mel_fun: MatrixElementFunction, scale: float) -> None:
     """Show matrix element rows for the values of L1 and n2 that correspond to L2."""
     TRopAM: nonnegint = g.glb_rat_TRopAM
     for L1 in range(max(0, L2 - TRopAM), L2 + TRopAM + 1):
@@ -962,8 +956,8 @@ def Show_Mels_Rows(Melements: LBlockNDFloatArray,
 def Show_Mels_Row(Melements: LBlockNDFloatArray,
                   L1: nonnegint, L2: nonnegint, n2: int,
                   toshow: nonnegint,
-                  mel_fun: Callable,
-                  scale: Expr) -> int:
+                  mel_fun: MatrixElementFunction,
+                  scale: float) -> int:
 
     Lvals: LValues = Melements.full_space.Lvals
     if L1 not in Lvals or L2 not in Lvals:
@@ -980,7 +974,7 @@ def Show_Mels_Row(Melements: LBlockNDFloatArray,
 
     col_count: int = min(TR_cols, toshow)
 
-    mels: list[str] = [glb_item_format.format((mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale).evalf())
+    mels: list[str] = [glb_item_format.format(mel_fun(L1, L2, TR_matrix[n2 - 1, n1 - 1]) / scale)
                        for n1 in range(1, col_count + 1)]
     print(glb_mel_f2.format(L1, L2, n2, '[' + ','.join(mels) + ']'))
 
@@ -1031,6 +1025,7 @@ def Show_Mels_Row(Melements: LBlockNDFloatArray,
 #                glb_rat_desg):
 # end:
 def Show_Rats(Melements: LBlockNDFloatArray,
+              _Lvals: LValues,
               rat_lst: Designators = g.glb_rat_lst,
               toshow: int = g.glb_rat_num) -> None:
     Show_Mels(Melements,
@@ -1057,6 +1052,7 @@ def Show_Rats(Melements: LBlockNDFloatArray,
 #                glb_amp_desg):
 # end:
 def Show_Amps(Melements: LBlockNDFloatArray,
+              _Lvals: LValues,
               amp_lst: Designators = g.glb_amp_lst,
               toshow: int = g.glb_amp_num) -> None:
     Show_Mels(Melements,
@@ -1072,10 +1068,10 @@ def Show_Amps(Melements: LBlockNDFloatArray,
 #
 # # The following procedure ACM_ScaleOrAdapt combines many of those
 # # previously described to provide a versatile user-friendly
-# # means of analysing Hamlitonians, displaying their eigenvalues,
+# # means of analysing Hamiltonians, displaying their eigenvalues,
 # # and calculating and displaying transition rates and amplitudes
 # # of the operator in the global variable glb_rat_TRop (which is
-# # the quadrapole operator in the default implementation).
+# # the quadrupole operator in the default implementation).
 # # This procedure is conveniently used through the procedures ACM_Scale
 # # and ACM_Adapt, given below, which simply set the arguments fit_eig
 # # and fit_rat, and thus work in the same way.
@@ -1264,13 +1260,16 @@ def Show_Amps(Melements: LBlockNDFloatArray,
 #   [eigen_quin[1],tran_mat,Lvals]:
 #
 # end;
+EigAmpL = tuple[EigenValues, Optional[LBlockNDFloatArray], LValues]
+
+
 def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
                      ham_op: OperatorSum,
-                     anorm: Expr, lambda_base: Expr,
+                     anorm: float, lambda_base: float,
                      nu_min: nonnegint, nu_max: nonnegint,
                      v_min: nonnegint, v_max: nonnegint,
                      L_min: nonnegint, L_max: Optional[nonnegint] = None
-                     ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+                     ) -> EigAmpL:
     require_nonnegint('fit_eig', fit_eig)
     require_nonnegint('fit_rat', fit_rat)
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -1316,14 +1315,13 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
         Show_Eigs(eigen_vals, Lvals, g.glb_eig_num)
 
-    trans: LBlockNDFloatArray
+    trans: Optional[LBlockNDFloatArray]
     trans_mat: NDArrayFloat
     full_space: LBlockFullSpace
     Lblocks: LBlocks
     if len(g.glb_rat_lst) > 0 or len(g.glb_amp_lst) > 0:
 
         trans = AmpXspeig(g.glb_rat_TRop, eigen_bases, Xparams, Lvals)
-        trans_mat = trans.mat
 
         if fit_rat > 0:
             L1: int = g.glb_rat_L1
@@ -1346,14 +1344,14 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
             g.glb_amp_sft = g.glb_amp_sft_fun(g.glb_rat_sft)
 
-        Show_Rats(trans, g.glb_rat_lst, g.glb_rat_num)
-        Show_Amps(trans, g.glb_amp_lst, g.glb_amp_num)
+        Show_Rats(trans, Lvals, g.glb_rat_lst, g.glb_rat_num)
+        Show_Amps(trans, Lvals, g.glb_amp_lst, g.glb_amp_num)
 
     else:
 
-        trans_mat = np.empty((0, 0))
+        trans = None
 
-    return eigen_vals, trans_mat, Lvals
+    return eigen_vals, trans, Lvals
 
 
 # # The following procedure ACM_Scale invokes the procedure ACM_ScaleOrAdapt
@@ -1374,11 +1372,11 @@ def ACM_ScaleOrAdapt(fit_eig: nonnegint, fit_rat: nonnegint,
 
 
 def ACM_Scale(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+              ) -> EigAmpL:
     return ACM_ScaleOrAdapt(0, 0, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)
 
@@ -1400,10 +1398,10 @@ def ACM_Scale(ham_op: OperatorSum,
 
 
 def ACM_Adapt(ham_op: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
-              ) -> tuple[EigenValues, NDArrayFloat, LValues]:
+              ) -> EigAmpL:
     return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
                             nu_min, nu_max, v_min, v_max, L_min, L_max)

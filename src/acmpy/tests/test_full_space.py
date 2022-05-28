@@ -1,8 +1,9 @@
 """This module tests the full_space.py module."""
 
+import math
+from math import isclose
 import numpy as np
 import pytest
-from math import isclose
 
 from sympy import Matrix, Expr, S, Rational, shape, sqrt
 
@@ -81,7 +82,7 @@ class TestDigXspace:
     )
     def test_ham_op_000000(self, ham_op: OperatorSum, expected: float):
         eigen_spaces: tuple[EigenValues, EigenBases, XParams, LValues] = \
-            DigXspace(ham_op, S.One, Rational(5, 2), 0, 0, 0, 0, 0, 0)
+            DigXspace(ham_op, 1.0, 2.5, 0, 0, 0, 0, 0, 0)
 
         eigen_vals: EigenValues = eigen_spaces[0]
         n: int = len(eigen_vals)
@@ -99,7 +100,7 @@ class TestDigXspace:
         assert shape(eigen_base) == (m, m)
 
         Xparams: XParams = eigen_spaces[2]
-        assert Xparams == (S.One, Rational(5, 2), 0, 0, 0, 0)
+        assert Xparams == (1.0, 2.5, 0, 0, 0, 0)
 
         Lvals: LValues = eigen_spaces[3]
         assert n == len(Lvals)
@@ -124,7 +125,7 @@ class TestDigXspace:
     )
     def test_ham_op_010101(self, ham_op: OperatorSum, expected: list[float]):
         eigen_spaces: tuple[EigenValues, EigenBases, XParams, LValues] = \
-            DigXspace(ham_op, S.One, Rational(5, 2), 0, 1, 0, 1, 0, 1)
+            DigXspace(ham_op, 1.0, 2.5, 0, 1, 0, 1, 0, 1)
 
         eigen_vals: EigenValues = eigen_spaces[0]
         n: int = len(eigen_vals)
@@ -142,8 +143,8 @@ class TestDigXspace:
         B: int
         ham_op, B = RWC_ham_fig5a
 
-        anorm: Expr = sqrt(B)
-        lambda_base = Rational(5, 2)
+        anorm: float = math.sqrt(B)
+        lambda_base: float = 2.5
         nu_max: nonnegint = 5
         v_max: nonnegint = 18
         L_max: nonnegint = 6

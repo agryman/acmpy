@@ -227,7 +227,7 @@ def lbsXspace(nu_min: nonnegint, nu_max: nonnegint,
 #   Rmat;
 # end:
 def RepXspace(x_oplc: OperatorSum,
-              anorm: Expr, lambda_base: Expr,
+              anorm: float, lambda_base: float,
               nu_min: nonnegint, nu_max: nonnegint,
               v_min: nonnegint, v_max: nonnegint,
               L: nonnegint, L_max: Optional[nonnegint] = None
@@ -266,7 +266,7 @@ def RepXspace(x_oplc: OperatorSum,
 
 
 def RepXspace_Term(op_term: OperatorTerm, Xlabels: list[XspaceLabel],
-                   anorm: Expr, lambda_base: Expr,
+                   anorm: float, lambda_base: float,
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L: nonnegint, L_max: nonnegint
@@ -399,7 +399,7 @@ def RepXspace_Term(op_term: OperatorTerm, Xlabels: list[XspaceLabel],
 #
 # end:
 def RepXspace_Prod(x_ops: tuple[Symbol, ...],
-                   anorm: Expr, lambda_base: Expr,
+                   anorm: float, lambda_base: float,
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: Optional[nonnegint]
@@ -609,7 +609,7 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
 #   direct_Mat;
 # end:
 def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
-                   anorm: Expr, lambda_base: Expr,
+                   anorm: float, lambda_base: float,
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: Optional[nonnegint]
@@ -767,7 +767,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
 #   direct_Mat:
 # end:
 @cache
-def RepXspace_Pi(anorm: Expr, lambda_base: Expr,
+def RepXspace_Pi(anorm: float, lambda_base: float,
                  nu_min: nonnegint, nu_max: nonnegint,
                  v_min: nonnegint, v_max: nonnegint,
                  L_min: nonnegint, L_max: nonnegint
@@ -970,7 +970,7 @@ def RepXspace_Pi(anorm: Expr, lambda_base: Expr,
 # end:
 @cache
 def RepXspace_PiPi(PiPi_L: nonnegint,
-                   anorm: Expr, lambda_base: Expr,
+                   anorm: float, lambda_base: float,
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: nonnegint
@@ -1216,7 +1216,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
 #   direct_Mat:
 # end:
 @cache
-def RepXspace_PiqPi(anorm: Expr, lambda_base: Expr,
+def RepXspace_PiqPi(anorm: float, lambda_base: float,
                     nu_min: nonnegint, nu_max: nonnegint,
                     v_min: nonnegint, v_max: nonnegint,
                     L_min: nonnegint, L_max: nonnegint

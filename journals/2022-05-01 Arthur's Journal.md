@@ -662,12 +662,848 @@ Change scaling factor to be float - DONE
 * mypy - DONE
 * pytest - DONE
 
-Checkpoint current version of code
+Checkpoint current version of code - DONE
 * commit changes to numpy branch
 * create and approve PR
 * merge in master branch
-* tag as v-1-1-1
+* tag as v1-1-1
 
 Check code for all uses of evalf() - IN-PROGRESS
 * 52 results in code
-* Make anorm and lambda_base floats
+* Make anorm and lambda_base floats - DONE
+* measure performance - DONE
+```text
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+elapsed process time for ACM_Scale: 5.1183629999999996
+```
+
+There is no change in the displayed accuracy.
+
+Previous time:
+```text
+elapsed process time for ACM_Scale: 44.304010999999996
+```
+
+Speedup = 44.3/5.1 = 8.7x
+
+Maple time = 3.6 sec.
+
+Python/Maple = 5.1/3.6 = 1.4x.
+Therefore, Python is now only 40% slower than Maple.
+
+Check code for all uses of evalf() - IN-PROGRESS
+* 41 results in code
+* the remaining use of SymPy numerical computation is in the representation matrices of type Matrix
+* convert the representations to NumPy - TODO
+* try to also use NumPy vectorized computation - TODO
+* NumPy also has an api for creating an array via a lambda
+* However, the lambda is passed two arrays of indices which means it should be possible to vectorize
+
+
+## 2022-05-08
+
+### 10:50 am
+
+Check code for all uses of evalf() and replace with NumPy where appropriate - IN-PROGRESS
+* convert the representations to NumPy - TODO
+* try to also use NumPy vectorized computation - TODO
+* NumPy also has an api for creating an array via a lambda: np.fromfunction()
+  * see https://numpy.org/doc/stable/reference/generated/numpy.fromfunction.html
+* However, the lambda is passed two arrays of indices which means it should be possible to vectorize
+  * define ufunc classes to compute matrix elements from indicies
+  * see https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html
+
+evalf() is applied to the results of the following functions:
+* NumSO5r3_Prod
+* CG_SO5r3
+* RepRadial_Prod_rem
+* RepRadial_LC_rem
+* Qred_p1
+* Qred_m1
+* QxQred_0
+* QxQred_p2
+* QxQxQred_p3
+* QxQxQred_m3
+* QmxQxQred_p1
+* QixQxQred
+* QxQxQred_m1
+* mel_fun: MatrixElementFunction - DONE
+
+break 12:20 pm
+
+### 1:50 pm
+
+evalf() is applied to the results of the following functions:
+* RepSO5_sqLdim
+* RepSO5_sqLdiv
+* NumSO5r3_Prod
+* CG_SO5r3
+* ME_SO5r3
+* RepRadial - IN-PROGRESS
+* RepRadial_Prod_rem
+* RepRadial_LC_rem
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_D2b
+* Qred_p1
+* Qred_m1
+* QxQred_0
+* QxQred_p2
+* QxQxQred_p3
+* QxQxQred_m3
+* QmxQxQred_p1
+* QixQxQred
+* QxQxQred_m1
+* mel_fun: MatrixElementFunction - DONE
+
+Analyse RepRadial
+```text
+def RepRadial(ME: Callable, lambdaa: float,
+              nu_min: nonnegint, nu_max: nonnegint
+              ) -> Matrix:
+```
+ME is used as:
+```text
+M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
+```
+Example ME function is:
+```text
+def ME_Radial_b2(lambdaa: float, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
+```
+* it doesn't make sense for the return value to be Expr
+* change return value to float - IN-PROGRESS
+* define new type - DONE
+```text
+RadialMatrixElementFunction = Callable[[float, nonnegint, nonnegint], float]
+```
+* create test cases for each matrix element function - IN-PROGRESS
+  * testing has so far revealed a difference in behaviour - DONE
+    * Maple: binomial(-1, -1) = 1
+    * SymPy: binomial(-1, -1) = 0
+* ME_Radial_id_ml(2.5, 1, 0, 2) gave an imaginary value -1.632993162*I - TODO
+
+
+break 7:15 pm
+
+### 9:15 pm
+
+* change ME function return value to float - DONE
+* create a test case for each ME function - IN-PROGRESS
+  * ME_Radial_S0 - DONE
+  * ME_Radial_Sp - DONE
+  * ME_Radial_Sm - DONE
+  * ME_Radial_b2 - DONE
+  * ME_Radial_bm2 - DONE
+  * ME_Radial_pt - DONE
+  * ME_Radial_D2b - DONE
+  * ME_Radial_bDb - DONE
+  * ME_Radial_b_pl - DONE
+  * ME_Radial_bm_pl - DONE
+  * ME_Radial_Db_pl - DONE
+  * ME_Radial_b_ml - DONE
+  * ME_Radial_bm_ml - DONE
+  * ME_Radial_Db_ml - DONE
+  * ME_Radial_id_pl - DONE
+  * ME_Radial_id_ml - IN-PROGRESS
+  * MF_Radial_id_poly
+  * MF_Radial_id_pl
+
+* ME_Radial_id_ml: 17 of 27 failed
+```text
+acmpy/tests/test_radial_me.py:357 (TestME_Radial_id_ml.test_ok[0-1-1--0.3760507166])
+self = <acmpy.tests.test_radial_me.TestME_Radial_id_ml object at 0x129437ca0>
+mu_f = 0, mu_i = 1, r = 1, expected = -0.3760507166
+
+    @pytest.mark.parametrize(
+        "mu_f,mu_i,r,expected", [
+            (0, 0, 0, 1.0000000000),
+            (0, 0, 1, 0.8819171036), -> 0.5773502691896257
+            (0, 0, 2, 0.4879500364), -> 1.0
+            (0, 1, 0, 0.0000000000),
+            (0, 1, 1, -0.3760507166), -> -0.3651483716701107
+            (0, 1, 2, -0.4161251894), -> -1.2649110640673518
+            (0, 2, 0, 0.0000000000),
+            (0, 2, 1, 0.2085954062), -> 0.2760262237369417
+            (0, 2, 2, 0.3462370863), -> 1.434274331201272
+            (1, 0, 0, 0.0000000000),
+            (1, 0, 1, 0.4714045209), -> 0.816496580927726
+            (1, 0, 2, 0.7968190730), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (1, 1, 0, 1.0000000000),
+            (1, 1, 1, 0.7035264708), -> 0.2581988897471611
+            (1, 1, 2, -0.0849411986), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (1, 2, 0, 0.0000000000),
+            (1, 2, 1, -0.3902462714), -> -0.19518001458970663
+            (1, 2, 2, -0.0942337990), -> > return res * math.sqrt(poch_f / poch_i) ValueError: math domain error
+            (2, 0, 0, 0.0000000000),
+            (2, 0, 1, 0.0000000000),
+            (2, 0, 2, 0.3563483226), -> 1.632993161855452
+            (2, 1, 0, 0.0000000000),
+            (2, 1, 1, 0.6030226892), -> 0.8944271909999159
+            (2, 1, 2, 0.7597371764), -> -1.0327955589886444
+            (2, 2, 0, 1.0000000000),
+            (2, 2, 1, 0.5853694070), -> 0.1690308509457033
+            (2, 2, 2, -0.2633914755) -> 1.0734900802433864
+        ]
+    )
+    def test_ok(self, mu_f, mu_i, r, expected):
+        ME: float = ME_Radial_id_ml(2.5, mu_f, mu_i, r)
+>       assert math.isclose(ME, expected)
+E       assert False
+E        +  where False = <built-in function isclose>(-0.3651483716701107, -0.3760507166)
+E        +    where <built-in function isclose> = math.isclose
+```
+
+* the 0 or 1 case is correct
+* there are two types of errors for the other cases
+  * numeric value wrong
+  * math domain error - probably taking the square root of a negative number
+
+break 10:45 pm
+
+## 2022-05-09
+
+### 11:30 am
+
+Debug test case failure:
+```text
+acmpy/tests/test_radial_me.py:357 (TestME_Radial_id_ml.test_ok[0-1-1--0.3760507166])
+```
+* Test case used lambda = 2.5 but expected data used 5.5 - DONE
+  * all tests now pass
+
+* create a test case for each ME function - IN-PROGRESS
+  * ME_Radial_id_ml - DONE
+  * MF_Radial_id_poly - TODO
+  * MF_Radial_id_pl - TODO
+
+The function:
+```text
+MF_Radial_id_poly(mu: Nu, nu: Nu, r: nonnegint)
+```
+is always called with nu <= mu + 2.
+
+break 12:35 pm
+
+### 3:00 pm
+
+* create a test case for each ME function - DONE
+  * MF_Radial_id_poly - DONE
+  * MF_Radial_id_pl - DONE
+
+It does appear the symbolic computation improves the accuracy of ME_Radial_id_pl and ME_Radial_id_ml.
+This is because the matrix elements are ratios of Gamma functions and therefore cancellation occurs
+making the results polynomials in lambda.
+Both Maple and SymPy can simplify expressions.
+Accuracy improves if the expressions are simplified before evaluation.
+
+However, the Gamma functions appear in ratios that are expression as Pochhammer symbols.
+SciPy provides an implementation, sc.poch. 
+It is therefore plausible that SciPy uses a more accurate algorithm for evaluating Pochhammer symbols
+that avoids first computing the Gamma functions and then dividing.
+
+Compare the accuracy of the SymPy MF_Radial_id_poly implementation versus a ScipPy implementation using sc.poch. - TODO
+
+Measure performance using the current version v1-1-2.
+
+In the radial space, replace Matrix with ndarray. - TODO
+
+Current Python performance on Ex 2.3 a:
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+elapsed process time for ACM_Scale: 3.6990489999999996
+```
+
+Previous Python time:
+```text
+elapsed process time for ACM_Scale: 5.1183629999999996
+```
+
+Speedup = 5.12/3.70 = 1.38x. This is a worthwhile speedup.
+
+Maple time = 3.6 sec.
+
+Python/Maple = 3.7/3.6 = 1.03. The Python code is now only 3% slower.
+
+Measure performance of Ex 2.3b.
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 6, L_max: 6
+Lowest eigenvalue is -6.33329. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.63,    2.13,    3.19,    3.66,    4.23]
+  At L= 2: [    0.13,    1.06,    2.05,    2.36,    2.71,    3.23]
+  At L= 3: [    1.14,    3.02,    3.43,    5.15,    5.74,    7.29]
+  At L= 4: [    0.32,    1.38,    2.09,    2.34,    2.63,    3.18]
+  At L= 5: [    1.67,    2.48,    3.89,    4.72,    6.10,    6.98]
+  At L= 6: [    0.70,    1.71,    2.62,    2.83,    3.10,    3.14]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.12
+  B(E2: 4(1) -> 2(1)) =     0.18
+  B(E2: 6(1) -> 4(1)) =     0.21
+  B(E2: 2(1) -> 2(1)) =     0.18
+  B(E2: 4(1) -> 4(1)) =     0.14
+  B(E2: 6(1) -> 6(1)) =     0.12
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.23
+  Amp( 2(2) -> 2(2) ) =     0.22
+elapsed process time for ACM_Scale: 3.675498
+```
+
+Increase v_max to 18.
+```text
+2 decimal places for each displayed value,
+8 total digits for each displayed value,
+except 5 decimal places for lowest (absolute) eigenvalue.
+Eigenvalues displayed relative to minimal value.
+Display lowest 6 eigenvalue(s) at each L.
+Display lowest 4 rate/amplitude(s) in each list.
+In ACM_Adapt, the scaling factor for relative eigenvalues is chosen such that
+that for the 2(1) state is 6.000000
+In ACM_Adapt, the scaling factor for "transition rates" is chosen such that
+  B(E2: 2(1) -> 0(1)) = 100.000000
+nu_max: 10, v_max: 18, L_max: 6
+Lowest eigenvalue is -6.33961. Relative eigenvalues follow (each divided by 1.00000):
+  At L= 0: [    0.00,    1.57,    2.12,    2.89,    3.61,    4.23]
+  At L= 2: [    0.10,    0.97,    1.78,    2.25,    2.39,    3.16]
+  At L= 3: [    1.11,    2.75,    3.37,    4.57,    5.07,    5.67]
+  At L= 4: [    0.31,    1.24,    1.92,    2.11,    2.52,    2.82]
+  At L= 5: [    1.43,    2.20,    3.24,    3.76,    3.94,    4.57]
+  At L= 6: [    0.61,    1.58,    2.38,    2.54,    2.88,    2.91]
+Selected transition rates follow (each divided by 1.00000):
+  B(E2: 2(1) -> 0(1)) =     0.13
+  B(E2: 4(1) -> 2(1)) =     0.19
+  B(E2: 6(1) -> 4(1)) =     0.22
+  B(E2: 2(1) -> 2(1)) =     0.17
+  B(E2: 4(1) -> 4(1)) =     0.15
+  B(E2: 6(1) -> 6(1)) =     0.13
+Selected transition amplitudes follow (each divided by 1.00000):
+  Amp( 2(1) -> 2(1) ) =    -0.22
+  Amp( 2(2) -> 2(2) ) =     0.22
+elapsed process time for ACM_Scale: 11.021412
+```
+
+* Example 2.2
+  * 5, 18, 6: Maple = 8.509, Python = 3.425
+  * 10, 18, 6: Maple = 20.165, Python = 6.649
+  * 15, 18, 6: Maple = 44.735, Python = 11.102
+  * 10, 6, 6: Maple = 3.620, Python = 2.883
+* Example 2.3a
+  * 10, 6, 6: Maple = 3.616, Python = 3.68
+  * 10, 18, 6: Maple = 20.810, Python = 10.368
+* Example 2.3b
+  * 10, 18, 6: Maple = 20.751, Python = 10.406
+* Example 2.3c
+  * 10, 18, 6: Maple = 20.604, Python = 10.445
+* Example 2.4a
+  * ACM_Scale: 10, 18, 6: Maple = 20.272, Python = 10.434
+  * ACM_Adapt: 10, 18, 6: Maple = 20.140, Python = 10.343
+* Example 2.4b
+  * ACM_Adapt: 10, 18, 6: Maple = 20.409, Python = 10.385
+* Example 2.4c
+  * ACM_Adapt: 10, 12, 12: Maple = 25.934, Python = 18.947
+
+break 6:05 pm
+
+### 7:40 pm
+
+* Example 2.5a
+  * ACM_Adapt: 10, 18, 6: Maple = 20.709, Python = 10.358
+* Example 2.5b
+  * ACM_Adapt: 10, 18, 6: Maple = 21.162, Python = 10.600
+* Example 2.5c
+  * ACM_Adapt: 10, 18, 6: Maple = 21.001, Python = 10.372
+
+* Example 3 - TODO
+* Create example running framework - DONE
+* Port examples into framework - IN_PROGRESS
+  * port set_example_2_4_a() next
+
+break 10:05 pm
+
+## 2022-05-10
+
+### 3:35 pm
+
+* Port examples into framework - IN_PROGRESS
+  * port set_example_2_4_a() next - DONE
+* Improve design of Example class - DONE
+  * Each example should optionally follow some other example the leaves the ACM global variables in the required state
+  * A typical example does these steps:
+    * set
+    * exec
+    * unset
+  * Change this to:
+    * prepare(predecessor example) - if one exists
+    * set(this example)
+    * exec(this example)
+    * unset(this example)
+  * Define prepare(this example) as follows - DONE
+    * prepare(predecessor example)
+    * set(this example)
+    * unset(this example)
+* Example 3 - TODO
+
+break 6:55 pm
+
+* Port examples into framework - IN_PROGRESS
+  * Section 3 - IN-PROGRESS
+
+
+## 2022-05-11
+
+### 2:40 pm
+
+* Port examples into framework - IN_PROGRESS
+  * Section 3 - IN-PROGRESS
+    * Show_Eigs() and Show_Rats() are used in the examples so keep their APIs as-is
+    * Show_Amps() also is part of the API
+    * I can preserve the API on the understanding that instead of returning a Matrix of Matrix, I return LBlockNDFloatArray
+    * I need to define an empty LBlockNDFloatArray, or maybe just a union type for this edge case, or Optional?
+
+break 6:10 pm
+
+### 8:40 pm
+
+* Port examples into framework - DONE
+* Section 3 - DONE
+  * Show_Eigs() and Show_Rats() are used in the examples so keep their APIs as-is
+  * Show_Amps() also is part of the API
+  * I can preserve the API on the understanding that instead of returning a Matrix of Matrix, I return LBlockNDFloatArray
+  * I need to define an empty LBlockNDFloatArray, or maybe just a union type for this edge case, or Optional?
+    * use Optional[LBlockNDFloatArray] - DONE
+* Section 4 - IN-PROGRESS
+  * completed 4.3
+  * next 4.4
+
+break 10:20 pm
+
+## 2022-05-12
+
+### 10:30 am
+
+Create Maple workbook with each example section as a worksheet so they can be re-executed individually. - DONE
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - TODO
+
+break 12:20 pm
+
+### 3:30 pm
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - IN-PROGRESS
+  * RWC_alam(B, -3, 2) fails for B >= 15
+    * the translation to Python is correct since the code work for certain inputs
+    * the problem is in `solveset()` which fails to find any solution as B increases past 14
+    * try using an older SymPy solver - not obvious what to use
+    * do the math
+
+break 6:40 pm
+
+## 2022-05-13
+
+### 8:25 am
+
+* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+
+break 8:50 am
+
+### 10:35 am
+
+* plot the function of `anorm` that `RWC_alam` is minimising - IN-PROGRESS
+
+break 12:55 pm
+
+### 3:20 pm
+
+* plot the function of `anorm` that `RWC_alam` is minimising - DONE
+  * plotting failed to reveal any clue
+
+## 2022-05-14
+
+### 11:00 am
+
+* clean up visualization notebook - IN-PROGRESS
+* report SymPy bugs - TODO
+  * `binomial(-1, -1) = 0`
+  * `solveset` returns the empty set
+
+break 11:40 am
+
+### 2:25 pm
+* clean up visualization notebook - DONE
+* report SymPy bugs - IN-PROGRESS
+  * `binomial(-1, -1) = 0` - DONE
+    * see https://github.com/sympy/sympy/issues/23497
+  * `solveset` returns the empty set - IN-PROGRESS
+
+break 6:40 pm
+
+## 2022-05-15
+
+### 10:45 am
+
+* report SymPy bugs - IN-PROGRESS
+  * `solveset` returns the empty set - IN-PROGRESS
+  * create standalone, simplified test case - IN-PROGRESS
+  
+break 12:35 pm
+
+## 2022-05-16
+
+### 11:00 am
+
+* report SymPy `solveset` bug - IN-PROGRESS
+  * `solveset` returns the empty set - IN-PROGRESS
+  * create standalone, simplified test case - IN-PROGRESS
+  * I'm getting unexpected results from `solveset()` for `RWC_alam()`
+  * Derive the math in `RWC_alam_clam()` which is simpler - DONE
+  * Derive the math in `RWC_alam()` - DONE
+
+break 12:05 pm
+
+### 3:10 pm
+
+* report SymPy `solveset` bug - IN-PROGRESS
+  * `solveset` returns the empty set
+  * create standalone, simplified test case - IN-PROGRESS
+  * I'm getting unexpected results from `solveset()` for `RWC_alam()` - IN-PROGRESS
+
+break 6:25 pm
+
+### 8:30 pm
+
+* report SymPy `solveset` bug - DONE
+  * create standalone, simplified test case - DONE
+  * see https://github.com/sympy/sympy/issues/23510
+
+* use nsolve instead of solveset - TODO
+  * add a parameter to the initial guess
+
+* I upgraded to the latest SymPy and now mypy reports errors
+  * fix mypy - TODO
+
+## 2022-05-17
+
+### 11:25 am
+
+* try workaround for solveset from Issue #23510
+```text
+Note that 3/2 results in a float 1.5, which may lead to further inaccuracy and solver failure.
+If you use Rational(3, 2) or S(3)/2 your example will work fine.
+
+==========Solving equation for B = 14 ==========
+Success: nsolve solution = 19.676355436230185
+Success: first solveset solution = 19.676355436230185
+Success: first solveset solution after simplification = 19.676355436230185
+==========Solving equation for B = 15 ==========
+Success: nsolve solution = 20.911495067823516
+Success: first solveset solution = 20.911495067823516
+Success: first solveset solution after simplification = 20.911495067823516
+```
+* using `S(3)/2` lets `solveset()` succeed, but in actual use the parameters $c_1$ and $c_2$ may be floats
+* to fix the issue use `nsolve()`
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - TODO
+  * Note: the Maple code selects that maximum root.
+    * Shouldn't it pick the root that minimizes the expectation value? - understand why this behavior - IN-PROGRESS
+
+break 12:25 pm
+
+### 2:00 pm
+
+* Note: the Maple code for `RWC_alam()` selects the maximum root!!!
+  * Shouldn't it pick the root that minimizes the expectation value? - understand why this behavior - DONE
+  * create Issue in Maple code repo - DONE
+    * see https://github.com/agryman/acm16/issues/6
+
+* I upgraded to the latest SymPy and now mypy reports errors
+  * fix mypy - DONE (reverted to sympy 1.9)
+  * mypy                          0.950
+With sympy==1.10.1
+```text
+mypy acmpy
+
+acmpy/compat.py:171: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/compat.py:171: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+acmpy/compat.py:173: error: Argument 1 to "array" has incompatible type "List[float]"; expected "Union[_SupportsArray[dtype[<nothing>]], Sequence[_SupportsArray[dtype[<nothing>]]], Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]], Sequence[Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]]], Sequence[Sequence[Sequence[Sequence[_SupportsArray[dtype[<nothing>]]]]]]]"
+acmpy/compat.py:173: error: Matrix? has no attribute "__iter__" (not iterable)
+acmpy/compat.py:176: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/compat.py:176: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+...
+acmpy/tests/test_full_space.py:99: error: Variable "sympy.matrices.Matrix" is not valid as a type
+acmpy/tests/test_full_space.py:99: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Found 121 errors in 8 files (checked 50 source files)
+```
+
+Back off to sympy==1.9
+
+```text
+pip uninstall sympy
+pip install sympy==1.9
+```
+
+Now no mypy errors.
+
+```text
+(venv) riemann:src arthurryman$ mypy acmpy
+Success: no issues found in 50 source files
+```
+
+I've joined the sympy mailing list and asked the question.
+* stay with sympy 1.9 until I understand the *correct* way to use mypy with sympy 1.10.1 - DONE
+
+Commit a snapshot of the code BEFORE switching to `nsolve()`. - DONE
+* tagged as v1-1-2
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess for nsolve
+    * hard code 20 to start - DONE
+    * rerun pytest - DONE
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+
+break 5:55 pm
+
+### 8:40 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - IN-PROGRESS
+
+break 10:25 pm
+
+## 2022-05-18
+
+### 11:00 am
+
+Look into SymPy PR to add type hints in 1.10.1. - DONE
+
+break 12:00 pm
+
+### 2:15 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - IN-PROGRESS
+
+break 6:00 pm
+
+### 7:35 pm
+
+* to fix the issue use `nsolve()` - IN-PROGRESS
+  * need an initial guess so analyze the expectation value and derive an expression for the initial guess - IN-PROGRESS
+    * check notebooks that describe behaviour of expectation value for small and large values
+    * do case c1 >= 0 - DONE
+    * I also did the other two cases but lost the work due to a Jupyter server crash :-(
+      * watch for error messages in the future to avoid lost work!!!
+    * recreate the lost work - TODO
+    * I used `limit()` to find asymptotic behaviour for large and small A
+    * I approximated the objective function as the sum of the large and small limits, showing that a zero exists
+    * I used the chain rule for differentiation instead of directly substituting the expression for `lambda0`
+      * I used the differential equation for lambda0 to avoid substituting radicals
+      * I should define coordinate systems more carefully and model the functions as multivariate rather than hand code the chain rule
+    * the three cases correspond to three non-overlapping subsets of the parameter space (c1, c2)
+    * the functions are defined piecewise on these three subsets
+    * I defined parameters for each case and have them the corresponding assumptions
+      * this allowed SymPy to get signs right
+    * understand big O notation in SymPy, e.g. can it compute germs? - TODO
+    * understand multivariate calculus in SymPy - TODO
+    * create minimal example for Matrix mypy bug - TODO
+      * see https://github.com/sympy/sympy/issues/17945
+    * try workaround suggested in https://groups.google.com/g/sympy/c/765HE8UenpE - TODO
+
+break 11:00 am
+
+## 2022-05-19
+
+### 11:00 am
+
+* understand big O notation in SymPy, e.g. can it compute germs? No. - DONE
+  * See: https://docs.sympy.org/latest/modules/series/series.html#order-terms
+  * SymPy can compute the order of a multivariate function
+  * You can compute the germ by dividing by the order and taking the limit
+* recreate the lost work - DONE
+* clean up notebook - TODO
+  * move definitions into new Python module `acmpy\papers\wr2015.py` - TODO
+  * remove redundant LaTeX formulas - TODO
+
+break 12:45 pm
+
+### 3:10 pm
+
+* clean up notebook - DONE
+  * move definitions into new Python module `acmpy\papers\wr2015.py` - DONE
+  * remove redundant LaTeX formulas - DONE
+* I derived the formulas for the initial guess A0
+  * see notebook `analysis-of-revised-rwc-alam`
+  * implement initial guesses in Python and test - TODO
+
+break 6:25 pm
+
+### 9:40 pm
+
+* I derived the formulas for the initial guess A0
+  * see notebook `analysis-of-revised-rwc-alam`
+  * implement initial guesses in Python and test - IN-PROGRESS
+    * two test cases fail, `nsolve()` fails to converge fast enough
+```text
+acmpy/tests/test_hamiltonian_data.py:10 (TestRWC_alam.test_c1_pos[15-5.297005523])
+self = <acmpy.tests.test_hamiltonian_data.TestRWC_alam object at 0x129bc1900>
+B = 15, expected = 5.297005523
+
+acmpy/tests/test_hamiltonian_data.py:10 (TestRWC_alam.test_c1_pos[16-5.459266423])
+self = <acmpy.tests.test_hamiltonian_data.TestRWC_alam object at 0x129bc1990>
+B = 16, expected = 5.459266423
+```
+* IDEA: maybe use Lagrange multipliers? - won't help because c1 >= 0 uses clam
+* However, the case can be solved exactly since it is a cubic polynomial
+* implement A0_case2 exact solution using `solve()` and use it as the initial guess - TODO
+  * should result in convergence of `nsolve()`
+  * failing that, look into numerical solvers in SciPy
+
+break 11:20 pm
+
+## 2022-05-20
+
+* investigate SciPy optimization - DONE
+  * See https://realpython.com/python-scipy-cluster-optimize/ 
+  * Very straightforward to call `minimize_scalar(objective_function)`
+* `RWC_alam()` is currently set up to find zeros of the derivative, so try to make that work
+
+* try to implement A0_case2 exact solution using `solve()` and use it as the initial guess - DONE
+  * should result in convergence of `nsolve()`
+  * I used `solveset()` in `RWC_alam_clam()` because the function is simply a cubic polynomial
+  * Note: `solve()` returned an empty list in some cases so submit a bug report - TODO
+
+* run mypy - DONE
+* run pytest - DONE
+* commit fixes - DONE
+
+Now I can resume reproducing the Maple examples.
+
+* Section 4 - IN-PROGRESS
+  * 4.4 - TODO
+  * Example 4.4.1 still fails
+```text
+    B: ClassVar[int] = 50
+    c2: ClassVar[float] = 2.0
+    c1: ClassVar[float] = 1 - 2 * c2
+```
+  * add a test case - DONE
+  * `solveset()` returns `EmptySet` when `B` gets large, even though I can prove there is a positive root
+  * try to use Lagrange multipliers - TODO
+
+
+## 2022-05-21
+
+### 2:15 pm
+
+* try to use Lagrange multipliers - DONE
+  * did not result in solution
+
+break 6:30 pm
+
+## 2022-05-23
+
+### 2:30 pm
+
+* create presentation for symposium
+
+break 6:20 pm
+
+### 7:40 pm
+
+* continue work on presentation
+
+break 9:45 pm
+
+## 2022-05-26
+
+### 2:45 pm
+
+* continue work on presentation
+
+break 6:45 pm
+
+### 8:30 pm
+
+* finished first draft of presentation
+  * proofread it
+  * add list of past ACM-related codes and their languages: C, Mathematica, Maple
+  * add some live examples, e.g. 
+    * exact integer math
+    * numeric example of quadrupole moment
+    * use pandas and matplotlib
+    * show some typeset SymPy expressions
+
+break 11:30 pm
+
+## 2022-05-27
+
+### 1:30 pm
+
+* proofread presentation - DONE
+* add list of past ACM-related codes and their languages: C, Mathematica, Maple - DONE
+
+First draft of presentation is complete.
+
+break 5:30 pm
+
+## 2022-05-28
+
+### 2:40 pm
+
+Deploy presentation to my GitHub Pages site. - DONE
+* site is down
+```text
+We're having a really bad day.
+
+The Unicorns have taken over. We're doing our best to get them under control and get GitHub back up and running.
+```
+* don't rely on GitHub Pages to host presentation.

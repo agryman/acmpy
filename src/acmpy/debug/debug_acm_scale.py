@@ -4,7 +4,7 @@ from time import process_time
 
 from sympy import S, Rational
 
-from acmpy.acm1_4 import ACM_set_defaults, ACM_Hamiltonian, ACM_Scale
+from acmpy.acm1_4 import ACM_set_defaults, ACM_Hamiltonian, ACM_Scale, nonnegint
 
 
 def main() -> None:
@@ -29,14 +29,14 @@ def main() -> None:
                 ham40, ham41, ham42, ham43,
                 ham50]
 
-    anorm = S.One
-    lambda_base = Rational(5, 2)
-    nu_min = 0
-    nu_max = 1
-    v_min = 0
-    v_max = 1
-    L_min = 0
-    L_max = 1
+    anorm: float = 1.0
+    lambda_base: float = 2.5
+    nu_min: nonnegint = 0
+    nu_max: nonnegint = 1
+    v_min: nonnegint = 0
+    v_max: nonnegint = 1
+    L_min: nonnegint = 0
+    L_max: nonnegint = 1
 
     for ham in ham_list:
 

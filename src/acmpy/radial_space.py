@@ -1,19 +1,21 @@
 """2. Procedures that pertain only to the radial (beta) space."""
 
+import math
 import numpy as np
+import scipy.special as sc
 from typing import Callable
 from functools import cache
 from abc import ABC, abstractmethod
 
-from sympy import Expr, S, sqrt, factorial, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, \
-    eye, zeros
+from sympy import Expr, S, sqrt, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, eye, zeros
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, \
     irem, Matrix_to_ndarray, ndarray_to_Matrix, NDArrayFloat
 from acmpy.eigenvalues import Eigenfiddle
 
 Nu = nonnegint
-
+RadialMatrixElementFunction = Callable[[float, Nu, Nu], float]
+RadialMatrixElementParamFunction = Callable[[float, Nu, Nu, int], float]
 
 # # The following is a list containing the symbolic names for ten operators
 # # that are the "basic" radial operators.
@@ -116,10 +118,7 @@ Radial_id: Symbol = Symbol('Radial_id', commutative=True)
 #
 # dimRadial:=(nu_min::nonnegint,nu_max::nonnegint)
 #   -> `if`(nu_max>=nu_min,nu_max-nu_min+1,0):
-def dimRadial(nu_min: nonnegint, nu_max: nonnegint) -> nonnegint:
-    require_nonnegint('nu_min', nu_min)
-    require_nonnegint('nu_max', nu_max)
-
+def dimRadial(nu_min: Nu, nu_max: Nu) -> nonnegint:
     return nu_max - nu_min + 1 if nu_max >= nu_min else 0
 
 
@@ -130,9 +129,7 @@ def dimRadial(nu_min: nonnegint, nu_max: nonnegint) -> nonnegint:
 #     [seq(i,i=nu_min..nu_max)];
 #   fi:
 # end:
-def lbsRadial(nu_min: nonnegint, nu_max: nonnegint) -> list[Nu]:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
+def lbsRadial(nu_min: Nu, nu_max: Nu) -> list[Nu]:
     return list(range(nu_min, nu_max + 1))
 
 
@@ -160,11 +157,8 @@ def lbsRadial(nu_min: nonnegint, nu_max: nonnegint) -> list[Nu]:
 #     0;
 #   fi;
 # end:
-def ME_Radial_S0(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    return lambdaa / 2 + mu_i if mu_f == mu_i else S.Zero
+def ME_Radial_S0(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    return lambdaa / 2 + mu_i if mu_f == mu_i else 0.0
 
 
 # ME_Radial_Sp:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
@@ -174,11 +168,8 @@ def ME_Radial_S0(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-def ME_Radial_Sp(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    return sqrt((lambdaa + mu_i) * (mu_i + 1)) if mu_f == mu_i + 1 else S.Zero
+def ME_Radial_Sp(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    return math.sqrt((lambdaa + mu_i) * (mu_i + 1)) if mu_f == mu_i + 1 else 0.0
 
 
 # ME_Radial_Sm:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
@@ -188,11 +179,8 @@ def ME_Radial_Sp(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-def ME_Radial_Sm(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    return sqrt((lambdaa + mu_i - 1) * mu_i) if mu_f == mu_i - 1 else S.Zero
+def ME_Radial_Sm(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    return math.sqrt((lambdaa + mu_i - 1) * mu_i) if mu_f == mu_i - 1 else 0.0
 
 
 # # The following give matrix elements of beta^2 for lambda'=lambda
@@ -209,18 +197,15 @@ def ME_Radial_Sm(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-def ME_Radial_b2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
+def ME_Radial_b2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
     if mu_f == mu_i - 1:
-        return sqrt((lambdaa + mu_i - 1) * mu_i)
+        return math.sqrt((lambdaa + mu_i - 1) * mu_i)
     if mu_f == mu_i:
         return lambdaa + 2 * mu_i
     if mu_f == mu_i + 1:
-        return sqrt((lambdaa + mu_i) * (mu_i + 1))
+        return math.sqrt((lambdaa + mu_i) * (mu_i + 1))
 
-    return S.Zero
+    return 0.0
 
 
 # # The following gives matrix elements of 1/beta^2 for lambda'=lambda
@@ -241,16 +226,14 @@ def ME_Radial_b2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     ME_Radial_pt(lambda,mu_i,mu_f);
 #   fi:
 # end:
-def ME_Radial_bm2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-    if lambdaa == S.NegativeOne:
+def ME_Radial_bm2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    if lambdaa == -1.0:
         raise ValueError('Singular 1/beta^2 for lambda=1')
-    if lambdaa.is_integer and (lambdaa <= -mu_i or lambdaa <= -mu_f):
+    if lambdaa.is_integer() and (lambdaa <= -mu_i or lambdaa <= -mu_f):
         raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
-    mu_1: nonnegint = max(mu_f, mu_i)
-    mu_2: nonnegint = min(mu_f, mu_i)
+    mu_1: Nu = max(mu_f, mu_i)
+    mu_2: Nu = min(mu_f, mu_i)
     return ME_Radial_pt(lambdaa, mu_1, mu_2)
 
 
@@ -259,15 +242,16 @@ def ME_Radial_bm2(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #                                /(factorial(mu_i)*GAMMA(lambda+mu_f)) )
 #                   / (lambda-1);
 # end:
-def ME_Radial_pt(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    if lambdaa == S.One:
+def ME_Radial_pt(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    if lambdaa == 1.0:
         raise ValueError(f'lambdaa must not be 1: {lambdaa}')
 
-    return (-1) ** (mu_f - mu_i) * sqrt(factorial(mu_f) * gamma(lambdaa + mu_i) /
-                                        (factorial(mu_i) * gamma(lambdaa + mu_f))) / (lambdaa - 1)
+    # the Pochhammer function (rising factorial) scipy.special.poch(z,m) = Gamma(z+m)/Gamma(z)
+    # n! = Gamma(n+1)
+    # Gamma(n+z)/(n!) = Gamma(n+z)/Gamma(n+1) = Gamma((n+1)+(z-1))/Gamma(n+1) = poch(n+1,z-1)
+    poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+    poch_f: float = sc.poch(mu_f + 1, lambdaa - 1)
+    return (-1) ** (mu_f - mu_i) * math.sqrt(poch_i / poch_f) / (lambdaa - 1)
 
 
 # # The following gives matrix elements of d^2/d(beta)^2 for lambda'=lambda
@@ -291,23 +275,20 @@ def ME_Radial_pt(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     stuff+(lambda-(3/2))*(lambda-(1/2))*ME_Radial_pt(lambda,mu_i,mu_f);
 #   fi:
 # end:
-def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    stuff: Expr
+def ME_Radial_D2b(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    stuff: float
     if mu_f == mu_i - 1:
-        stuff = sqrt((lambdaa + mu_i - 1) * mu_i)
+        stuff = math.sqrt((lambdaa + mu_i - 1) * mu_i)
     elif mu_f == mu_i:
         stuff = -lambdaa - 2 * mu_i
     elif mu_f == mu_i + 1:
-        stuff = sqrt((lambdaa + mu_i) * (mu_i + 1))
+        stuff = math.sqrt((lambdaa + mu_i) * (mu_i + 1))
     else:
-        stuff = S.Zero
+        stuff = 0.0
 
-    mu_1: nonnegint = max(mu_f, mu_i)
-    mu_2: nonnegint = min(mu_f, mu_i)
-    return stuff + (lambdaa - Rational(3, 2)) * (lambdaa - Rational(1, 2)) * ME_Radial_pt(lambdaa, mu_1, mu_2)
+    mu_1: Nu = max(mu_f, mu_i)
+    mu_2: Nu = min(mu_f, mu_i)
+    return stuff + (lambdaa - 1.5) * (lambdaa - 0.5) * ME_Radial_pt(lambdaa, mu_1, mu_2)
 
 
 # # The following gives matrix elements of beta*d/d(beta) for lambda'=lambda
@@ -324,19 +305,15 @@ def ME_Radial_D2b(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint) -> Expr:
 #     0;
 #   fi;
 # end:
-def ME_Radial_bDb(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                  ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
+def ME_Radial_bDb(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
     if mu_f == mu_i - 1:
-        return sqrt((lambdaa + mu_i - 1) * mu_i)
+        return math.sqrt((lambdaa + mu_i - 1) * mu_i)
     elif mu_f == mu_i:
-        return Rational(-1, 2)
+        return -0.5
     elif mu_f == mu_i + 1:
-        return -sqrt((lambdaa + mu_i) * (mu_i + 1))
+        return -math.sqrt((lambdaa + mu_i) * (mu_i + 1))
     else:
-        return S.Zero
+        return 0.0
 
 
 # # The following gives matrix elements of beta for lambda'=lambda+1
@@ -351,17 +328,13 @@ def ME_Radial_bDb(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #     0;
 #   fi;
 # end:
-def ME_Radial_b_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                   ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
+def ME_Radial_b_pl(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
     if mu_f == mu_i - 1:
-        return sqrt(mu_i)
+        return math.sqrt(mu_i)
     elif mu_f == mu_i:
-        return sqrt(lambdaa + mu_i)
+        return math.sqrt(lambdaa + mu_i)
     else:
-        return S.Zero
+        return 0.0
 
 
 # # The following gives matrix elements of 1/beta for lambda'=lambda+1
@@ -379,20 +352,16 @@ def ME_Radial_b_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #                            /(factorial(mu_i)*GAMMA(lambda+mu_f+1)) );
 #   fi:
 # end:
-def ME_Radial_bm_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    lambdaa = simplify(lambdaa)
-    if lambdaa.is_integer and lambdaa <= -mu_i:
+def ME_Radial_bm_pl(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
         raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f < mu_i:
-        return S.zero
+        return 0.0
     else:
-        return (-1) ** (mu_f - mu_i) * sqrt((factorial(mu_f) * gamma(lambdaa + mu_i))
-                                            / (factorial(mu_i) * gamma(lambdaa + mu_f + 1)) )
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        poch_f: float = sc.poch(mu_f + 1, lambdaa)
+        return (-1) ** (mu_f - mu_i) * sqrt(poch_i / poch_f)
 
 
 # # The following gives matrix elements of d/d(beta) for lambda'=lambda+1
@@ -415,23 +384,20 @@ def ME_Radial_bm_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #   fi:
 #   res:
 # end:
-def ME_Radial_Db_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    res: Expr
+def ME_Radial_Db_pl(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    res: float
     if mu_f == mu_i - 1:
-        res = sqrt(mu_i)
+        res = math.sqrt(mu_i)
     elif mu_f == mu_i:
-        res = -sqrt(lambdaa + mu_i)
+        res = -math.sqrt(lambdaa + mu_i)
     else:
-        res = S.Zero
+        res = 0.0
 
-    if mu_f > mu_i:
-        res += (-1) ** (mu_f - mu_i) * (lambdaa - Rational(1, 2)) \
-               * sqrt(((factorial(mu_f) * gamma(lambdaa + mu_i))
-                       / (factorial(mu_i) * gamma(lambdaa + mu_f + 1))))
+    if mu_f >= mu_i:
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        poch_f: float = sc.poch(mu_f + 1, lambdaa)
+        res += (-1) ** (mu_f - mu_i) * (lambdaa - 0.5) \
+               * sqrt(poch_i / poch_f)
 
     return res
 
@@ -448,17 +414,13 @@ def ME_Radial_Db_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #     0;
 #   fi;
 # end:
-def ME_Radial_b_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                   ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
+def ME_Radial_b_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
     if mu_f == mu_i + 1:
-        return sqrt(mu_f)
+        return math.sqrt(mu_f)
     elif mu_f == mu_i:
-        return sqrt(lambdaa + mu_i - 1)
+        return math.sqrt(lambdaa + mu_i - 1)
     else:
-        return S.Zero
+        return 0.0
 
 
 # # The following gives matrix elements of 1/beta for lambda'=lambda-1
@@ -476,20 +438,16 @@ def ME_Radial_b_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #                            /(factorial(mu_f)*GAMMA(lambda+mu_i)) );
 #   fi:
 # end:
-def ME_Radial_bm_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    lambdaa = simplify(lambdaa)
-    if lambdaa.is_integer and lambdaa <= -mu_i:
+def ME_Radial_bm_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
         raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f > mu_i:
-        return S.Zero
+        return 0.0
     else:
-        return (-1) ** (mu_f - mu_i) * sqrt((factorial(mu_i) * gamma(lambdaa + mu_f - 1))
-                                            / (factorial(mu_f) * gamma(lambdaa + mu_i)))
+        poch_f: float = sc.poch(mu_f + 1, lambdaa - 2)
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        return (-1) ** (mu_f - mu_i) * sqrt(poch_f / poch_i)
 
 
 # # The following gives matrix elements of d/d(beta) for lambda'=lambda-1
@@ -511,23 +469,20 @@ def ME_Radial_bm_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #   fi:
 #   res:
 # end:
-def ME_Radial_Db_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
-    res: Expr
+def ME_Radial_Db_ml(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    res: float
     if mu_f == mu_i + 1:
-        res = -sqrt(mu_f)
+        res = -math.sqrt(mu_f)
     elif mu_f == mu_i:
-        res = sqrt(lambdaa + mu_i - 1)
+        res = math.sqrt(lambdaa + mu_i - 1)
     else:
-        res = S.Zero
+        res = 0.0
 
     if mu_f <= mu_i:
-        res += (-1) ** (mu_f - mu_i) * (Rational(3, 2) - lambdaa) \
-               * sqrt((factorial(mu_i) * gamma(lambdaa + mu_f - 1))
-                      / (factorial(mu_f) * gamma(lambdaa + mu_i)))
+        poch_f: float = sc.poch(mu_f + 1, lambdaa - 2)
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        res += (-1) ** (mu_f - mu_i) * (1.5 - lambdaa) \
+               * math.sqrt(poch_f / poch_i)
 
     return res
 
@@ -550,23 +505,18 @@ def ME_Radial_Db_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint
 #     0
 #   fi:
 # end:
-def ME_Radial_id_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint, r: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-    require_nonnegint('r', r)
-
-    lambdaa = simplify(lambdaa)
-    if lambdaa.is_integer and lambdaa <= -mu_i:
+def ME_Radial_id_pl(lambdaa: float, mu_f: Nu, mu_i: Nu, r: nonnegint) -> float:
+    if lambdaa.is_integer() and lambdaa <= -mu_i:
         raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
-    # stopped here
-    if mu_i < mu_f + r:
-        return MF_Radial_id_poly(mu_f, mu_i, r).subs(lamvar, lambdaa) \
-               * sqrt((factorial(mu_f) * gamma(lambdaa + mu_i))
-                      / (factorial(mu_i) * gamma(lambdaa + mu_f + 2 * r)))
+    if mu_i <= mu_f + r:
+        poly: Expr = MF_Radial_id_poly(mu_f, mu_i, r)
+        res: float = float(poly.subs(lamvar, lambdaa))
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        poch_f: float = sc.poch(mu_f + 1, lambdaa + 2 * r - 1)
+        return res * math.sqrt(poch_i / poch_f)
     else:
-        return S.Zero
+        return 0.0
 
 
 # # The following gives matrix elements of the identity operator
@@ -587,22 +537,18 @@ def ME_Radial_id_pl(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint, r: nonnegin
 #     0
 #   fi:
 # end:
-def ME_Radial_id_ml(lambdaa: Expr, mu_f: nonnegint, mu_i: nonnegint, r: nonnegint
-                    ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-    require_nonnegint('r', r)
-
-    lambdaa = simplify(lambdaa)
-    if lambdaa.is_integer and lambdaa <= -mu_f + 2 * r:
+def ME_Radial_id_ml(lambdaa: float, mu_f: Nu, mu_i: Nu, r: nonnegint) -> float:
+    if lambdaa.is_integer() and lambdaa <= -mu_f + 2 * r:
         raise ValueError('cannot evaluate Gamma function at non-positive integer')
 
     if mu_f <= mu_i + r:
-        return MF_Radial_id_poly(mu_i, mu_f, r).subs(lamvar, lambdaa - 2 * r) \
-               * sqrt((factorial(mu_i) * gamma(lambdaa + mu_f - 2 * r))
-                      / (factorial(mu_f) * gamma(lambdaa + mu_i)))
+        poly: Expr = MF_Radial_id_poly(mu_i, mu_f, r)
+        res: float = float(poly.subs(lamvar, lambdaa - 2 * r))
+        poch_f: float = sc.poch(mu_f + 1, lambdaa - 1 - 2 * r)
+        poch_i: float = sc.poch(mu_i + 1, lambdaa - 1)
+        return res * math.sqrt(poch_f / poch_i)
     else:
-        return S.Zero
+        return 0.0
 
 
 # # The following, used by the above two procedures, calculates (33)
@@ -625,8 +571,8 @@ lamvar: Symbol = symbols('lamvar', real=True)
 #
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
-def MF_Radial_id_poly(mu: nonnegint, nu: nonnegint, r: nonnegint
-                      ) -> Expr:
+def MF_Radial_id_poly(mu: Nu, nu: Nu, r: nonnegint) -> Expr:
+    assert nu <= mu + r
     return MF_Radial_id_pl(lamvar, mu, nu, r)
 
 
@@ -648,11 +594,15 @@ def MF_Radial_id_poly(mu: nonnegint, nu: nonnegint, r: nonnegint
 #
 #   simplify(res,GAMMA)*(-1)^(mu+nu):
 # end;
-def MF_Radial_id_pl(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
+def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
                     ) -> Expr:
-    require_nonnegint('mu', mu)
-    require_nonnegint('nu', nu)
-    require_nonnegint('r', r)
+    # The Maple code works for r=0 (giving delta_{mu,nu}, as required).
+    # Warning! Maple and SymPy return different results for negative arguments to the binomial function.
+    # Maple: binomial(-1, -1) = 1
+    # SymPy: binomial(-1, -1) = 0
+    # The following statement works around this edge case.
+    if r == 0:
+        return S.One if mu == nu else S.Zero
 
     if nu > mu + r:
         return S.Zero
@@ -661,54 +611,6 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
                     * gamma(lambdaa + mu + 2 * r) / gamma(lambdaa + mu + r + j)
                     * gamma(mu + j + 1) / gamma(mu + 1)
                     for j in range(max(0, nu - mu), r + 1))
-
-    return simplify(res) * (-1) ** (mu + nu)
-
-
-# # Same result, but done in a different way.
-#
-# MF_Radial_id_pl2:=proc(lambda::algebraic,mu::nonnegint,nu::nonnegint,
-#                                    r::nonnegint)
-#   local res:
-#
-#   if nu>mu+r then
-#     return(0):
-#   fi:
-#
-#   res:=add( (-1)^j * binomial(r,j) * binomial(2*r+mu-nu-j-1,r+mu-nu)
-#               * GAMMA(lambda+2*r+mu)/GAMMA(lambda+r-1)
-#               * GAMMA(lambda+2*r-j-1)/GAMMA(lambda+2*r+mu-j),
-#                                               j=0..k-1):
-#
-#   if nu=mu+r then
-#     res:=res+ (-1)^r * GAMMA(lambda+2*r+mu)/GAMMA(lambda+r+mu):
-#   fi:
-#
-#   simplify(res,GAMMA)*(-1)^(mu+nu):
-# end;
-def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
-                     ) -> Expr:
-    require_nonnegint('mu', mu)
-    require_nonnegint('nu', nu)
-    require_nonnegint('r', r)
-
-    if nu > mu + r:
-        return S.Zero
-
-    # NOTE: The Maple source is correct because it fails to define k.
-    # NOTE: This function is not used anywhere.
-    assert r + mu - nu >= 0
-    # TODO: verify the following is the correct value of k
-    k: int = r + mu - nu + 1
-    assert k >= 1
-
-    res: Expr = sum((-1) ** j * binomial(r, j) * binomial(2 * r + mu - nu - j - 1, r + mu - nu)
-                    * gamma(lambdaa + 2 * r + mu) / gamma(lambdaa + r - 1)
-                    * gamma(lambdaa + 2 * r - j - 1) / gamma(lambdaa + 2 * r + mu - j)
-                    for j in range(k))
-
-    if nu == mu + r:
-        res += (-1) ** r * gamma(lambdaa + 2 * r + mu) / gamma(lambdaa + r + mu)
 
     return simplify(res) * (-1) ** (mu + nu)
 
@@ -778,13 +680,10 @@ def MF_Radial_id_pl2(lambdaa: Expr, mu: nonnegint, nu: nonnegint, r: nonnegint
 #   fi:
 #
 # end:
-def ME_Radial(radial_op: Symbol, anorm: Expr,
-              lambdaa: Expr, lambda_var: int,
-              mu_f: nonnegint, mu_i: nonnegint
-              ) -> Expr:
-    require_nonnegint('mu_f', mu_f)
-    require_nonnegint('mu_i', mu_i)
-
+def ME_Radial(radial_op: Symbol, anorm: float,
+              lambdaa: float, lambda_var: int,
+              mu_f: Nu, mu_i: Nu
+              ) -> float:
     if radial_op == Radial_b2 and lambda_var == 0:
         return ME_Radial_b2(lambdaa, mu_f, mu_i) / anorm ** 2
     elif radial_op == Radial_bm2 and lambda_var == 0:
@@ -825,7 +724,7 @@ def ME_Radial(radial_op: Symbol, anorm: Expr,
         op_prod: tuple[Symbol, ...] = () if radial_op == Radial_id else (radial_op,)
         MM: Matrix = RepRadial_Prod(op_prod, anorm, lambdaa, lambda_var, 0, max(mu_f, mu_i),
                                     iquo(abs(lambda_var) + 3, 2))
-        return MM[mu_f, mu_i]
+        return float(MM[mu_f, mu_i])
 
 
 # ###########################################################################
@@ -866,11 +765,9 @@ def ME_Radial(radial_op: Symbol, anorm: Expr,
 #        GAMMA,radical):
 # end:
 @cache
-def RepRadial(ME: Callable, lambdaa: Expr,
-              nu_min: nonnegint, nu_max: nonnegint
+def RepRadial(ME: RadialMatrixElementFunction, lambdaa: float,
+              nu_min: Nu, nu_max: Nu
               ) -> Matrix:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
     n: int = nu_max - nu_min + 1
     M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
 
@@ -892,11 +789,9 @@ def RepRadial(ME: Callable, lambdaa: Expr,
 #        GAMMA,radical):
 # end:
 @cache
-def RepRadial_param(ME: Callable, lambdaa: Expr,
-                    nu_min: nonnegint, nu_max: nonnegint, param: int
+def RepRadial_param(ME: RadialMatrixElementParamFunction, lambdaa: float,
+                    nu_min: Nu, nu_max: Nu, param: int
                     ) -> Matrix:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
     n: int = nu_max - nu_min + 1
     M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
 
@@ -916,8 +811,8 @@ def RepRadial_param(ME: Callable, lambdaa: Expr,
 # #  MatrixPower(evalf(RepRadial(ME,lambda,nu_min,nu_max)),1/2):
 # #end:
 @cache
-def RepRadial_sq(ME: Callable, lambdaa: Expr,
-                 nu_min: nonnegint, nu_max: nonnegint
+def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
+                 nu_min: Nu, nu_max: Nu
                  ) -> Matrix:
     require_nonnegint_range('nu', nu_min, nu_max)
 
@@ -927,8 +822,8 @@ def RepRadial_sq(ME: Callable, lambdaa: Expr,
 
 
 @cache
-def RepRadial_b2_sqrt(lambdaa: Expr,
-                      nu_min: nonnegint, nu_max: nonnegint
+def RepRadial_b2_sqrt(lambdaa: float,
+                      nu_min: Nu, nu_max: Nu
                       ) -> Matrix:
     Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
     Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
@@ -937,8 +832,8 @@ def RepRadial_b2_sqrt(lambdaa: Expr,
 
 
 @cache
-def RepRadial_b2_sqrtInv(lambdaa: Expr,
-                         nu_min: nonnegint, nu_max: nonnegint
+def RepRadial_b2_sqrtInv(lambdaa: float,
+                         nu_min: Nu, nu_max: Nu
                          ) -> Matrix:
     Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
     Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
@@ -1249,14 +1144,11 @@ def Matrix_sqrtInv(Amatrix: NDArrayFloat) -> NDArrayFloat:
 #
 # end:
 @cache
-def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
-                    lambdaa: Expr, R: int,
-                    nu_min: nonnegint, nu_max: nonnegint
+def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
+                    lambdaa: float, R: int,
+                    nu_min: Nu, nu_max: Nu
                     ) -> Matrix:
-    require_nonnegint('T', T)
-    require_nonnegint_range('nu', nu_min, nu_max)
-
-    if lambdaa.evalf() <= 0 or (lambdaa + R).evalf() <= 0:
+    if lambdaa <= 0 or (lambdaa + R) <= 0:
         raise ValueError(f'Non-positive lambda shift for operator [{K},{T}]')
 
     Mat_product: Matrix
@@ -1298,7 +1190,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: Expr,
 
     assert len(lam_splits) == n
 
-    lambda_run: Expr = lambdaa
+    lambda_run: float = lambdaa
 
     if lamX < 0:
         assert is_even(lamX)
@@ -1510,8 +1402,8 @@ class KTSOp(ABC):
     """Abstract base class for KTOp and SOp."""
 
     @abstractmethod
-    def representation(self, anorm: Expr,
-                       lambdaa: Expr, R: int,
+    def representation(self, anorm: float,
+                       lambdaa: float, R: int,
                        nu_min: nonnegint, nu_max: nonnegint
                        ) -> Matrix:
         ...
@@ -1534,9 +1426,9 @@ class KTOp(KTSOp):
     def __hash__(self) -> int:
         return hash((self.K, self.T))
 
-    def representation(self, anorm: Expr,
-                       lambdaa: Expr, R: int,
-                       nu_min: nonnegint, nu_max: nonnegint
+    def representation(self, anorm: float,
+                       lambdaa: float, R: int,
+                       nu_min: Nu, nu_max: Nu
                        ) -> Matrix:
         return RepRadial_bS_DS(self.K, self.T, anorm, lambdaa, R, nu_min, nu_max)
 
@@ -1556,14 +1448,14 @@ class SOp(KTSOp):
     def __hash__(self) -> int:
         return hash(self.S)
 
-    def representation(self, anorm: Expr,
-                       lambdaa: Expr, R: int,
-                       nu_min: nonnegint, nu_max: nonnegint
+    def representation(self, anorm: float,
+                       lambdaa: float, R: int,
+                       nu_min: Nu, nu_max: Nu
                        ) -> Matrix:
         if R != 0:
             raise ValueError("Non-zero lambda shift for S operator (this shouldn't arise!)")
 
-        ME: Callable = [ME_Radial_Sm, ME_Radial_S0, ME_Radial_Sp][self.S + 1]
+        ME: RadialMatrixElementFunction = [ME_Radial_Sm, ME_Radial_S0, ME_Radial_Sp][self.S + 1]
         return RepRadial(ME, lambdaa, nu_min, nu_max)
 
 
@@ -1641,12 +1533,10 @@ KTSOps = tuple[KTSOp, ...]
 #
 # end;
 @cache
-def RepRadialshfs_Prod(rps_op: KTSOps, anorm: Expr,
-                       lambdaa: Expr, lambda_shfs: tuple[int],
-                       nu_min: nonnegint, nu_max: nonnegint
+def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
+                       lambdaa: float, lambda_shfs: tuple[int, ...],
+                       nu_min: Nu, nu_max: Nu
                        ) -> Matrix:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
     n: int = len(rps_op)
 
     Mat_product: Matrix
@@ -1655,7 +1545,7 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: Expr,
         Mat_product = eye(nu_max - nu_min + 1)
 
     else:
-        lambda_run: Expr = lambdaa
+        lambda_run: float = lambdaa
 
         for i in range(n, 0, -1):
 
@@ -1781,9 +1671,9 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: Expr,
 #     fi:
 #
 # end;
-def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: Expr,
-                   lambdaa: Expr, lambda_var: int,
-                   nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: float,
+                   lambdaa: float, lambda_var: int,
+                   nu_min: Nu, nu_max: Nu,
                    nu_lap: nonnegint
                    ) -> Matrix:
     rep: Matrix = RepRadial_Prod_common(rbs_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
@@ -1798,18 +1688,14 @@ def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: Expr,
     return rep
 
 
-def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: Expr,
-                          lambdaa: Expr, lambda_var: int,
-                          nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: float,
+                          lambdaa: float, lambda_var: int,
+                          nu_min: Nu, nu_max: Nu,
                           nu_lap: nonnegint
                           ) -> Matrix:
-    require_int('lambda_var', lambda_var)
-    require_nonnegint_range('nu', nu_min, nu_max)
-    require_int('nu_lap', nu_lap)
-
-    if lambdaa.evalf() <= 0:
+    if lambdaa <= 0:
         raise ValueError(f'Non-positive lambda value {lambdaa}')
-    elif (lambdaa + lambda_var).evalf() <= 0:
+    elif (lambdaa + lambda_var) <= 0:
         raise ValueError(f'Non-positive lambda value {lambdaa + lambda_var}')
 
     parsed_ops: KTSOps = Parse_RadialOp_List(rbs_op)
@@ -1889,9 +1775,9 @@ def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: Expr,
 #
 # end;
 @cache
-def RepRadial_Prod_rem(rbs_op: tuple[Symbol, ...], anorm: Expr,
-                       lambdaa: Expr, lambda_var: int,
-                       nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_Prod_rem(rbs_op: tuple[Symbol, ...], anorm: float,
+                       lambdaa: float, lambda_var: int,
+                       nu_min: Nu, nu_max: Nu,
                        nu_lap: nonnegint = 0
                        ) -> Matrix:
 
@@ -2126,8 +2012,6 @@ def Parse_RadialOp_List(rs_op: tuple[Symbol, ...]) -> KTSOps:
 #
 # end:
 def Lambda_RadialOp_List(rsp_op: KTSOps, lambda_var: int) -> tuple[int, ...]:
-    require_int('lambda_var', lambda_var)
-
     lambda_rem: int = abs(lambda_var)
     n: int = len(rsp_op)
     lambda_list: list[int] = [0] * n
@@ -2260,9 +2144,9 @@ def Lambda_RadialOp_List(rsp_op: KTSOps, lambda_var: int) -> tuple[int, ...]:
 #
 #   Mat;
 # end:
-def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
-                 lambdaa: Expr, lambda_var: int,
-                 nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
+                 lambdaa: float, lambda_var: int,
+                 nu_min: Nu, nu_max: Nu,
                  nu_lap: nonnegint = 0
                  ) -> Matrix:
     M: Matrix = RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
@@ -2277,15 +2161,11 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
     return M
 
 
-def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
-                        lambdaa: Expr, lambda_var: int,
-                        nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
+                        lambdaa: float, lambda_var: int,
+                        nu_min: Nu, nu_max: Nu,
                         nu_lap: nonnegint = 0
                         ) -> Matrix:
-    require_int('lambda_var', lambda_var)
-    require_nonnegint_range('nu', nu_min, nu_max)
-    require_nonnegint('nu_lap', nu_lap)
-
     n: int = len(rlc_op)
 
     M: Matrix
@@ -2330,9 +2210,9 @@ def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
 #   Mat;
 # end:
 @cache
-def RepRadial_LC_rem(rlc_op: list[tuple[Expr, KTSOps]], anorm: Expr,
-                     lambdaa: Expr, lambda_var: int,
-                     nu_min: nonnegint, nu_max: nonnegint,
+def RepRadial_LC_rem(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
+                     lambdaa: float, lambda_var: int,
+                     nu_min: Nu, nu_max: Nu,
                      nu_lap: nonnegint = 0) -> Matrix:
 
     return RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
