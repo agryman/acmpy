@@ -2,7 +2,9 @@
 
 import math
 
+from typing import Any
 from sympy import S, Expr, sqrt, Symbol, nsolve, solveset, Reals, Set, FiniteSet
+from scipy.optimize import root_scalar, RootResults
 
 from acmpy.compat import IntFloatExpr, nonnegint, require_nonnegint
 from acmpy.internal_operators import ACM_Hamiltonian, OperatorSum
@@ -176,26 +178,59 @@ def RWC2(A: Expr, mu: Expr, B: float, c1: float, c2: float, v: nonnegint = 0) ->
            - B ** 2 * mu * (mu + 2) * (A * c1 + c2 * (mu + 4))
 
 
+class RwcOptimizationError(Exception):
+    """Raised when RWC_alam() is unable to find optimum values for (a, lambda)."""
+
+    B: float
+    c1: float
+    c2: float
+    v: nonnegint
+    result: Any
+
+    def __init__(self, B: float, c1: float, c2: float, v: nonnegint, result: Any):
+        self.B = B
+        self.c1 = c1
+        self.c2 = c2
+        self.v = v
+        self.result = result
+        super().__init__('Unable to find optimum values for (a, lambda)')
+
+
 def RWC_alam(B: float, c1: float, c2: float, v: nonnegint = 0
              ) -> tuple[float, float]:
     require_nonnegint('v', v)
 
-    if c1 >= 0:
+    if c1 >= 0.0:
         return RWC_alam_clam(B, c1, c2, v)
 
-    assert c1 < 0
+    assert c1 < 0.0
+    if c2 <= 0.0:
+        raise ValueError(f'c2 must be positive when c1 is negative: c1={c1}, c2={c2}')
     A: Symbol = Symbol('A', real=True, positive=True)
-    mu: Expr = muf(A, c1, c2, v)
-    F2: Expr = RWC2(A, mu, B, c1, c2, v)
+    mu_A: Expr = muf(A, c1, c2, v)
+    F2_A: Expr = RWC2(A, mu_A, B, c1, c2, v)
 
-    # aa_initial: float = (35 * B ** 2 * c2 / 2) ** (1 / 3)
-    # aa_initial: float = A0_case3_approx(B, c1, c2, v)
-    # aa_initial: float = 20.0
-    # aa0: float = float(nsolve(F2, A, aa_initial))
-    A0_set: Set = solveset(F2, A, domain=Reals)
-    # assert isinstance(A0_set, FiniteSet)
-    A0_pos: list[float] = [float(A0) for A0 in A0_set if A0 > 0]
-    aa0: float = A0_pos[0]
+    def F2(A_value: float) -> float:
+        return float(F2_A.subs(A, A_value))
+
+    # find the bracket interval [0, A_pos] where F2(A) changes sign
+
+    # F2(0.0) is negative
+    # F2(0.0) = -B ** 2 * c2 * (2 * v + 3) * (2 * v + 5) * (2 * v + 7)
+    assert F2(0.0) < 0.0
+
+    # F2(A) becomes positive for large A
+    # F2(A) -> (2 * abs(c1) / c2) * A ** 4
+    A_pos: float = 1.0
+    while F2(A_pos) <= 0:
+        A_pos *= 2.0
+    assert F2(A_pos) > 0.0
+
+    result: RootResults = root_scalar(F2, bracket=(0.0, A_pos))
+    if not result.converged:
+        raise RwcOptimizationError(B, c1, c2, v, result)
+
+    aa0: float = result.root
 
     return math.sqrt(aa0), float(1 + muf(S(aa0), c1, c2, v) / 2)
 
