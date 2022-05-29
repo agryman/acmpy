@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-05-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-05-01 Arthur's Journal.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/rwc-alam/scipy-optimize.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/rwc-alam/scipy-optimize.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/examples/run_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/examples/run_example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/hamiltonian_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +86,7 @@
       <recent name="$PROJECT_DIR$/src/acmpy/debug" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests in test_hamiltonian_data.py">
+  <component name="RunManager" selected="Python.run_example">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -153,9 +157,6 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/examples" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -265,10 +266,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run_example" />
         <item itemvalue="Python tests.Python tests in test_hamiltonian_data.py" />
         <item itemvalue="Python tests.Python tests for test_hamiltonian_data.TestA0_case3_approx.test_ok" />
         <item itemvalue="Python tests.Python tests for test_hamiltonian_data.TestRWC_alam.test_c1_neg_large_B" />
-        <item itemvalue="Python.run_example" />
         <item itemvalue="Python tests.Python tests for test_hamiltonian_data.TestRWC_alam_clam" />
       </list>
     </recent_temporary>
@@ -459,7 +460,7 @@
       <workItem from="1653622737356" duration="51000" />
       <workItem from="1653672523999" duration="4290000" />
       <workItem from="1653686936234" duration="130000" />
-      <workItem from="1653763256340" duration="1424000" />
+      <workItem from="1653763256340" duration="11332000" />
     </task>
     <servers />
   </component>
@@ -486,13 +487,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/acmpy/hamiltonian_data.py</url>
-          <line>196</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -512,7 +506,7 @@
     <SUITE FILE_PATH="coverage/acmpy$debug_rwc_alam.coverage" NAME="debug_rwc_alam Coverage Results" MODIFIED="1652751221607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
     <SUITE FILE_PATH="coverage/acmpy$debug_mf_radial_id.coverage" NAME="debug_mf_radial_id Coverage Results" MODIFIED="1652046022627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
     <SUITE FILE_PATH="coverage/acmpy$profile_acm_scale.coverage" NAME="profile_acm_scale Coverage Results" MODIFIED="1651699554919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/performance" />
-    <SUITE FILE_PATH="coverage/acmpy$run_example.coverage" NAME="run_example Coverage Results" MODIFIED="1653072863928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
+    <SUITE FILE_PATH="coverage/acmpy$run_example.coverage" NAME="run_example Coverage Results" MODIFIED="1653853012729" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
     <SUITE FILE_PATH="coverage/acmpy$ex_1_preliminaries.coverage" NAME="ex_1_preliminaries Coverage Results" MODIFIED="1650574183992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
     <SUITE FILE_PATH="coverage/acmpy$deug_full_space.coverage" NAME="deug_full_space Coverage Results" MODIFIED="1650652991919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
     <SUITE FILE_PATH="coverage/acmpy$ex_1_1_essentials.coverage" NAME="ex-1-1-essentials Coverage Results" MODIFIED="1650397306882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />

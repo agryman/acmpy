@@ -1512,3 +1512,30 @@ The Unicorns have taken over. We're doing our best to get them under control and
 * delete numpy branch
 * continue debugging Example 4.4.1
 * create new branch example-4-4-1
+
+Example 4.4.1 calls `RWC_alam()` which solves for the zeros of the derivative
+of the expectation value of the Hamiltonian on a ground state.
+I tried using the SciPy `minimize_scalar()` function on this did find the
+solution.
+
+The code doesn't quite match the paper since it includes a $v$ parameter.
+I need to reverse engineer the code to determine the objective function
+that is being minimized.
+* write a spec for `RWC_alam()` to understand what it is doing - TODO
+
+I don't need to reverse engineer the code because SciPy has a `root_scalar()` function!
+* use the SciPy `root_scalar()` function - IN-PROGRESS
+
+break 6:10 pm
+
+## 2022-05-29
+
+### 1:30 pm
+
+Ask forum about GitHub Pages error. - DONE
+
+* use the SciPy `root_scalar()` function - DONE
+* commit fixed version
+
+
+
