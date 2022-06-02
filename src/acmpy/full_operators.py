@@ -4,22 +4,22 @@ import numpy as np
 from typing import Optional
 from functools import cache
 
-from sympy import S, Symbol, Expr, Matrix, zeros, diag, eye, Rational, sqrt
+from sympy import S, Symbol, Expr, Matrix, zeros, eye, Rational, sqrt
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint, \
-    NDArrayFloat, Matrix_to_ndarray, ndarray_to_Matrix
+    NDArrayFloat, Matrix_to_ndarray
 from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
     Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3, Spherical_Operators
-from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, Matrix_sqrt, Matrix_sqrtInv, \
+from acmpy.radial_space import dimRadial, Nu, lbsRadial, RepRadial, RepRadial_param, \
     RepRadial_bS_DS, RepRadialshfs_Prod, RepRadial_Prod_rem, RepRadial_LC_rem, Radial_Operators, Radial_Db, \
     Radial_bm, Radial_bm2, Radial_D2b, Radial_bDb, Radial_b, RepRadial_b2_sqrt, RepRadial_b2_sqrtInv
 from acmpy.internal_operators import NUMBER, SENIORITY, ALFA, ANGMOM, RepSO5_Y_rem, RepSO5r3_Prod_rem, \
     Convert_red, NumSO5r3_Prod, Qred_p1, Qred_m1, QxQred_p2, QxQred_m2, QxQred_0, QxQxQred_p3, QxQxQred_m3, \
-    QxQxQred_m1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi, \
+    QxQxQred_m1, QxQxQred_p1, ME_SO5red, Xspace_Pi, Xspace_PiPi2, Xspace_PiPi4, Xspace_PiqPi, \
     OperatorSum, OperatorTerm, OperatorProduct
 from acmpy.so5_so3_cg import CG_SO5r3
 import acmpy.globals as g
-from acmpy.globals import glb_lam_fun
+from acmpy.globals import ACM_eval_lambda_fun
 
 
 # ###########################################################################
@@ -633,11 +633,11 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
     direct_Mat: Matrix = zeros(sph_dim * rad_dim)
     for j2 in range(1, sph_dim + 1):
         jdisp: int = (j2 - 1) * rad_dim
-        lambda_disp_init = glb_lam_fun(sph_labels[j2 - 1][0])
+        lambda_disp_init = ACM_eval_lambda_fun(sph_labels[j2 - 1][0])
 
         for i2 in range(1, sph_dim + 1):
             idisp: int = (i2 - 1) * rad_dim
-            lambda_disp_fin = glb_lam_fun(sph_labels[i2 - 1][0])
+            lambda_disp_fin = ACM_eval_lambda_fun(sph_labels[i2 - 1][0])
             sph_ME: float = sph_Mat[i2 - 1, j2 - 1]
 
             if sph_ME == 0:
@@ -786,7 +786,7 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
         jdisp: int = (j2 - 1) * rad_dim
-        lambda_disp_init: nonnegint = glb_lam_fun(v_init)
+        lambda_disp_init: nonnegint = ACM_eval_lambda_fun(v_init)
 
         for i2 in range(1, sph_dim + 1):
             v_fin, al_fin, L_fin = sph_labels[i2 - 1]
@@ -794,7 +794,7 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
                 continue
             v_chg: int = v_fin - v_init
             idisp: int = (i2 - 1) * rad_dim
-            lambda_disp_fin: nonnegint = glb_lam_fun(v_fin)
+            lambda_disp_fin: nonnegint = ACM_eval_lambda_fun(v_fin)
 
             rad_Mat: Matrix
             if v_chg == 1:
@@ -990,7 +990,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
         jdisp: int = (j2 - 1) * rad_dim
-        lambda_disp_init: int = glb_lam_fun(v_init)
+        lambda_disp_init: int = ACM_eval_lambda_fun(v_init)
 
         for i2 in range(1, sph_dim + 1):
             v_fin, al_fin, L_fin = sph_labels[i2 - 1]
@@ -999,7 +999,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
 
             v_chg: int = v_fin - v_init
             idisp: int = (i2 - 1) * rad_dim
-            lambda_disp_fin: int = glb_lam_fun(v_fin)
+            lambda_disp_fin: int = ACM_eval_lambda_fun(v_fin)
 
             if v_chg == 2:
 
@@ -1021,7 +1021,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max)
 
-                rad_Mat = rad_Mat * (-QxQred_p2(v_init)).evalf()
+                rad_Mat = rad_Mat * (-QxQred_m2(v_init)).evalf()
 
             elif v_chg == 0:
 
@@ -1235,7 +1235,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
         jdisp: int = (j2 - 1) * rad_dim
-        lambda_disp_init: int = glb_lam_fun(v_init)
+        lambda_disp_init: int = ACM_eval_lambda_fun(v_init)
 
         for i2 in range(1, sph_dim + 1):
             v_fin, al_fin, L_fin = sph_labels[i2 - 1]
@@ -1243,7 +1243,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                 continue
             v_chg: int = v_fin - v_init
             idisp: int = (i2 - 1) * rad_dim
-            lambda_disp_fin = glb_lam_fun(v_fin)
+            lambda_disp_fin = ACM_eval_lambda_fun(v_fin)
 
             op_sum: OperatorSum
             op_sum2: OperatorSum
@@ -1259,7 +1259,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                 rad_Mat = RepRadial_LC_rem(op_sum,
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init,
-                                           nu_min, nu_max)
+                                           nu_min, nu_max, 1)
                 c = QxQxQred_p3(v_init).evalf()
                 rad_Mat = rad_Mat * c
 
@@ -1271,7 +1271,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                 rad_Mat = RepRadial_LC_rem(op_sum,
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init,
-                                           nu_min, nu_max)
+                                           nu_min, nu_max, 1)
                 c = QxQxQred_m3(v_init).evalf()
                 rad_Mat = rad_Mat * c
 
@@ -1289,7 +1289,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                             anorm, lambda_base + lambda_disp_init,
                                             lambda_disp_fin - lambda_disp_init,
                                             nu_min, nu_max)
-                c = QmxQxQred_p1(v_init).evalf()
+                c = QxQxQred_p1(v_init).evalf()
                 c2 = ((2 * v_init + 5) * QixQxQred(v_init, v_fin, v_fin + 1)).evalf()
                 rad_Mat = rad_Mat * c + rad_Mat2 * c2
 
@@ -1374,11 +1374,12 @@ def QixQxQred(v_i: nonnegint, v_f: nonnegint, v_int: nonnegint) -> Expr:
     L_i: int = 2 * min(v_i, v_f)
 
     mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v_int, L_i - 2, L_i + 2)
-    return -ME_SO5red(v_f, 1, v_int) * ME_SO5red(v_int, 2, v_i) * sqrt(Rational(2, 7)) / 15 * \
-           sum(CG_SO5r3(v_int, a, L, 1, 1, 2, v_f, 1, L_i) *
-               CG_SO5r3(v_i, 1, L_i, 2, 1, 2, v_int, a, L) *
-               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
-           CG_SO5r3(v_i, 1, L_i, 3, 1, 0, v_f, 1, L_i) / sqrt(5 * dimSO3(L_i))
+    return \
+        -ME_SO5red(v_f, 1, v_int) * ME_SO5red(v_int, 2, v_i) * sqrt(Rational(2, 7)) / 15 \
+        * sum(CG_SO5r3(v_int, a, L, 1, 1, 2, v_f, 1, L_i) *
+              CG_SO5r3(v_i, 1, L_i, 2, 1, 2, v_int, a, L) *
+              sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) \
+        / CG_SO5r3(v_i, 1, L_i, 3, 1, 0, v_f, 1, L_i) / sqrt(5 * dimSO3(L_i))
 
 
 # # The four cases are also implemented separately by the following
@@ -1422,11 +1423,12 @@ def QpxQxQred_p1(v: nonnegint) -> Expr:
 
     mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1)
 
-    return Qred_p1(v) * QxQred_0(v) * \
-           sum(CG_SO5r3(v, a, L, 1, 1, 2, v + 1, 1, L1) *
-               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
-               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
-           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
+    return \
+        Qred_p1(v) * QxQred_0(v) * \
+        sum(CG_SO5r3(v, a, L, 1, 1, 2, v + 1, 1, L1)
+            * CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L)
+            * sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) \
+        / CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
 
 
 # QmxQxQred_p1:=proc(v::nonnegint)
@@ -1457,11 +1459,12 @@ def QmxQxQred_p1(v: nonnegint) -> Expr:
 
     mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v + 2, L1 - 2, L1 + 2)
 
-    return Qred_m1(v + 2) * QxQred_p2(v) * \
-           sum(CG_SO5r3(v + 2, a, L, 1, 1, 2, v + 1, 1, L1) *
-               CG_SO5r3(v, 1, L1, 2, 1, 2, v + 2, a, L) *
-               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
-           CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
+    return \
+        Qred_m1(v + 2) * QxQred_p2(v) * \
+        sum(CG_SO5r3(v + 2, a, L, 1, 1, 2, v + 1, 1, L1)
+            * CG_SO5r3(v, 1, L1, 2, 1, 2, v + 2, a, L)
+            * sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) \
+        / CG_SO5r3(v, 1, L1, 3, 1, 0, v + 1, 1, L1) / sqrt(5 * dimSO3(L1))
 
 
 # QpxQxQred_m1:=proc(v::posint)
@@ -1488,10 +1491,12 @@ def QpxQxQred_m1(v: posint) -> Expr:
 
     L1: int = 2 * v - 2
 
-    return Qred_p1(v - 2) * QxQred_m2(v) * \
-           CG_SO5r3(v - 2, 1, L1 - 2, 1, 1, 2, v - 1, 1, L1) * \
-           CG_SO5r3(v, 1, L1, 2, 1, 2, v - 2, 1, L1 - 2) * \
-           sqrt(dimSO3(L1 - 2))
+    return \
+        Qred_p1(v - 2) * QxQred_m2(v) \
+        * CG_SO5r3(v - 2, 1, L1 - 2, 1, 1, 2, v - 1, 1, L1) \
+        * CG_SO5r3(v, 1, L1, 2, 1, 2, v - 2, 1, L1 - 2) \
+        * sqrt(dimSO3(L1 - 2)) \
+        / CG_SO5r3(v, 1, L1, 3, 1, 0, v - 1, 1, L1) / sqrt(dimSO3(L1 - 2))
 
 
 # QmxQxQred_m1:=proc(v::posint)
@@ -1522,9 +1527,9 @@ def QmxQxQred_m1(v: posint) -> Expr:
 
     mediates: list[SO5SO3Label] = lbsSO5r3_rngL(v, L1 - 2, L1 + 2)
 
-    return Qred_m1(v) * QxQred_0(v) * \
-           sum(CG_SO5r3(v, a, L, 1, 1, 2, v - 1, 1, L1) *
-               CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L) *
-               sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) / \
-           CG_SO5r3(v, 1, L1, 3, 1, 0, v - 1, 1, L1) / \
-           sqrt(5 * dimSO3(L1))
+    return \
+        Qred_m1(v) * QxQred_0(v) * \
+        sum(CG_SO5r3(v, a, L, 1, 1, 2, v - 1, 1, L1)
+            * CG_SO5r3(v, 1, L1, 2, 1, 2, v, a, L)
+            * sqrt(dimSO3(L)) * (-1) ** L for (_, a, L) in mediates) \
+        / CG_SO5r3(v, 1, L1, 3, 1, 0, v - 1, 1, L1) / sqrt(5 * dimSO3(L1))

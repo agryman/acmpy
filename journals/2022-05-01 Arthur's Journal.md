@@ -1535,7 +1535,144 @@ break 6:10 pm
 Ask forum about GitHub Pages error. - DONE
 
 * use the SciPy `root_scalar()` function - DONE
-* commit fixed version
+* commit fixed version - DONE
+* create branch `verify-examples-section-4` - DONE
+* verify examples from Maple worksheet Section 4 - IN-PROGRESS
+  * Example_4_5_a - IN-PROGRESS
 
+break 6:00 pm
 
+### 9:00 pm
 
+* verify examples from Maple worksheet Section 4 - IN-PROGRESS
+  * Example_4_5_a - IN-PROGRESS
+  * not getting agreement - debug
+  * eigenvalues are similar but different
+  * possibly caused by error in generating matrix elements
+  * simplify testcase to `ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)`
+  * ACM_Adapt -> ACM_ScaleOr_Adapt -> DigXspace returns wrong result
+  * DigXspace -> RepXspace gives wrong result
+  * continue tracing execution into RepXspace_Term- IN-PROGRESS
+  * the only difference is the use of the SHO basis type - check where this is used - TODO
+
+break 10:00 pm
+
+## 2022-05-30
+
+### 1:50 pm
+
+* Debug Example_4_5_a - IN-PROGRESS
+  * the only difference is the use of the SHO basis type - check where this is used - IN-PROGRESS
+  * inspect code where glb_lam_fun is used
+  * the global variable glb_lam_fun is only accessed in the functions:
+    * RepXspace_Twin - DONE
+    * RepXspace_Pi - DONE
+    * RepXspace_PiPi - DONE
+      * found 1 bug
+    * RepXspace_PiqPi - DONE
+      * found 3 bugs
+      * Note: SymPy x.evalf() does not return float. It returns a SymPy object.
+    * The fixes did not correct the result.
+
+* Renamed example to Example_4_5_d, reduce parameters.
+
+Maple Result:
+```text
+"Example_4_5_d";
+st := time();
+ACM_Adapt(RWC_ham, sqrt(B), 2.500, 0, 5, 0, 5, 0, 8);
+elapsed := time() - st;
+                        "Example_4_5_d"
+Lowest eigenvalue is -23.29391. Relative eigenvalues follow (each divided by 0.03662):
+  At L= 0: [   40.77,  117.51,  219.48,  302.71]
+  At L= 2: [    6.00,   20.51,   62.00,   91.80]
+  At L= 3: [   33.47,  210.26,  372.07,  519.59]
+  At L= 4: [    4.12,   16.68,   37.53,   69.32]
+  At L= 5: [    1.03,   19.16,  169.07,  190.48]
+  At L= 6: [    1.17,   20.54,   48.83,  170.12]
+  At L= 7: [    1.91,  169.02,  332.89,  491.09]
+  At L= 8: [    0.00,   30.74,  170.33,  199.79]
+Selected transition rates follow (each divided by 0.00002):
+  B(E2: 2(1) -> 0(1)) =   100.00
+  B(E2: 4(1) -> 2(1)) =    37.70
+  B(E2: 6(1) -> 4(1)) =    42.59
+  B(E2: 8(1) -> 6(1)) =   814.02
+  B(E2: 2(2) -> 2(1)) =  7899.99
+  B(E2: 4(2) -> 4(1)) =  1113.23
+  B(E2: 4(3) -> 4(2)) =  3845.49
+  B(E2: 4(4) -> 4(3)) =  2594.25
+  B(E2: 6(2) -> 6(1)) =  2476.52
+  B(E2: 6(3) -> 6(2)) =  1486.19
+  B(E2: 6(4) -> 6(3)) =    16.05
+Selected transition amplitudes follow (each divided by 0.00410):
+  Amp( 2(1) -> 2(1) ) =    -4.77
+                        elapsed := 0.601
+```
+
+Python result:
+```text
+Traceback (most recent call last):
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/venv/lib/python3.10/site-packages/IPython/core/interactiveshell.py", line 3397, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-2-90ae8d97df7c>", line 1, in <cell line: 1>
+    runfile('/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/examples/run_example.py', wdir='/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/examples')
+  File "/Users/arthurryman/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/221.5591.52/IntelliJ IDEA.app.plugins/python/helpers/pydev/_pydev_bundle/pydev_umd.py", line 198, in runfile
+    pydev_imports.execfile(filename, global_vars, local_vars)  # execute the script
+  File "/Users/arthurryman/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/221.5591.52/IntelliJ IDEA.app.plugins/python/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/examples/run_example.py", line 5, in <module>
+    Example_4_5_d.run()
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/examples/example.py", line 37, in run
+    cls.exec()
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/examples/section_4.py", line 186, in exec
+    ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/full_space.py", line 1406, in ACM_Adapt
+    return ACM_ScaleOrAdapt(1, 1, ham_op, anorm, lambda_base,
+  File "/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/full_space.py", line 1314, in ACM_ScaleOrAdapt
+    raise ValueError(f'Cannot scale: reference state {g.glb_eig_L}({g.glb_eig_idx}) has lowest energy')
+ValueError: Cannot scale: reference state 2(1) has lowest energy
+```
+
+* Create test case - IN-PROGRESS
+
+break 5:50 pm
+
+### 8:30 pm
+
+* I created test case `test_example_4_5()` in `test_full_operator.py`
+* The actual result agrees with the expected result in the top left 6 x 6 block
+
+break 9:45 pm
+
+## 2022-05-31
+
+### 1:55 pm
+
+Continue debugging Example_4_5_d
+* Visual code inspection was useful before
+  * inspect `full_space.py` - DONE
+  * inspect `full_operators.py` - DONE
+    * found bug in `QpxQxQred_m1()`!
+    * failure in `test_example_4_5()` is still present
+* trace execution and compare to Maple - IN-PROGRESS
+* create more test cases for the results of `RepXspace_Prod()`
+  * write Maple code to export results in CSV or other data file
+  * read those data files in my test cases
+
+break 5:30 pm
+
+### 8:00 pm
+
+* create more test cases for the results of `RepXspace_Prod()` - DONE
+  * write Maple code to export results in CSV or other data file - DONE
+  * read those data files in my test cases - DONE
+* all test cases fail in a similar way - error occur in blocks
+* the spherical space matrix for SpHarm310 is correct
+  * create test case - TODO
+* create test cases for the radial representations - TODO
+* Hypothesis: the code that forms the Xspace rep is wrong
+  * this is the only place where the basis type is used via the global lambda function
+  * generate the same testcases for the parity basis (type 2)
+  * do some testcases for each basis type
+
+break 9:50 pm

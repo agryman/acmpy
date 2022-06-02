@@ -11,6 +11,7 @@ from acmpy.compat import nonnegint, is_close, NDArrayFloat, ndarray_to_list
 from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues, \
     LBlockFullSpace, LBlockNDFloatArray, LBlocks, validate_Lvals
 from acmpy.internal_operators import OperatorSum, ACM_Hamiltonian
+from acmpy.globals import ACM_set_defaults
 
 
 class TestEigenfiddle:
@@ -139,6 +140,8 @@ class TestDigXspace:
             assert isclose(actual_val, expected_val)
 
     def test_RWC_ham_fig5a(self, RWC_ham_fig5a: tuple[OperatorSum, int]):
+        ACM_set_defaults(0)
+
         ham_op: OperatorSum
         B: int
         ham_op, B = RWC_ham_fig5a

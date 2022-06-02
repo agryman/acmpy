@@ -144,13 +144,11 @@ def DigXspace(ham_op: OperatorSum,
               v_min: nonnegint, v_max: nonnegint,
               L_min: nonnegint, L_max: Optional[nonnegint] = None
               ) -> tuple[EigenValues, EigenBases, XParams, LValues]:
-    if L_max is None:
-        L_max = L_min
+    LLM: nonnegint = L_min if L_max is None else L_max
+
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
-    require_nonnegint_range('L', L_min, L_max)
-
-    LLM: nonnegint = L_max
+    require_nonnegint_range('L', L_min, LLM)
 
     Xparams: XParams = anorm, lambda_base, nu_min, nu_max, v_min, v_max
 
