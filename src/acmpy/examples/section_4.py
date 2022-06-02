@@ -179,10 +179,17 @@ class Example_4_5_c(Example_4_4_alam):
         print(ACM_set_rat_lst(cls.rat_lst))
 
 
+class Example_4_5_d_050508(Example_4_4_alam):
+    predecessor = Example_4_5_c
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)
+
+
 class Example_4_5_d(Example_4_4_alam):
     predecessor = Example_4_5_c
 
     @classmethod
     def exec(cls):
-        result = ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)
-        # ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 11, 0, 21, 0, 8)
+        ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)
