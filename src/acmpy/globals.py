@@ -1253,6 +1253,10 @@ def ACM_show_lambda_fun(vmin: nonnegint = 0, vmax: nonnegint = 10) -> tuple[int,
     return tuple(glb_lam_fun(v) for v in range(vmin, vmax + 1))
 
 
+def ACM_eval_lambda_fun(v: nonnegint) -> nonnegint:
+    """Evaluates the global lambda function for a given seniority v."""
+    return glb_lam_fun(v)
+
 # # Following tests that lambda only shifts by +/-1 as we change v,
 # # returning boolean true if so, false if not.
 # # (This procedure is not used elsewhere.)

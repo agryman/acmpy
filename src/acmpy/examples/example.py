@@ -1,10 +1,10 @@
 from time import process_time
-from typing import ClassVar, Any
+from typing import ClassVar, Optional, Type
 
 
 class Example:
     """This is the base class for all examples."""
-    predecessor: ClassVar[Any] = None
+    predecessor: ClassVar[Optional[Type['Example']]] = None
 
     @classmethod
     def set(cls):

@@ -3,12 +3,10 @@
 import math
 from typing import ClassVar
 from sympy import Expr, Rational, S
-from acmpy.globals import ACM_set_listln, ACM_set_eig_fit, ACM_set_rat_fit, ACM_set_rat_lst, ACM_set_amp_lst, \
-    ACM_add_rat_lst, ACM_add_amp_lst, ACM_set_scales, ACM_show_scales
+from acmpy.globals import ACM_set_listln, ACM_set_amp_lst, \
+    ACM_show_lambda_fun, ACM_set_basis_type, ACM_set_rat_lst
 from acmpy.internal_operators import OperatorSum, ACM_Hamiltonian
 from acmpy.full_space import ACM_Scale, ACM_Adapt, Show_Eigs, Show_Rats, Show_Amps, dimXspace
-from acmpy.full_operators import lbsXspace
-from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO5r3_rngVvarL
 from acmpy.hamiltonian_data import RWC_alam
 from acmpy.examples.example import Example
 from acmpy.examples.section_1 import Example_1_2
@@ -92,14 +90,99 @@ class Example_4_3_f(Example_4_1_ham):
 
 
 class Example_4_4_alam(Example_4_1_ham):
-    predecessor = Example_4_3_f
     alam: ClassVar[tuple[float, float]] = RWC_alam(Example_4_1_ham.B,
                                                    Example_4_1_ham.c1,
                                                    Example_4_1_ham.c2)
 
 
 class Example_4_4_a(Example_4_4_alam):
+    predecessor = Example_4_3_f
+
     @classmethod
     def exec(cls):
-        print(cls.B, cls.c1, cls.c2)
-        print(cls.alam)
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 3, 0, 21, 0, 8)
+
+
+class Example_4_4_b(Example_4_4_alam):
+    predecessor = Example_4_4_a
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 5, 0, 21, 0, 8)
+
+
+class Example_4_4_c(Example_4_4_alam):
+    predecessor = Example_4_4_b
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 7, 0, 21, 0, 8)
+
+
+class Example_4_4_d(Example_4_4_alam):
+    predecessor = Example_4_4_c
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 9, 0, 21, 0, 8)
+
+
+class Example_4_4_e(Example_4_4_alam):
+    predecessor = Example_4_4_d
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 11, 0, 21, 0, 8)
+
+
+class Example_4_4_f(Example_4_4_alam):
+    predecessor = Example_4_4_e
+
+    @classmethod
+    def exec(cls):
+        ACM_Adapt(cls.ham, cls.alam[0], cls.alam[1], 0, 13, 0, 21, 0, 8)
+
+
+class Example_4_5_a(Example_4_4_alam):
+    predecessor = Example_4_4_f
+
+    @classmethod
+    def exec(cls):
+        print(ACM_show_lambda_fun())
+
+
+class Example_4_5_b(Example_4_4_alam):
+    predecessor = Example_4_5_a
+
+    @classmethod
+    def set(cls):
+        print(ACM_set_basis_type(1))
+
+    @classmethod
+    def exec(cls):
+        print(ACM_show_lambda_fun())
+
+
+class Example_4_5_c(Example_4_4_alam):
+    predecessor = Example_4_5_b
+    rat_lst = ((2, 0, 1, 1, 2),
+               (2, 2, 2, 1),
+               (4, 4, 2, 1),
+               (4, 4, 3, 2),
+               (4, 4, 4, 3),
+               (6, 6, 2, 1),
+               (6, 6, 3, 2),
+               (6, 6, 4, 3))
+
+    @classmethod
+    def set(cls):
+        print(ACM_set_rat_lst(cls.rat_lst))
+
+
+class Example_4_5_d(Example_4_4_alam):
+    predecessor = Example_4_5_c
+
+    @classmethod
+    def exec(cls):
+        result = ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 5, 0, 5, 0, 8)
+        # ACM_Adapt(cls.ham, math.sqrt(cls.B), 2.5, 0, 11, 0, 21, 0, 8)
