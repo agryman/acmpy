@@ -260,7 +260,7 @@ Continue conversion to NumPy
 * RepSO5r3_Prod_rem() - DONE
 * RepSO5r3_Prod_wrk() - DONE
 * RepSO5r3_Prod() - DONE
-* RepSO5_Y_rem() - convert
-* RepSO5_sqLdim() - convert
-* RepSO5_sqLdiv() - convert
+* RepSO5_Y_rem() - DONE
+* RepSO5_sqLdim() - DONE
+* RepSO5_sqLdiv() - DONE
 
