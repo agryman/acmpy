@@ -217,5 +217,21 @@ Resolve pytest failures -
 * Restore previous version of `RepRadial_bS_DS()` - does this resolve failures?
   * restored SymPy implementation as `RepRadial_bS_DS_sp()`
   * all tests pass
-* Rename NumPy implementation to `RepRadial_bS_DS_np()` and compare intermediate results 
+* Rename NumPy implementation to `RepRadial_bS_DS_np()`
+* I visually inspected the two implementations
+  * no obvious bugs
+  * I suspect the *= and += operators may be doing something odd
+    * replace with full expressions
+* compare intermediate results for NumPy vs SymPy
   * where do they differ from the SymPy implementation?
+
+This is a subtle bug. I was using the mutating assignment operators, e.g.
+```text
+                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
+                Mat *= (1 / anorm ** 2)
+```
+However, the function `RepRadial()` is cached.
+Therefore, the cached value was modified so the next time the function
+was called, an incorrect value would be returned.
+Therefore, the code needs to take care that cached values are NEVER mutated!
+Either, always copy the returned value, OR don't modify the returned value.

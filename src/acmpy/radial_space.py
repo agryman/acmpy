@@ -1151,10 +1151,13 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
                     lambdaa: float, R: int,
                     nu_min: Nu, nu_max: Nu
                     ) -> NDArrayFloat:
-    # return RepRadial_bS_DS_np(K, T, anorm, lambdaa, R, nu_min, nu_max)
-    return Matrix_to_ndarray(
-        RepRadial_bS_DS_sp(K, T, anorm, lambdaa, R, nu_min, nu_max)
-    )
+    use_numpy: bool = True
+    if use_numpy:
+        return RepRadial_bS_DS_np(K, T, anorm, lambdaa, R, nu_min, nu_max)
+    else:
+        return Matrix_to_ndarray(
+            RepRadial_bS_DS_sp(K, T, anorm, lambdaa, R, nu_min, nu_max)
+        )
 
 
 def RepRadial_bS_DS_sp(K: int, T: nonnegint, anorm: float,
@@ -1320,7 +1323,7 @@ def RepRadial_bS_DS_sp(K: int, T: nonnegint, anorm: float,
                 Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
                 Mat = Mat * ndarray_to_Matrix(
                     RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max)
-                ).evalf()
+                )
                 Mat *= anorm
 
             imm = 1
@@ -1421,17 +1424,20 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b_pl, lambda_run, nu_min, nu_max)
-                Mat *= (1 / anorm)
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm_pl, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
                 Mat = RepRadial(ME_Radial_Db_pl, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             imm = 1
 
@@ -1440,17 +1446,20 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b_ml, lambda_run, nu_min, nu_max)
-                Mat *= (1 / anorm)
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm_ml, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
                 Mat = RepRadial(ME_Radial_Db_ml, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             imm = 1
 
@@ -1459,12 +1468,14 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                Mat *= (1 / anorm ** 2)
+                # Mat *= (1 / anorm ** 2) NEVER mutate a cached value!
+                Mat = Mat / anorm ** 2
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm2, lambda_run, nu_min, nu_max)
-                Mat *= anorm ** 2
+                # Mat *= anorm ** 2 NEVER mutate a cached value!
+                Mat = Mat * anorm ** 2
 
             elif i == K + 1:
                 assert K > 0
@@ -1475,7 +1486,8 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
 
             else:
                 Mat = RepRadial(ME_Radial_D2b, lambda_run, nu_min, nu_max)
-                Mat *= anorm ** 2
+                # Mat *= anorm ** 2 NEVER mutate a cached value!
+                Mat = Mat * anorm ** 2
 
             imm = 2
 
@@ -1486,14 +1498,14 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
                 Mat = Matrix_to_ndarray(
                     RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
                 )
-                Mat *= (1 / anorm)
+                Mat *= (1 / anorm) # NEVER mutate a cached value!
 
             elif i <= -K:
                 assert K < 0
                 Mat = Matrix_to_ndarray(
                     RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
                 )
-                Mat *= anorm
+                Mat *= anorm # NEVER mutate a cached value!
 
             else:
                 assert i > abs(K)
