@@ -410,11 +410,11 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
 
-    run_Mat: Optional[Matrix] = None
+    run_Mat: Optional[NDArrayFloat] = None
     up_running: int = 0
     sph_ops: tuple[Symbol, ...] = ()
     nu_ops: tuple[Symbol, ...] = ()
-    xsp_Mat: Matrix
+    xsp_Mat: NDArrayFloat
 
     for this_op in x_ops:
 
@@ -433,7 +433,7 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
                 sph_ops = ()
                 if up_running > 0:
                     assert run_Mat is not None
-                    run_Mat = run_Mat * xsp_Mat
+                    run_Mat = run_Mat @ xsp_Mat
                 else:
                     assert run_Mat is None
                     run_Mat = xsp_Mat
@@ -465,10 +465,10 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
             assert xsp_Mat is not None
             if up_running > 0:
                 assert run_Mat is not None
-                run_Mat = run_Mat * xsp_Mat
+                run_Mat = run_Mat @ xsp_Mat
             else:
                 assert run_Mat is None
-                run_Mat = Matrix(xsp_Mat)
+                run_Mat = xsp_Mat.copy()
                 up_running = 1
 
     if nu_ops != [] or sph_ops != []:
@@ -480,7 +480,7 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
 
         if up_running > 0:
             assert run_Mat is not None
-            run_Mat = run_Mat * xsp_Mat
+            run_Mat = run_Mat @ xsp_Mat
         else:
             assert run_Mat is None
             run_Mat = xsp_Mat
@@ -488,12 +488,12 @@ def RepXspace_Prod(x_ops: tuple[Symbol, ...],
 
     if up_running == 0:
         assert run_Mat is None
-        run_Mat = eye(dimXspace(nu_min, nu_max,
-                                v_min, v_max,
-                                L_min, L_max))
+        run_Mat = np.eye(dimXspace(nu_min, nu_max,
+                                   v_min, v_max,
+                                   L_min, L_max))
 
     assert run_Mat is not None
-    return Matrix_to_ndarray(run_Mat)
+    return run_Mat
 
 
 # # The following procedure RepXspace_Twin does much of the work
@@ -613,7 +613,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: Optional[nonnegint]
-                   ) -> Matrix:
+                   ) -> NDArrayFloat:
     if L_max is None:
         L_max = L_min
     require_nonnegint_range('nu', nu_min, nu_max)
@@ -624,13 +624,16 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
 
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-    sph_Mat: Matrix = RepSO5r3_Prod_rem(sph_ops, v_min, v_max, L_min, L_max)
+    sph_Mat: NDArrayFloat = Matrix_to_ndarray(
+        RepSO5r3_Prod_rem(sph_ops, v_min, v_max, L_min, L_max)
+    )
 
-    sph_Mat = (Convert_red ** NumSO5r3_Prod(sph_ops)).evalf() * sph_Mat
+    sph_Mat = float(Convert_red ** NumSO5r3_Prod(sph_ops)) * sph_Mat
 
     rad_dim: int = dimRadial(nu_min, nu_max)
+    direct_dim: int = sph_dim * rad_dim
 
-    direct_Mat: Matrix = zeros(sph_dim * rad_dim)
+    direct_Mat: NDArrayFloat = np.zeros((direct_dim, direct_dim))
     for j2 in range(1, sph_dim + 1):
         jdisp: int = (j2 - 1) * rad_dim
         lambda_disp_init = ACM_eval_lambda_fun(sph_labels[j2 - 1][0])
@@ -643,14 +646,12 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
             if sph_ME == 0:
                 continue
 
-            rad_Mat: Matrix = RepRadial_Prod_rem(rad_ops, anorm,
-                                                 lambda_base + lambda_disp_init,
-                                                 lambda_disp_fin - lambda_disp_init,
-                                                 nu_min, nu_max, g.glb_nu_lap)
+            rad_Mat: NDArrayFloat = RepRadial_Prod_rem(rad_ops, anorm,
+                                                       lambda_base + lambda_disp_init,
+                                                       lambda_disp_fin - lambda_disp_init,
+                                                       nu_min, nu_max, g.glb_nu_lap)
 
-            for i1 in range(1, rad_dim + 1):
-                for j1 in range(1, rad_dim + 1):
-                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (rad_Mat[i1 - 1, j1 - 1] * sph_ME).evalf()
+            direct_Mat[idisp:(idisp + rad_dim), jdisp:(jdisp + rad_dim)] = rad_Mat * sph_ME
 
     return direct_Mat
 
@@ -771,7 +772,7 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
                  nu_min: nonnegint, nu_max: nonnegint,
                  v_min: nonnegint, v_max: nonnegint,
                  L_min: nonnegint, L_max: nonnegint
-                 ) -> Matrix:
+                 ) -> NDArrayFloat:
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
@@ -782,7 +783,8 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     assert sph_dim == len(sph_labels)
 
-    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+    direct_dim: int = sph_dim * rad_dim
+    direct_Mat: NDArrayFloat = np.zeros((direct_dim, direct_dim))
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
         jdisp: int = (j2 - 1) * rad_dim
@@ -796,14 +798,14 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
             idisp: int = (i2 - 1) * rad_dim
             lambda_disp_fin: nonnegint = ACM_eval_lambda_fun(v_fin)
 
-            rad_Mat: Matrix
+            rad_Mat: NDArrayFloat
             if v_chg == 1:
 
                 rad_Mat = RepRadial_LC_rem(((S.One, (Radial_Db,)),
                                             (S(-v_init - 2), (Radial_bm,))),
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init, nu_min, nu_max)
-                rad_Mat = rad_Mat * (Qred_p1(v_init)).evalf()
+                rad_Mat = rad_Mat * float(Qred_p1(v_init))
 
             elif v_chg == -1:
 
@@ -811,7 +813,7 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
                                             (S(v_init + 1), (Radial_bm,))),
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init, nu_min, nu_max)
-                rad_Mat = rad_Mat * (Qred_m1(v_init)).evalf()
+                rad_Mat = rad_Mat * float(Qred_m1(v_init))
 
             else:
                 continue
@@ -820,9 +822,7 @@ def RepXspace_Pi(anorm: float, lambda_base: float,
                                   1, 1, 2,
                                   v_fin, al_fin, L_fin)
 
-            for i1 in range(1, rad_dim + 1):
-                for j1 in range(1, rad_dim + 1):
-                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+            direct_Mat[idisp:(idisp + rad_dim), jdisp:(jdisp + rad_dim)] = CG2 * rad_Mat
 
     return direct_Mat
 
@@ -974,7 +974,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                    nu_min: nonnegint, nu_max: nonnegint,
                    v_min: nonnegint, v_max: nonnegint,
                    L_min: nonnegint, L_max: nonnegint
-                   ) -> Matrix:
+                   ) -> NDArrayFloat:
     require_nonnegint('PiPi_L', PiPi_L)
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
@@ -985,7 +985,8 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
-    direct_Mat: Matrix = Matrix(sph_dim * rad_dim)
+    direct_dim: int = sph_dim * rad_dim
+    direct_Mat: NDArrayFloat = np.zeros((direct_dim, direct_dim))
 
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
@@ -1001,6 +1002,8 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
             idisp: int = (i2 - 1) * rad_dim
             lambda_disp_fin: int = ACM_eval_lambda_fun(v_fin)
 
+            rad_Mat: NDArrayFloat
+
             if v_chg == 2:
 
                 rad_Mat = RepRadial_LC_rem(((S.One, (Radial_D2b,)),
@@ -1010,7 +1013,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max)
 
-                rad_Mat = rad_Mat * (-QxQred_p2(v_init)).evalf()
+                rad_Mat = rad_Mat * float(-QxQred_p2(v_init))
 
             elif v_chg == -2:
 
@@ -1021,7 +1024,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max)
 
-                rad_Mat = rad_Mat * (-QxQred_m2(v_init)).evalf()
+                rad_Mat = rad_Mat * float(-QxQred_m2(v_init))
 
             elif v_chg == 0:
 
@@ -1031,7 +1034,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max)
 
-                rad_Mat = rad_Mat * (-QxQred_0(v_init)).evalf()
+                rad_Mat = rad_Mat * float(-QxQred_0(v_init))
 
             else:
                 continue
@@ -1040,9 +1043,7 @@ def RepXspace_PiPi(PiPi_L: nonnegint,
                                   2, 1, PiPi_L,
                                   v_fin, al_fin, L_fin)
 
-            for i1 in range(1, rad_dim + 1):
-                for j1 in range(1, rad_dim + 1):
-                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+            direct_Mat[idisp:(idisp + rad_dim), jdisp:(jdisp + rad_dim)] = CG2 * rad_Mat
 
             if PiPi_L == 2:
                 direct_Mat = -direct_Mat
@@ -1220,7 +1221,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                     nu_min: nonnegint, nu_max: nonnegint,
                     v_min: nonnegint, v_max: nonnegint,
                     L_min: nonnegint, L_max: nonnegint
-                    ) -> Matrix:
+                    ) -> NDArrayFloat:
     require_nonnegint_range('nu', nu_min, nu_max)
     require_nonnegint_range('v', v_min, v_max)
     require_nonnegint_range('L', L_min, L_max)
@@ -1230,7 +1231,8 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
 
-    direct_Mat: Matrix = zeros(sph_dim * rad_dim)
+    direct_dim: int = sph_dim * rad_dim
+    direct_Mat: NDArrayFloat = np.zeros((direct_dim, direct_dim))
 
     for j2 in range(1, sph_dim + 1):
         v_init, al_init, L_init = sph_labels[j2 - 1]
@@ -1247,8 +1249,8 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
 
             op_sum: OperatorSum
             op_sum2: OperatorSum
-            rad_Mat: Matrix
-            rad_Mat2: Matrix
+            rad_Mat: NDArrayFloat
+            rad_Mat2: NDArrayFloat
             c: float
             c2: float
             if v_chg == 3:
@@ -1260,7 +1262,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max, 1)
-                c = QxQxQred_p3(v_init).evalf()
+                c = float(QxQxQred_p3(v_init))
                 rad_Mat = rad_Mat * c
 
             elif v_chg == -3:
@@ -1272,7 +1274,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                            anorm, lambda_base + lambda_disp_init,
                                            lambda_disp_fin - lambda_disp_init,
                                            nu_min, nu_max, 1)
-                c = QxQxQred_m3(v_init).evalf()
+                c = float(QxQxQred_m3(v_init))
                 rad_Mat = rad_Mat * c
 
             elif v_chg == 1:
@@ -1289,8 +1291,8 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                             anorm, lambda_base + lambda_disp_init,
                                             lambda_disp_fin - lambda_disp_init,
                                             nu_min, nu_max)
-                c = QxQxQred_p1(v_init).evalf()
-                c2 = ((2 * v_init + 5) * QixQxQred(v_init, v_fin, v_fin + 1)).evalf()
+                c = float(QxQxQred_p1(v_init))
+                c2 = ((2 * v_init + 5) * float(QixQxQred(v_init, v_fin, v_fin + 1)))
                 rad_Mat = rad_Mat * c + rad_Mat2 * c2
 
             elif v_chg == -1:
@@ -1307,8 +1309,8 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                             anorm, lambda_base + lambda_disp_init,
                                             lambda_disp_fin - lambda_disp_init,
                                             nu_min, nu_max)
-                c = QxQxQred_m1(v_init).evalf()
-                c2 = -(2 * v_init) * QixQxQred(v_init, v_fin, v_fin - 1).evalf()
+                c = float(QxQxQred_m1(v_init))
+                c2 = -(2 * v_init) * float(QixQxQred(v_init, v_fin, v_fin - 1))
                 rad_Mat = rad_Mat * c + rad_Mat2 * c2
 
             else:
@@ -1318,9 +1320,7 @@ def RepXspace_PiqPi(anorm: float, lambda_base: float,
                                   3, 1, 0,
                                   v_fin, al_fin, L_fin)
 
-            for i1 in range(1, rad_dim + 1):
-                for j1 in range(1, rad_dim + 1):
-                    direct_Mat[idisp + i1 - 1, jdisp + j1 - 1] = (CG2 * rad_Mat[i1 - 1, j1 - 1]).evalf()
+            direct_Mat[idisp:(idisp + rad_dim), jdisp:(jdisp + rad_dim)] = CG2 * rad_Mat
 
     return direct_Mat
 
