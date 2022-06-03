@@ -829,10 +829,10 @@ def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
 @cache
 def RepRadial_b2_sqrt(lambdaa: float,
                       nu_min: Nu, nu_max: Nu
-                      ) -> Matrix:
+                      ) -> NDArrayFloat:
     Mat_np: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
     Mat_sqrt_np: NDArrayFloat = Matrix_sqrt(Mat_np)
-    return ndarray_to_Matrix(Mat_sqrt_np)
+    return Mat_sqrt_np
 
 
 @cache
@@ -1151,209 +1151,6 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
                     lambdaa: float, R: int,
                     nu_min: Nu, nu_max: Nu
                     ) -> NDArrayFloat:
-    use_numpy: bool = True
-    if use_numpy:
-        return RepRadial_bS_DS_np(K, T, anorm, lambdaa, R, nu_min, nu_max)
-    else:
-        return Matrix_to_ndarray(
-            RepRadial_bS_DS_sp(K, T, anorm, lambdaa, R, nu_min, nu_max)
-        )
-
-
-def RepRadial_bS_DS_sp(K: int, T: nonnegint, anorm: float,
-                    lambdaa: float, R: int,
-                    nu_min: Nu, nu_max: Nu
-                    ) -> Matrix:
-    if lambdaa <= 0 or (lambdaa + R) <= 0:
-        raise ValueError(f'Non-positive lambda shift for operator [{K},{T}]')
-
-    Mat_product: Matrix
-    Mat: Matrix
-    if K == 0 and T == 0 and is_odd(R):
-        if R < 0:
-            Mat_product = RepRadial_b2_sqrt(lambdaa + R, nu_min, nu_max)
-
-            Mat = ndarray_to_Matrix(
-                RepRadial(ME_Radial_bm_ml, lambdaa + R + 1, nu_min, nu_max)
-            )
-            Mat_product *= Mat
-
-            if R < -1:
-                Mat = RepRadial_param(ME_Radial_id_ml, lambdaa, nu_min, nu_max, -(R + 1) // 2)
-                Mat_product *= Mat
-
-        else:
-
-            Mat_product = RepRadial_b2_sqrt(lambdaa, nu_min, nu_max)
-
-            Mat = ndarray_to_Matrix(
-                RepRadial(ME_Radial_bm_pl, lambdaa, nu_min, nu_max)
-            )
-            Mat_product = Mat * Mat_product
-
-            if R > 1:
-                Mat = RepRadial_param(ME_Radial_id_pl, lambdaa + 1, nu_min, nu_max, (R - 1) // 2)
-                Mat_product = Mat * Mat_product
-
-        return Mat_product
-
-    lam_splits: list[int] = Lambda_Splits(K, T, R)
-
-    n: int = abs(K) + T
-
-    lamX: int
-    if len(lam_splits) > n:
-        lamX = lam_splits[0]
-        lam_splits = lam_splits[1:]
-    else:
-        lamX = 0
-
-    assert len(lam_splits) == n
-
-    lambda_run: float = lambdaa
-
-    if lamX < 0:
-        assert is_even(lamX)
-        Mat_product = RepRadial_param(ME_Radial_id_ml, lambda_run, nu_min, nu_max, -lamX // 2)
-
-        lambda_run += lamX
-
-    i: int = n
-
-    while i > 0:
-
-        imm: int
-        if lam_splits[i - 1] > 0:
-
-            if i <= K:
-                assert K > 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_b_pl, lambda_run, nu_min, nu_max)
-                )
-                Mat *= 1 / anorm
-
-            elif i <= -K:
-                assert K < 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_bm_pl, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm
-
-            else:
-                assert i > abs(K)
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_Db_pl, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm
-
-            imm = 1
-
-        elif lam_splits[i - 1] < 0:
-
-            if i <= K:
-                assert K > 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_b_ml, lambda_run, nu_min, nu_max)
-                )
-                Mat *= 1 / anorm
-
-            elif i <= -K:
-                assert K < 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_bm_ml, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm
-
-            else:
-                assert i > abs(K)
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_Db_ml, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm
-
-            imm = 1
-
-        elif i > 1 and lam_splits[i - 2] == 0:
-
-            if i <= K:
-                assert K > 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                )
-                Mat *= 1 / anorm ** 2
-
-            elif i <= -K:
-                assert K < 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_bm2, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm ** 2
-
-            elif i == K + 1:
-                assert K > 0
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max)
-                )
-
-            elif i == -K - 1:
-                raise ValueError("This shouldn't arise!")
-
-            else:
-                Mat = ndarray_to_Matrix(
-                    RepRadial(ME_Radial_D2b, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm ** 2
-
-            imm = 2
-
-        else:
-
-            if i <= K:
-                assert K > 0
-                Mat = RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
-                Mat *= 1 / anorm
-
-            elif i <= -K:
-                assert K < 0
-                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                Mat *= anorm
-
-            else:
-                assert i > abs(K)
-                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                Mat = Mat * ndarray_to_Matrix(
-                    RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm
-
-            imm = 1
-
-        if i == n and lamX >= 0:
-            Mat_product = Mat
-        else:
-            Mat_product = Mat * Mat_product
-
-        lambda_run += lam_splits[i - 1]
-        i -= imm
-
-    if lamX > 0:
-        assert is_even(lamX)
-        Mat = RepRadial_param(ME_Radial_id_pl, lambda_run, nu_min, nu_max, lamX // 2)
-        if n > 0:
-            Mat_product = Mat * Mat_product
-        else:
-            Mat_product = Mat
-
-    if n == 0 and lamX == 0:
-        Mat_product = eye(nu_max - nu_min + 1)
-
-    return simplify(Mat_product)
-
-
-def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
-                    lambdaa: float, R: int,
-                    nu_min: Nu, nu_max: Nu
-                    ) -> NDArrayFloat:
     if lambdaa <= 0 or (lambdaa + R) <= 0:
         raise ValueError(f'Non-positive lambda shift for operator [{K},{T}]')
 
@@ -1361,9 +1158,7 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
     Mat: NDArrayFloat
     if K == 0 and T == 0 and is_odd(R):
         if R < 0:
-            Mat_product = Matrix_to_ndarray(
-                RepRadial_b2_sqrt(lambdaa + R, nu_min, nu_max)
-            )
+            Mat_product = RepRadial_b2_sqrt(lambdaa + R, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_ml, lambdaa + R + 1, nu_min, nu_max)
             Mat_product = Mat_product @ Mat
@@ -1376,9 +1171,7 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
 
         else:
 
-            Mat_product = Matrix_to_ndarray(
-                RepRadial_b2_sqrt(lambdaa, nu_min, nu_max)
-            )
+            Mat_product = RepRadial_b2_sqrt(lambdaa, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_pl, lambdaa, nu_min, nu_max)
             Mat_product = Mat @ Mat_product
@@ -1495,10 +1288,9 @@ def RepRadial_bS_DS_np(K: int, T: nonnegint, anorm: float,
 
             if i <= K:
                 assert K > 0
-                Mat = Matrix_to_ndarray(
-                    RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
-                )
-                Mat *= (1 / anorm) # NEVER mutate a cached value!
+                Mat = RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm # NEVER mutate a cached value!
 
             elif i <= -K:
                 assert K < 0

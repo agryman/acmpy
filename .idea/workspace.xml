@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/acmpy/radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/radial_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/tests/test_radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/tests/test_radial_space.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -473,7 +474,7 @@
       <workItem from="1654019629114" duration="17815000" />
       <workItem from="1654109517644" duration="14594000" />
       <workItem from="1654184404041" duration="19360000" />
-      <workItem from="1654269882864" duration="7331000" />
+      <workItem from="1654269882864" duration="8872000" />
     </task>
     <servers />
   </component>

@@ -235,3 +235,31 @@ Therefore, the cached value was modified so the next time the function
 was called, an incorrect value would be returned.
 Therefore, the code needs to take care that cached values are NEVER mutated!
 Either, always copy the returned value, OR don't modify the returned value.
+
+Committed bug fix.
+
+Pause further conversion and focus on setting up laptop for demos.
+
+break 1:30 pm
+
+### 2:55 pm
+
+Setup laptop. - IN-PROGRESS
+* installing latest Xcode 13.4 - ...
+* installing latest Xcode 13.4 Command Line Tools for brew -
+
+Continue conversion to NumPy
+* RepRadial_bS_DS() - DONE
+* RepRadial_b2_sqrt() - DONE
+* RepRadial_param() - convert
+* RepRadial_b2_sqrtInv() - convert
+* RepRadialshfs_Prod() - convert
+* KTSOp.representation() - convert
+* KTOp.representation() - convert
+* SOp.representation() - convert
+* RepSO5r3_Prod_rem() - convert
+* RepSO5r3_Prod_wrk() - convert
+* RepSO5_Y_rem() - convert
+* RepSO5_sqLdim() - convert
+* RepSO5_sqLdiv() - convert
+

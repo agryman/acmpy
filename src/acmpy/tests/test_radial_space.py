@@ -206,8 +206,7 @@ class TestRepRadial_b2_sqrt:
                 [-0.06608711020447351, 0.6215720763185667, 2.666323432707639]])]
     )
     def test_ok_lambdaa_0_2(self, lambdaa, expected):
-        M_matrix: Matrix = RepRadial_b2_sqrt(lambdaa, 0, 2)
-        M: NDArrayFloat = Matrix_to_ndarray(M_matrix)
+        M: NDArrayFloat = RepRadial_b2_sqrt(lambdaa, 0, 2)
         E: NDArrayFloat = list_to_ndarray(expected)
         assert is_nd_zeros(M - E, abs_tol=1e-8)
 
