@@ -255,10 +255,11 @@ Continue conversion to NumPy
 * RepRadial_b2_sqrtInv() - DONE
 * RepRadialshfs_Prod() - DONE
 * KTSOp.representation() - DONE
-* KTOp.representation() - convert
-* SOp.representation() - convert
-* RepSO5r3_Prod_rem() - convert
-* RepSO5r3_Prod_wrk() - convert
+* KTOp.representation() - DONE
+* SOp.representation() - DONE
+* RepSO5r3_Prod_rem() - DONE
+* RepSO5r3_Prod_wrk() - DONE
+* RepSO5r3_Prod() - DONE
 * RepSO5_Y_rem() - convert
 * RepSO5_sqLdim() - convert
 * RepSO5_sqLdiv() - convert

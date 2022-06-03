@@ -1,12 +1,13 @@
 """5. Procedures that obtain the internal representation of operators."""
 
+import numpy as np
 from functools import cache
 from typing import Optional
 
 from sympy import Symbol, pi, sqrt, Integer, Rational, Expr, \
     S, factorial, Matrix, diag, eye
 
-from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr
+from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr, NDArrayFloat, ndarray_to_Matrix, Matrix_to_ndarray
 from acmpy.so5_so3_cg import CG_SO5r3
 from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label, \
     SpHarm_Table, SpHarm_Operators, \
@@ -388,8 +389,8 @@ def RepSO5_sqLdiv(v_min: int, v_max: int,
 # end:
 def RepSO5r3_Prod(ys_op: list,
                   v_min: int, v_max: int,
-                  L_min: int, L_max: int) -> Matrix:
-    rep: Matrix = RepSO5r3_Prod_wrk(tuple(ys_op), v_min, v_max, L_min, L_max)
+                  L_min: int, L_max: int) -> NDArrayFloat:
+    rep: NDArrayFloat = RepSO5r3_Prod_wrk(tuple(ys_op), v_min, v_max, L_min, L_max)
 
     RepSO5_Y_rem.cache_clear()
     return rep
@@ -408,7 +409,7 @@ def RepSO5r3_Prod(ys_op: list,
 @cache
 def RepSO5r3_Prod_rem(ys_op: tuple,
                       v_min: int, v_max: int,
-                      L_min: int, L_max: int) -> Matrix:
+                      L_min: int, L_max: int) -> NDArrayFloat:
     return RepSO5r3_Prod_wrk(ys_op, v_min, v_max, L_min, L_max)
 
 
@@ -479,15 +480,15 @@ def RepSO5r3_Prod_rem(ys_op: tuple,
 # end:
 def RepSO5r3_Prod_wrk(ys_op: tuple,
                       v_min: int, v_max: int,
-                      L_min: int, L_max: int) -> Matrix:
+                      L_min: int, L_max: int) -> NDArrayFloat:
     n: int = len(ys_op)
 
     if n == 0:
-        return eye(dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max))
+        return np.eye(dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max))
 
-    Mat_product: Optional[Matrix] = None
+    Mat_product: Optional[NDArrayFloat] = None
     for ys_op_i in ys_op:
-        M: Matrix
+        M: Optional[Matrix] = None
 
         if isinstance(ys_op_i, tuple) and len(ys_op_i) == 3:
             M = RepSO5_Y_rem(*ys_op_i, v_min, v_max, L_min, L_max)
@@ -501,7 +502,8 @@ def RepSO5r3_Prod_wrk(ys_op: tuple,
             raise ValueError(f'Invalid SO(5) harmonic designator {ys_op_i}')
 
         assert M is not None
-        Mat_product = Matrix(M) if Mat_product is None else Mat_product * M
+        M_np: NDArrayFloat = Matrix_to_ndarray(M)
+        Mat_product = M_np if Mat_product is None else Mat_product @ M_np
 
     assert Mat_product is not None
     return Mat_product

@@ -624,9 +624,7 @@ def RepXspace_Twin(rad_ops: tuple[Symbol, ...], sph_ops: tuple[Symbol, ...],
 
     sph_dim: int = dimSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
     sph_labels: list[SO5SO3Label] = lbsSO5r3_rngVvarL(v_min, v_max, L_min, L_max)
-    sph_Mat: NDArrayFloat = Matrix_to_ndarray(
-        RepSO5r3_Prod_rem(sph_ops, v_min, v_max, L_min, L_max)
-    )
+    sph_Mat: NDArrayFloat = RepSO5r3_Prod_rem(sph_ops, v_min, v_max, L_min, L_max)
 
     sph_Mat = float(Convert_red ** NumSO5r3_Prod(sph_ops)) * sph_Mat
 
