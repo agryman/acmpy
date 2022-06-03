@@ -1419,7 +1419,7 @@ class KTSOp(ABC):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: nonnegint, nu_max: nonnegint
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
         ...
 
 
@@ -1443,10 +1443,8 @@ class KTOp(KTSOp):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
-        return ndarray_to_Matrix(
-            RepRadial_bS_DS(self.K, self.T, anorm, lambdaa, R, nu_min, nu_max)
-        )
+                       ) -> NDArrayFloat:
+        return RepRadial_bS_DS(self.K, self.T, anorm, lambdaa, R, nu_min, nu_max)
 
 
 class SOp(KTSOp):
@@ -1467,14 +1465,12 @@ class SOp(KTSOp):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
         if R != 0:
             raise ValueError("Non-zero lambda shift for S operator (this shouldn't arise!)")
 
         ME: RadialMatrixElementFunction = [ME_Radial_Sm, ME_Radial_S0, ME_Radial_Sp][self.S + 1]
-        return ndarray_to_Matrix(
-            RepRadial(ME, lambdaa, nu_min, nu_max)
-        )
+        return RepRadial(ME, lambdaa, nu_min, nu_max)
 
 
 KTSOps = tuple[KTSOp, ...]
@@ -1569,7 +1565,9 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
 
             r_op: KTSOp = rps_op[i - 1]
             R: int = lambda_shfs[i - 1]
-            Mat = r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
+            Mat = ndarray_to_Matrix(
+                r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
+            )
             lambda_run += R
 
             if i == n:

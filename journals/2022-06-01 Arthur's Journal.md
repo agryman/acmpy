@@ -254,7 +254,7 @@ Continue conversion to NumPy
 * RepRadial_param() - DONE
 * RepRadial_b2_sqrtInv() - DONE
 * RepRadialshfs_Prod() - DONE
-* KTSOp.representation() - convert
+* KTSOp.representation() - DONE
 * KTOp.representation() - convert
 * SOp.representation() - convert
 * RepSO5r3_Prod_rem() - convert
