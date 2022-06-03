@@ -7,7 +7,7 @@
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/internal_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/internal_operators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/profile_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/profile_example.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +84,7 @@
       <recent name="$PROJECT_DIR$/src/acmpy/tests/data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_full_space.TestDigXspace.test_RWC_ham_fig5a">
+  <component name="RunManager" selected="Python.profile_example">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -155,9 +155,6 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/performance" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -177,9 +174,6 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/examples" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -274,10 +268,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.profile_example" />
+        <item itemvalue="Python.run_example" />
         <item itemvalue="Python tests.Python tests for test_full_space.TestDigXspace.test_RWC_ham_fig5a" />
         <item itemvalue="Python tests.Python tests for test_full_operators.TestRepXspace.test_example_4_5_basis_type" />
-        <item itemvalue="Python.run_example" />
-        <item itemvalue="Python.profile_example" />
         <item itemvalue="Python tests.Python tests in test_full_operators.py" />
       </list>
     </recent_temporary>
@@ -473,7 +467,7 @@
       <workItem from="1654019629114" duration="17815000" />
       <workItem from="1654109517644" duration="14594000" />
       <workItem from="1654184404041" duration="19360000" />
-      <workItem from="1654269882864" duration="12297000" />
+      <workItem from="1654269882864" duration="12913000" />
     </task>
     <servers />
   </component>
