@@ -722,9 +722,9 @@ def ME_Radial(radial_op: Symbol, anorm: float,
 
     else:
         op_prod: tuple[Symbol, ...] = () if radial_op == Radial_id else (radial_op,)
-        MM: Matrix = RepRadial_Prod(op_prod, anorm, lambdaa, lambda_var, 0, max(mu_f, mu_i),
-                                    iquo(abs(lambda_var) + 3, 2))
-        return float(MM[mu_f, mu_i])
+        MM: NDArrayFloat = RepRadial_Prod(op_prod, anorm, lambdaa, lambda_var, 0, max(mu_f, mu_i),
+                                          iquo(abs(lambda_var) + 3, 2))
+        return MM[mu_f, mu_i]
 
 
 # ###########################################################################
@@ -767,11 +767,14 @@ def ME_Radial(radial_op: Symbol, anorm: float,
 @cache
 def RepRadial(ME: RadialMatrixElementFunction, lambdaa: float,
               nu_min: Nu, nu_max: Nu
-              ) -> Matrix:
+              ) -> NDArrayFloat:
     n: int = nu_max - nu_min + 1
-    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
+    # M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j)))
+    M: NDArrayFloat = np.array([[ME(lambdaa, nu_min + i, nu_min + j)
+                                 for j in range(n)]
+                                for i in range(n)])
 
-    return simplify(M)
+    return M
 
 
 # # The following works similarly to RepRadial above, but takes an additional
@@ -791,7 +794,7 @@ def RepRadial(ME: RadialMatrixElementFunction, lambdaa: float,
 @cache
 def RepRadial_param(ME: RadialMatrixElementParamFunction, lambdaa: float,
                     nu_min: Nu, nu_max: Nu, param: int
-                    ) -> Matrix:
+                    ) -> NDArrayFloat:
     n: int = nu_max - nu_min + 1
     M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
 
@@ -816,7 +819,9 @@ def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
                  ) -> Matrix:
     require_nonnegint_range('nu', nu_min, nu_max)
 
-    M: Matrix = RepRadial(ME, lambdaa, nu_min, nu_max).evalf()
+    M: Matrix = ndarray_to_Matrix(
+        RepRadial(ME, lambdaa, nu_min, nu_max)
+    )
 
     return M ** Rational(1, 2)
 
@@ -824,21 +829,19 @@ def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
 @cache
 def RepRadial_b2_sqrt(lambdaa: float,
                       nu_min: Nu, nu_max: Nu
-                      ) -> Matrix:
-    Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
-    Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
+                      ) -> NDArrayFloat:
+    Mat_np: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
     Mat_sqrt_np: NDArrayFloat = Matrix_sqrt(Mat_np)
-    return ndarray_to_Matrix(Mat_sqrt_np)
+    return Mat_sqrt_np
 
 
 @cache
 def RepRadial_b2_sqrtInv(lambdaa: float,
                          nu_min: Nu, nu_max: Nu
-                         ) -> Matrix:
-    Mat: Matrix = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
-    Mat_np: NDArrayFloat = Matrix_to_ndarray(Mat.evalf())
-    Mat_sqrtInv_np: NDArrayFloat = Matrix_sqrtInv(Mat_np)
-    return ndarray_to_Matrix(Mat_sqrtInv_np)
+                         ) -> NDArrayFloat:
+    Mat: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    Mat_sqrtInv: NDArrayFloat = Matrix_sqrtInv(Mat)
+    return Mat_sqrtInv
 
 
 # # The following returns the positive definite square root of a
@@ -1147,33 +1150,33 @@ def Matrix_sqrtInv(Amatrix: NDArrayFloat) -> NDArrayFloat:
 def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
                     lambdaa: float, R: int,
                     nu_min: Nu, nu_max: Nu
-                    ) -> Matrix:
+                    ) -> NDArrayFloat:
     if lambdaa <= 0 or (lambdaa + R) <= 0:
         raise ValueError(f'Non-positive lambda shift for operator [{K},{T}]')
 
-    Mat_product: Matrix
-    Mat: Matrix
+    Mat_product: NDArrayFloat
+    Mat: NDArrayFloat
     if K == 0 and T == 0 and is_odd(R):
         if R < 0:
             Mat_product = RepRadial_b2_sqrt(lambdaa + R, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_ml, lambdaa + R + 1, nu_min, nu_max)
-            Mat_product *= Mat
+            Mat_product = Mat_product @ Mat
 
             if R < -1:
                 Mat = RepRadial_param(ME_Radial_id_ml, lambdaa, nu_min, nu_max, -(R + 1) // 2)
-                Mat_product *= Mat
+                Mat_product = Mat_product @ Mat
 
         else:
 
             Mat_product = RepRadial_b2_sqrt(lambdaa, nu_min, nu_max)
 
             Mat = RepRadial(ME_Radial_bm_pl, lambdaa, nu_min, nu_max)
-            Mat_product = Mat * Mat_product
+            Mat_product = Mat @ Mat_product
 
             if R > 1:
                 Mat = RepRadial_param(ME_Radial_id_pl, lambdaa + 1, nu_min, nu_max, (R - 1) // 2)
-                Mat_product = Mat * Mat_product
+                Mat_product = Mat @ Mat_product
 
         return Mat_product
 
@@ -1208,17 +1211,20 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b_pl, lambda_run, nu_min, nu_max)
-                Mat *= 1 / anorm
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm_pl, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
                 Mat = RepRadial(ME_Radial_Db_pl, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             imm = 1
 
@@ -1227,17 +1233,20 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b_ml, lambda_run, nu_min, nu_max)
-                Mat *= 1 / anorm
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm_ml, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
                 Mat = RepRadial(ME_Radial_Db_ml, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             imm = 1
 
@@ -1246,12 +1255,14 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
-                Mat *= 1 / anorm ** 2
+                # Mat *= (1 / anorm ** 2) NEVER mutate a cached value!
+                Mat = Mat / anorm ** 2
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial(ME_Radial_bm2, lambda_run, nu_min, nu_max)
-                Mat *= anorm ** 2
+                # Mat *= anorm ** 2 NEVER mutate a cached value!
+                Mat = Mat * anorm ** 2
 
             elif i == K + 1:
                 assert K > 0
@@ -1262,7 +1273,8 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
 
             else:
                 Mat = RepRadial(ME_Radial_D2b, lambda_run, nu_min, nu_max)
-                Mat *= anorm ** 2
+                # Mat *= anorm ** 2 NEVER mutate a cached value!
+                Mat = Mat * anorm ** 2
 
             imm = 2
 
@@ -1271,25 +1283,27 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             if i <= K:
                 assert K > 0
                 Mat = RepRadial_b2_sqrt(lambda_run, nu_min, nu_max)
-                Mat *= 1 / anorm
+                # Mat *= (1 / anorm) NEVER mutate a cached value!
+                Mat = Mat / anorm # NEVER mutate a cached value!
 
             elif i <= -K:
                 assert K < 0
                 Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
                 Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                Mat = Mat * RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max).evalf()
-                Mat *= anorm
+                Mat = Mat @ RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max)
+                Mat *= anorm # NEVER mutate a cached value!
 
             imm = 1
 
         if i == n and lamX >= 0:
             Mat_product = Mat
         else:
-            Mat_product = Mat * Mat_product
+            Mat_product = Mat @ Mat_product
 
         lambda_run += lam_splits[i - 1]
         i -= imm
@@ -1298,14 +1312,14 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
         assert is_even(lamX)
         Mat = RepRadial_param(ME_Radial_id_pl, lambda_run, nu_min, nu_max, lamX // 2)
         if n > 0:
-            Mat_product = Mat * Mat_product
+            Mat_product = Mat @ Mat_product
         else:
             Mat_product = Mat
 
     if n == 0 and lamX == 0:
-        Mat_product = eye(nu_max - nu_min + 1)
+        Mat_product = np.eye(nu_max - nu_min + 1)
 
-    return simplify(Mat_product)
+    return Mat_product
 
 
 # # The following procedure is (only) called by the above RepRadial_bS_DS:
@@ -1405,7 +1419,7 @@ class KTSOp(ABC):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: nonnegint, nu_max: nonnegint
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
         ...
 
 
@@ -1429,7 +1443,7 @@ class KTOp(KTSOp):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
         return RepRadial_bS_DS(self.K, self.T, anorm, lambdaa, R, nu_min, nu_max)
 
 
@@ -1451,7 +1465,7 @@ class SOp(KTSOp):
     def representation(self, anorm: float,
                        lambdaa: float, R: int,
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
         if R != 0:
             raise ValueError("Non-zero lambda shift for S operator (this shouldn't arise!)")
 
@@ -1536,7 +1550,7 @@ KTSOps = tuple[KTSOp, ...]
 def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
                        lambdaa: float, lambda_shfs: tuple[int, ...],
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
     n: int = len(rps_op)
 
     Mat_product: Matrix
@@ -1551,7 +1565,9 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
 
             r_op: KTSOp = rps_op[i - 1]
             R: int = lambda_shfs[i - 1]
-            Mat = r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
+            Mat = ndarray_to_Matrix(
+                r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
+            )
             lambda_run += R
 
             if i == n:
@@ -1675,8 +1691,8 @@ def RepRadial_Prod(rbs_op: tuple[Symbol, ...], anorm: float,
                    lambdaa: float, lambda_var: int,
                    nu_min: Nu, nu_max: Nu,
                    nu_lap: nonnegint
-                   ) -> Matrix:
-    rep: Matrix = RepRadial_Prod_common(rbs_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
+                   ) -> NDArrayFloat:
+    rep: NDArrayFloat = RepRadial_Prod_common(rbs_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
 
     RepRadial.cache_clear()
     RepRadial_param.cache_clear()
@@ -1692,7 +1708,7 @@ def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: float,
                           lambdaa: float, lambda_var: int,
                           nu_min: Nu, nu_max: Nu,
                           nu_lap: nonnegint
-                          ) -> Matrix:
+                          ) -> NDArrayFloat:
     if lambdaa <= 0:
         raise ValueError(f'Non-positive lambda value {lambdaa}')
     elif (lambdaa + lambda_var) <= 0:
@@ -1711,8 +1727,8 @@ def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: float,
 
     nu_min_shift: int = min(nu_lap, nu_min)
 
-    rep: Matrix = RepRadialshfs_Prod(parsed_ops, anorm, lambdaa, lambda_shfs,
-                                     nu_min - nu_min_shift, nu_max + nu_lap)
+    rep: NDArrayFloat = RepRadialshfs_Prod(parsed_ops, anorm, lambdaa, lambda_shfs,
+                                           nu_min - nu_min_shift, nu_max + nu_lap)
 
     if nu_lap == 0:
         return rep
@@ -1779,7 +1795,7 @@ def RepRadial_Prod_rem(rbs_op: tuple[Symbol, ...], anorm: float,
                        lambdaa: float, lambda_var: int,
                        nu_min: Nu, nu_max: Nu,
                        nu_lap: nonnegint = 0
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
 
     return RepRadial_Prod_common(rbs_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
 
@@ -2149,7 +2165,9 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
                  nu_min: Nu, nu_max: Nu,
                  nu_lap: nonnegint = 0
                  ) -> Matrix:
-    M: Matrix = RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
+    M: Matrix = ndarray_to_Matrix(
+        RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
+    )
 
     RepRadial_Prod_rem.cache_clear()
     RepRadialshfs_Prod.cache_clear()
@@ -2165,18 +2183,19 @@ def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
                         lambdaa: float, lambda_var: int,
                         nu_min: Nu, nu_max: Nu,
                         nu_lap: nonnegint = 0
-                        ) -> Matrix:
+                        ) -> NDArrayFloat:
     n: int = len(rlc_op)
 
-    M: Matrix
+    M: NDArrayFloat
     if n == 0:
-        M = zeros(nu_max - nu_min + 1)
+        dim: int = nu_max - nu_min + 1
+        M = np.zeros((dim, dim))
     else:
         coeff, op = rlc_op[0]
-        M = RepRadial_Prod_rem(op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap) * coeff
+        M = RepRadial_Prod_rem(op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap) * float(coeff)
 
         for coeff, op in rlc_op[1:]:
-            M += RepRadial_Prod_rem(op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap) * coeff
+            M += RepRadial_Prod_rem(op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap) * float(coeff)
 
     return M
 
@@ -2213,6 +2232,6 @@ def RepRadial_LC_common(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
 def RepRadial_LC_rem(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
                      lambdaa: float, lambda_var: int,
                      nu_min: Nu, nu_max: Nu,
-                     nu_lap: nonnegint = 0) -> Matrix:
+                     nu_lap: nonnegint = 0) -> NDArrayFloat:
 
     return RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)

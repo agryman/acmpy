@@ -9,7 +9,7 @@ class TestRepSO5r3_Prod_rem:
     """Tests the RepSO5r3_Prod_rem() function."""
 
     def test_example_4_5(self, allclose):
-        rep = Matrix_to_ndarray(RepSO5r3_Prod_rem((SpHarm_310,), 0, 5, 0, 0))
+        rep = RepSO5r3_Prod_rem((SpHarm_310,), 0, 5, 0, 0)
         expected = np.array([[0.,1.732050807],
                              [1.732050808,0.]])
         assert allclose(rep, expected)
