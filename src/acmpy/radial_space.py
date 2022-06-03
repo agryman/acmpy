@@ -838,10 +838,10 @@ def RepRadial_b2_sqrt(lambdaa: float,
 @cache
 def RepRadial_b2_sqrtInv(lambdaa: float,
                          nu_min: Nu, nu_max: Nu
-                         ) -> Matrix:
-    Mat_np: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
-    Mat_sqrtInv_np: NDArrayFloat = Matrix_sqrtInv(Mat_np)
-    return ndarray_to_Matrix(Mat_sqrtInv_np)
+                         ) -> NDArrayFloat:
+    Mat: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    Mat_sqrtInv: NDArrayFloat = Matrix_sqrtInv(Mat)
+    return Mat_sqrtInv
 
 
 # # The following returns the positive definite square root of a
@@ -1288,18 +1288,15 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
 
             elif i <= -K:
                 assert K < 0
-                Mat = Matrix_to_ndarray(
-                    RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                )
-                Mat *= anorm # NEVER mutate a cached value!
+                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
+                # Mat *= anorm NEVER mutate a cached value!
+                Mat = Mat * anorm
 
             else:
                 assert i > abs(K)
-                Mat = Matrix_to_ndarray(
-                    RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
-                )
+                Mat = RepRadial_b2_sqrtInv(lambda_run, nu_min, nu_max)
                 Mat = Mat @ RepRadial(ME_Radial_bDb, lambda_run, nu_min, nu_max)
-                Mat *= anorm
+                Mat *= anorm # NEVER mutate a cached value!
 
             imm = 1
 
