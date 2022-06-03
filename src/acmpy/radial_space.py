@@ -1554,7 +1554,7 @@ KTSOps = tuple[KTSOp, ...]
 def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
                        lambdaa: float, lambda_shfs: tuple[int, ...],
                        nu_min: Nu, nu_max: Nu
-                       ) -> Matrix:
+                       ) -> NDArrayFloat:
     n: int = len(rps_op)
 
     Mat_product: Matrix
@@ -1729,15 +1729,12 @@ def RepRadial_Prod_common(rbs_op: tuple[Symbol, ...], anorm: float,
 
     nu_min_shift: int = min(nu_lap, nu_min)
 
-    rep: NDArrayFloat = Matrix_to_ndarray(
-        RepRadialshfs_Prod(parsed_ops, anorm, lambdaa, lambda_shfs,
-                           nu_min - nu_min_shift, nu_max + nu_lap)
-    )
+    rep: NDArrayFloat = RepRadialshfs_Prod(parsed_ops, anorm, lambdaa, lambda_shfs,
+                                           nu_min - nu_min_shift, nu_max + nu_lap)
 
     if nu_lap == 0:
         return rep
     else:
-        # TODO verify that this means the same thing for NumPy arrays and SymPy Matrix's
         return rep[nu_min_shift:(1 + nu_max - nu_min + nu_min_shift),
                    nu_min_shift:(1 + nu_max - nu_min + nu_min_shift)]
 
