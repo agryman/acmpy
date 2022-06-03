@@ -251,7 +251,7 @@ Setup laptop. - IN-PROGRESS
 Continue conversion to NumPy
 * RepRadial_bS_DS() - DONE
 * RepRadial_b2_sqrt() - DONE
-* RepRadial_param() - convert
+* RepRadial_param() - ...
 * RepRadial_b2_sqrtInv() - convert
 * RepRadialshfs_Prod() - convert
 * KTSOp.representation() - convert

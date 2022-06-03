@@ -794,7 +794,7 @@ def RepRadial(ME: RadialMatrixElementFunction, lambdaa: float,
 @cache
 def RepRadial_param(ME: RadialMatrixElementParamFunction, lambdaa: float,
                     nu_min: Nu, nu_max: Nu, param: int
-                    ) -> Matrix:
+                    ) -> NDArrayFloat:
     n: int = nu_max - nu_min + 1
     M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
 
@@ -1164,9 +1164,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             Mat_product = Mat_product @ Mat
 
             if R < -1:
-                Mat = Matrix_to_ndarray(
-                    RepRadial_param(ME_Radial_id_ml, lambdaa, nu_min, nu_max, -(R + 1) // 2)
-                )
+                Mat = RepRadial_param(ME_Radial_id_ml, lambdaa, nu_min, nu_max, -(R + 1) // 2)
                 Mat_product = Mat_product @ Mat
 
         else:
@@ -1177,9 +1175,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
             Mat_product = Mat @ Mat_product
 
             if R > 1:
-                Mat = Matrix_to_ndarray(
-                    RepRadial_param(ME_Radial_id_pl, lambdaa + 1, nu_min, nu_max, (R - 1) // 2)
-                )
+                Mat = RepRadial_param(ME_Radial_id_pl, lambdaa + 1, nu_min, nu_max, (R - 1) // 2)
                 Mat_product = Mat @ Mat_product
 
         return Mat_product
@@ -1201,9 +1197,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
 
     if lamX < 0:
         assert is_even(lamX)
-        Mat_product = Matrix_to_ndarray(
-            RepRadial_param(ME_Radial_id_ml, lambda_run, nu_min, nu_max, -lamX // 2)
-        )
+        Mat_product = RepRadial_param(ME_Radial_id_ml, lambda_run, nu_min, nu_max, -lamX // 2)
 
         lambda_run += lamX
 
@@ -1319,9 +1313,7 @@ def RepRadial_bS_DS(K: int, T: nonnegint, anorm: float,
 
     if lamX > 0:
         assert is_even(lamX)
-        Mat = Matrix_to_ndarray(
-            RepRadial_param(ME_Radial_id_pl, lambda_run, nu_min, nu_max, lamX // 2)
-        )
+        Mat = RepRadial_param(ME_Radial_id_pl, lambda_run, nu_min, nu_max, lamX // 2)
         if n > 0:
             Mat_product = Mat @ Mat_product
         else:
