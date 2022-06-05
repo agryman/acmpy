@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/performance/profile_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/performance/profile_example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/acm1.4a-examples/section-02-basic-use.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.slides.html" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/presentations/scipy-acm/scientific-python-and-acm.slides.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,6 +157,9 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/performance" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -174,6 +179,9 @@
       <module name="acmpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/examples" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -468,6 +476,10 @@
       <workItem from="1654109517644" duration="14594000" />
       <workItem from="1654184404041" duration="19360000" />
       <workItem from="1654269882864" duration="12913000" />
+      <workItem from="1654294043828" duration="1424000" />
+      <workItem from="1654303461888" duration="273000" />
+      <workItem from="1654347272308" duration="596000" />
+      <workItem from="1654453830848" duration="598000" />
     </task>
     <servers />
   </component>
