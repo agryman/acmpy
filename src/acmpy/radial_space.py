@@ -7,10 +7,9 @@ from typing import Callable
 from functools import cache
 from abc import ABC, abstractmethod
 
-from sympy import Expr, S, sqrt, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, eye, zeros
+from sympy import Expr, S, sqrt, simplify, Symbol, symbols, binomial, RisingFactorial
 
-from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, \
-    irem, Matrix_to_ndarray, ndarray_to_Matrix, NDArrayFloat
+from acmpy.compat import nonnegint, require_nonnegint, is_even, iquo, is_odd, require_int, irem, NDArrayFloat
 from acmpy.eigenvalues import Eigenfiddle
 
 Nu = nonnegint
@@ -601,6 +600,7 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
     # Maple: binomial(-1, -1) = 1
     # SymPy: binomial(-1, -1) = 0
     # The following statement works around this edge case.
+    # print(f'MF_Radial_id_pl: lambdaa={lambdaa}, mu={mu}, nu={nu}, r={r}')
     if r == 0:
         return S.One if mu == nu else S.Zero
 
@@ -608,8 +608,8 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
         return S.Zero
 
     res: Expr = sum((-1) ** j * binomial(r, j) * binomial(r + mu - nu + j - 1, r - 1)
-                    * gamma(lambdaa + mu + 2 * r) / gamma(lambdaa + mu + r + j)
-                    * gamma(mu + j + 1) / gamma(mu + 1)
+                    * RisingFactorial(lambdaa + mu + r + j, r - j)
+                    * RisingFactorial(mu + 1, j)
                     for j in range(max(0, nu - mu), r + 1))
 
     return simplify(res) * (-1) ** (mu + nu)
@@ -796,34 +796,11 @@ def RepRadial_param(ME: RadialMatrixElementParamFunction, lambdaa: float,
                     nu_min: Nu, nu_max: Nu, param: int
                     ) -> NDArrayFloat:
     n: int = nu_max - nu_min + 1
-    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
+    M: NDArrayFloat = np.array([[ME(lambdaa, nu_min + i, nu_min + j, param)
+                                 for j in range(n)]
+                                for i in range(n)])
 
-    return simplify(M)
-
-
-# # The following returns the square root of the matrix obtained above.
-# # The arguments are as above, and the return matrix contain float entries.
-# # (This has severe problems dealing with Matrices larger than about 20x20 -
-# #  the problem is in Maple's MatrixPower).
-# # This has now been replaced by Matrix_sqrt below
-#
-# #RepRadial_sq:=proc(ME::procedure,lambda::algebraic,
-# #                                 nu_min::nonnegint,nu_max::nonnegint)
-# #    option remember;
-# #
-# #  MatrixPower(evalf(RepRadial(ME,lambda,nu_min,nu_max)),1/2):
-# #end:
-@cache
-def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
-                 nu_min: Nu, nu_max: Nu
-                 ) -> Matrix:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
-    M: Matrix = ndarray_to_Matrix(
-        RepRadial(ME, lambdaa, nu_min, nu_max)
-    )
-
-    return M ** Rational(1, 2)
+    return M
 
 
 @cache
@@ -1553,10 +1530,10 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
                        ) -> NDArrayFloat:
     n: int = len(rps_op)
 
-    Mat_product: Matrix
-    Mat: Matrix
+    Mat_product: NDArrayFloat
+    Mat: NDArrayFloat
     if n == 0:
-        Mat_product = eye(nu_max - nu_min + 1)
+        Mat_product = np.eye(nu_max - nu_min + 1, dtype=np.float64)
 
     else:
         lambda_run: float = lambdaa
@@ -1565,17 +1542,15 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
 
             r_op: KTSOp = rps_op[i - 1]
             R: int = lambda_shfs[i - 1]
-            Mat = ndarray_to_Matrix(
-                r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
-            )
+            Mat = r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
             lambda_run += R
 
             if i == n:
                 Mat_product = Mat
             else:
-                Mat_product = Mat * Mat_product
+                Mat_product = Mat @ Mat_product
 
-    return simplify(Mat_product)
+    return Mat_product
 
 
 # # The following represents a product Op of radial operators, specified by a
@@ -2164,10 +2139,8 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
                  lambdaa: float, lambda_var: int,
                  nu_min: Nu, nu_max: Nu,
                  nu_lap: nonnegint = 0
-                 ) -> Matrix:
-    M: Matrix = ndarray_to_Matrix(
-        RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
-    )
+                 ) -> NDArrayFloat:
+    M: NDArrayFloat = RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
 
     RepRadial_Prod_rem.cache_clear()
     RepRadialshfs_Prod.cache_clear()
