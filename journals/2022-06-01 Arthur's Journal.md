@@ -795,7 +795,21 @@ break 5:55 pm
 Investigate GitHub pages to simplify linking to references.
 * review https://pages.github.com - DONE
 * how is content from projects published on the account website? - DONE
-* publish the symposium presentation - TODO
-* publish the PDF references - TODO
+* publish the symposium presentation - DONE
+* publish the PDF references - DONE
 
 Create www folder for web content.
+Need to call it docs for GitHub Pages.
+Published site - waiting for URL to become active. - DONE
+
+The pages are functional but look very plain since I haven't
+added any CSS. Rather than do this manually, look into using
+Jekyl to generate the site from markdown. - TODO
+
+Think about a better way to organize references.
+Consolidate all PDF files into a AWS S3 and serve them from there.
+Create a dictionary to abbreviate reference names.
+Use BibTeX.
+Generate a web page of references for each reference - a DAG.
+
+break 10:05 pm

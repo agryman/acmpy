@@ -5,47 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm.zip" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/GettyImages-466221663-24bc935.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/GettyImages-466221663-24bc935.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/acm-maple-demo.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/acm-maple-demo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/acmpy-demo.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/acmpy-demo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/anaconda-com.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/anaconda-com.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/cocalc-com.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/cocalc-com.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/datalore-jetbrains-com.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/datalore-jetbrains-com.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/github-agryman-acm16.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/github-agryman-acm16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/github-agryman-acmpy.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/github-agryman-acmpy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/google-colaboratory.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/google-colaboratory.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jetbrains-pycharm.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/jetbrains-pycharm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyter-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/jupyter-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyterhub.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/jupyterhub.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyterlab.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/jupyterlab.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/kaggle-com.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/kaggle-com.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/matplotlib-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/matplotlib-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mpmath-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/mpmath-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mybinder-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/mybinder-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mypy-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/mypy-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/numpy-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/numpy-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pandas-pydata-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/pandas-pydata-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pypi-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/pypi-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pytest-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/pytest-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/python-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/python-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/python-psf.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/python-psf.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sagemath-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/sagemath-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/scipy-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/scipy-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/survey-bottom-ranked.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/survey-bottom-ranked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/survey-top-ranked.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/survey-top-ranked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sympy-github.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/sympy-github.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sympy-org.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/sympy-org.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/images/wildlife-trusts-starling-murmuration-dusk-david-tipling-2020vision.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/images/wildlife-trusts-starling-murmuration-dusk-david-tipling-2020vision.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/presentations/scipy-acm/scientific-python-and-acm.slides.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/presentations/scipy-acm/scientific-python-and-acm.slides.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/references/RWC2009.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/docs/references/RWC2009.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/references/RowanWood.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/docs/references/RowanWood.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/references/Rowe2004.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/docs/references/Rowe2004.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/references/WR2015.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/docs/references/WR2015.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/references/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/references/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
