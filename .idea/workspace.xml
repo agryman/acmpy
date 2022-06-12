@@ -5,14 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/acmpy/radial_bases.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acmpy/radial_operators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acmpy/tests/test_radial_bases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/GettyImages-466221663-24bc935.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/Templeludigan-Murmuration-ED01-high-res-Edward-Delaney.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/acm-maple-demo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/acmpy-demo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/anaconda-com.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/cocalc-com.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/datalore-jetbrains-com.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/github-agryman-acm16.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/github-agryman-acmpy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/google-colaboratory.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jetbrains-pycharm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyter-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyterhub.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/jupyterlab.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/kaggle-com.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/matplotlib-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mpmath-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mybinder-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/mypy-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/numpy-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pandas-pydata-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pypi-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/pytest-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/python-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/python-psf.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sagemath-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/scipy-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/survey-bottom-ranked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/survey-top-ranked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sympy-github.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/sympy-org.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/images/wildlife-trusts-starling-murmuration-dusk-david-tipling-2020vision.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/presentations/scipy-acm/scientific-python-and-acm.slides.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/full_operators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_operators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/full_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/full_space.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/acmpy/radial_space.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/acmpy/radial_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references/RWC2009.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/www/references/RWC2009.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references/RowanWood.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/www/references/RowanWood.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references/Rowe2004.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/www/references/Rowe2004.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references/WR2015.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/www/references/WR2015.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/references/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +60,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -56,37 +91,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;Project Files&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/arthurryman/Documents/repositories/agryman/acmpy/src/acmpy/tests&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "TODO_SCOPE": "Project Files",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/arthurryman/Documents/repositories/agryman/acmpy/www",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/www" />
       <recent name="$PROJECT_DIR$/src/acmpy/tests" />
       <recent name="$PROJECT_DIR$/src/acmpy/tests/data/example-4-5" />
       <recent name="$PROJECT_DIR$/data/stats/v1-1-1" />
       <recent name="$PROJECT_DIR$/data/stats/v1-1-0" />
-      <recent name="$PROJECT_DIR$/data/stats/v1" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/www" />
       <recent name="$PROJECT_DIR$/generated/example-4-5" />
       <recent name="$PROJECT_DIR$/generated" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/acmpy/tests/data/example-4-5" />
-      <recent name="$PROJECT_DIR$/src/acmpy/tests/data" />
     </key>
   </component>
   <component name="RunManager" selected="Python.radial_operators">

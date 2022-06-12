@@ -797,3 +797,5 @@ Investigate GitHub pages to simplify linking to references.
 * how is content from projects published on the account website? - DONE
 * publish the symposium presentation - TODO
 * publish the PDF references - TODO
+
+Create www folder for web content.
