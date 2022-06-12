@@ -5,6 +5,7 @@
 ### 2:50 pm
 
 Status:
+
 * The Python code gives different results than the Maple code for basis type 1
 * I am using a simplified version of Example-4-5 to debug
 * I have created more test cases
@@ -22,12 +23,14 @@ break 6:20 pm
 * create testcases for all generated data - DONE
 
 Status:
+
 * Test cases pass for basis type = 2
 * Test cases fail for basis type = 0, 1, 3
 * In fact, the Python code always computes the expected result for basis type = 2, which is the default
 * Therefore, there is something wrong with how the `glb_lam_fun` variable is being accessed from the `full_operators.py`
 * Write a test case that sets and calls the `glb_lam_fun` variable
 * The way I am importing `glb_lam_fun` is not working as I expect:
+
 ```text
 PASSED            [  7%]before glb_lam_fun = <function lambda_acm_fun at 0x1292acb80>
 Using the constant lambda basis.
@@ -36,6 +39,7 @@ FAILED            [ 10%]before glb_lam_fun = <function lambda_acm_fun at 0x1292a
 Using the constant lambda basis.
 after glb_lam_fun = <function lambda_acm_fun at 0x1292acb80>
 ```
+
 * Calling `ACM_set_basis_type()` DOES NOT change the value of `glb_lam_fun` that I import into another module!!!
 * Fix: Define a wrapper function `ACM_eval_lambda_fun()` in the same module as `glb_lam_fun`. - DONE
 * All tests now pass.
@@ -102,7 +106,6 @@ break 12:15 pm
 * run mypy to detect type errors
 * whenever the return type is changed, inspect all callers and remove redundant type conversions
 * eliminate unnecessary SymPy operations such as simplify - assume all matrix elements are float
-
 * RepXspace_Prod() - DONE
 * RepXspace_Twin() - DONE
 * RepXspace_PiqPi() - DONE
@@ -136,7 +139,7 @@ break 6:10 pm
 * RepRadial() - DONE
 * RepRadial_LC_rem() - DONE
 * RepRadial_LC_common() - DONE
-* RepRadial_bS_DS() - ... 
+* RepRadial_bS_DS() - ...
   * tests break!!!
 * RepRadial_b2_sqrt() - convert
 * RepRadial_param() - convert
@@ -152,6 +155,7 @@ break 6:10 pm
 * RepSO5_sqLdiv() - convert
 
 Status: I converted RepRadial_bS_DS() but broke the tests.
+
 ```text
 ====================================================================== short test summary info ======================================================================
 FAILED acmpy/tests/test_full_operators.py::TestRepXspace::test_example_4_5_basis_type[0] - assert False
@@ -167,22 +171,27 @@ break 10:10 pm
 ## 2022-06-03
 
 Resolve pytest failures -
+
 * Inspect the test cases and determine the code involved
   * test_example_4_5_basis_type calls RepXspace() with the Hamiltonian from Example.4.1
+
 ```text
-    B: ClassVar[int] = 50
+B: ClassVar[int] = 50
     c2: ClassVar[float] = 2.0
     c1: ClassVar[float] = 1 - 2 * c2
     chi: ClassVar[float] = 1.5
     kappa: ClassVar[float] = 1.0
 ```
-  * test_RWC_ham_fig5a calls DigXspace() with the Hamiltonian: 
+
+* test_RWC_ham_fig5a calls DigXspace() with the Hamiltonian:
+
 ```text
-    B: int = 20
+B: int = 20
     c2: Expr = Rational(3, 2)
     c1: Expr = 1 - 2 * c2
     chi: Expr = S(2)
 ```
+
 * debug the testcases, put breakpoint in `RepRadial_bS_DS()`
   * do they follow the same paths?
   * /test_full_operators.py::TestRepXspace::test_example_4_5_basis_type - calls `RepRadial_bS_DS()`
@@ -226,10 +235,12 @@ Resolve pytest failures -
   * where do they differ from the SymPy implementation?
 
 This is a subtle bug. I was using the mutating assignment operators, e.g.
+
 ```text
-                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
+Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
                 Mat *= (1 / anorm ** 2)
 ```
+
 However, the function `RepRadial()` is cached.
 Therefore, the cached value was modified so the next time the function
 was called, an incorrect value would be returned.
@@ -245,10 +256,12 @@ break 1:30 pm
 ### 2:55 pm
 
 Setup laptop. - IN-PROGRESS
+
 * installing latest Xcode 13.4 - ...
 * installing latest Xcode 13.4 Command Line Tools for brew -
 
 Continue conversion to NumPy
+
 * RepRadial_bS_DS() - DONE
 * RepRadial_b2_sqrt() - DONE
 * RepRadial_param() - DONE
@@ -264,7 +277,8 @@ Continue conversion to NumPy
 * RepSO5_sqLdim() - DONE
 * RepSO5_sqLdiv() - DONE
 
-Measure performance of numpy implementation on Example 4.5 - 
+Measure performance of numpy implementation on Example 4.5 -
+
 ```text
 ============================== Begin: Example_4_5_d_050508 ==============================
 Lowest eigenvalue is -23.29391. Relative eigenvalues follow (each divided by 0.03662):
@@ -293,9 +307,11 @@ Selected transition amplitudes follow (each divided by 0.00410):
 elapsed process time = 7.965
 ============================== End:   Example_4_5_d_050508 ==============================
 ```
+
 Previous time was 8.241s.
 
-Profile code to determine where time is being spent. - 
+Profile code to determine where time is being spent. -
+
 ```text
 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/bin/python "/Users/arthurryman/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/221.5787.30/IntelliJ IDEA.app.plugins/python/helpers/pydev/pydevconsole.py" --mode=client --port=64773
 import sys; print('Python %s on %s' % (sys.version, sys.platform))
@@ -492,14 +508,16 @@ Out[8]: <pstats.Stats at 0x11387be20>
 ```
 
 Why are there still calls to sympy Matrix?
+
 ```text
-      297    0.004    0.000   11.966    0.040 matrices.py:924(_handle_creation_inputs)
+297    0.004    0.000   11.966    0.040 matrices.py:924(_handle_creation_inputs)
       864    0.011    0.000   11.952    0.014 matrices.py:1126(<listcomp>)
 ```
 
 Note the matrix element functions:
+
 ```text
-      372    0.000    0.000   11.486    0.031 radial_space.py:574(MF_Radial_id_poly)
+372    0.000    0.000   11.486    0.031 radial_space.py:574(MF_Radial_id_poly)
       372    0.002    0.000   11.485    0.031 radial_space.py:597(MF_Radial_id_pl)
       252    0.005    0.000    5.792    0.023 radial_space.py:508(ME_Radial_id_pl)
       252    0.005    0.000    5.738    0.023 radial_space.py:540(ME_Radial_id_ml)
@@ -509,7 +527,7 @@ Inspect code that still uses SymPy `Matrix`
 
 * `internal_operators.py`
   * `RepSO5_Y_alg()` - not used
-`eigenvalues.py`
+    `eigenvalues.py`
     * `Eigenvectors()` - not used
 * `test_radial_space.py` - DONE
   * `test_KT000()` - DONE
@@ -534,7 +552,9 @@ break 6:05 pm
     * with this fix: elapsed process time = 7.105 (formerly 7.868)
 
 With the changes to `RepRadial_param()` and `RepRadialshfs_Prod()` there shouldn't be any calls to `Matrix` functions.
+
 * profile the execution again
+
 ```text
 Wed Jun  8 21:39:38 2022    Example_4_5_d_050508_stats
          22125825 function calls (21415660 primitive calls) in 12.089 seconds
@@ -575,13 +595,15 @@ Wed Jun  8 21:39:38 2022    Example_4_5_d_050508_stats
 
 * no more calls to `Matrix` functions
 * the most time-consuming SymPy call is `simplify()`
+
 ```text
 1081/389    0.042    0.000   11.566    0.030 simplify.py:411(simplify)
 ```
 
 This is probably caused by the calls to the `ME` and `MF` functions:
+
 ```text
-      372    0.000    0.000   11.664    0.031 radial_space.py:573(MF_Radial_id_poly)
+372    0.000    0.000   11.664    0.031 radial_space.py:573(MF_Radial_id_poly)
       372    0.002    0.000   11.663    0.031 radial_space.py:596(MF_Radial_id_pl)
  1081/389    0.042    0.000   11.566    0.030 simplify.py:411(simplify)
       252    0.005    0.000    5.878    0.023 radial_space.py:507(ME_Radial_id_pl)
@@ -593,7 +615,8 @@ This is probably caused by the calls to the `ME` and `MF` functions:
 * ME_Radial_id_pl
 * ME_Radial_id_ml
 
-Idea - Use OO design. 
+Idea - Use OO design.
+
 * Create an abstract base class that can compute the entire representation matrix.
 * Define the default behaviour in the base class to:
   * iterate over the matrix entries and call the scalar function to return a float
@@ -602,6 +625,7 @@ Idea - Use OO design.
   * incrementally override the matrix functions using vectorization (aka ufunc)
 
 Pragmatic approach:
+
 * use SciPy functions for gamma and binomial
 * create separate SciPy version and compare results with SymPy version
 * trace execution to see what values of arguments should be used
@@ -611,7 +635,7 @@ Pragmatic approach:
   * perhaps we should use Pochhammer function instead of ratios of gamma functions
   * `ME_Radial_id_pl()` calls `MF_Radial_id_poly()` and then substitutes `lambdaa` for `lamvar`
   * `MF_Radial_id_poly()` calls `MF_Radial_id_pl()` with `lamvar`
-* Compare the direct numeric evaluation with the symbolic simplification 
+* Compare the direct numeric evaluation with the symbolic simplification
   * created testcase `test_lamvar()` - no loss of accuracy using direct numeric evaluation
   * create version that uses SciPy `poch()` - TODO
     * create testcases - TODO
@@ -624,6 +648,7 @@ break 11:40 pm
 
 Rather than immediately going to SciPy `poch()` I may get a speedup by
 using SymPy `RisingFactorial()` to replace the quotients of gamma functions.
+
 - The testcases have sped up by 3 seconds
 
 break 9:20 am
@@ -631,12 +656,14 @@ break 9:20 am
 ### 11:25 am
 
 Measure performance.
+
 * elapsed process time = 1.747 (formerly 7.105)!
   * Maple: elapsed := 0.616
   * Maple is now just 3x faster than Python
 * very significant speedup using SymPy `RisingFactorial()` instead of `gamma()`
 
 Profile execution.
+
 ```text
 Thu Jun  9 11:30:47 2022    Example_4_5_d_050508_stats
          2561175 function calls (2474371 primitive calls) in 1.453 seconds
@@ -674,9 +701,99 @@ Thu Jun  9 11:30:47 2022    Example_4_5_d_050508_stats
    107/91    0.001    0.000    0.200    0.002 simplify.py:346(signsimp)
 2272/2198    0.017    0.000    0.199    0.000 operations.py:46(__new__)
 ```
+
 * significant time is spend in SymPy `simplify()` which is probably avoidable with loss of accuracy
 * The `RepRadial` functions repeated calls to the `MF_Radial` and `ME_Radial` functions
   * these can be eliminated by using NumPy vectorized functions
 
 Proceed with incremental OO redesign.
+
 * create framework and wrap the SymPy matrix element functions
+* create a new concrete class for each `ME` function passed into `RepRadial()` or `RepRadial_param()`
+* inspect all usages of:
+
+```text
+RadialMatrixElementFunction = Callable[[float, Nu, Nu], float]
+RadialMatrixElementParamFunction = Callable[[float, Nu, Nu, int], float]
+```
+
+break 12:15 pm
+
+### 2:05 pm
+
+Create `RadialOperator` class.
+
+break 2:25 pm
+
+### 6:05 pm
+
+* ME_Radial_b_ml
+* ME_Radial_b_pl
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_bm_ml
+* ME_Radial_bm_pl
+* ME_Radial_bm2
+* ME_Radial_D2b
+* ME_Radial_Db_ml
+* ME_Radial_Db_pl
+* ME_Radial_id_pl
+* ME_Radial_S0
+* ME_Radial_Sm
+* ME_Radial_Sp
+
+break 6:30 pm
+
+## 2022-06-10
+
+### 3:00 pm
+
+break 6:15 pm
+
+## 2022-06-11
+
+### 2:15 pm
+
+Continue refactoring radial operators using OO design.
+
+* ME_Radial_b_ml
+* ME_Radial_b_pl
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_bm_ml
+* ME_Radial_bm_pl
+* ME_Radial_bm2
+* ME_Radial_D2b
+* ME_Radial_Db_ml
+* ME_Radial_Db_pl
+* ME_Radial_id_pl
+* ME_Radial_S0
+* ME_Radial_Sm
+* ME_Radial_Sp
+
+The above abstraction is wrong.
+The `ME` objects are not simply radial operators.
+Rather, they are matrix elements of radial operators between
+basis vectors belonging to bases that have different values of
+the parameter $\lambda$.
+The change in the value of $\lambda$ is an integer.
+
+The generality allowed by the code is that for a given
+calculation, all the bases share a pair of real, positive
+parameters $(a, \lambda_0)$.
+
+Investigate GitHub pages to simplify linking to references.
+* review https://pages.github.com
+* how is content from projects published on the account website? - TODO
+* publish the symposium presentation - TODO
+* publish the PDF references - TODO
+
+break 5:55 pm
+
+### 7:55 pm
+
+Investigate GitHub pages to simplify linking to references.
+* review https://pages.github.com - DONE
+* how is content from projects published on the account website? - DONE
+* publish the symposium presentation - TODO
+* publish the PDF references - TODO
