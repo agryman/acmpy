@@ -10,7 +10,7 @@ from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, 
 from acmpy.internal_operators import OperatorSum, Op_Tame
 from acmpy.spherical_space import dimSO5r3_rngV
 from acmpy.full_operators import RepXspace, dimXspace
-from acmpy.radial_space import dimRadial
+from acmpy.radial_bases import dimRadial
 from acmpy.eigenvalues import Eigenfiddle
 from acmpy.globals import Designators, MatrixElementFunction
 import acmpy.globals as g

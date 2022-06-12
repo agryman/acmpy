@@ -5,6 +5,7 @@
 ### 2:50 pm
 
 Status:
+
 * The Python code gives different results than the Maple code for basis type 1
 * I am using a simplified version of Example-4-5 to debug
 * I have created more test cases
@@ -22,12 +23,14 @@ break 6:20 pm
 * create testcases for all generated data - DONE
 
 Status:
+
 * Test cases pass for basis type = 2
 * Test cases fail for basis type = 0, 1, 3
 * In fact, the Python code always computes the expected result for basis type = 2, which is the default
 * Therefore, there is something wrong with how the `glb_lam_fun` variable is being accessed from the `full_operators.py`
 * Write a test case that sets and calls the `glb_lam_fun` variable
 * The way I am importing `glb_lam_fun` is not working as I expect:
+
 ```text
 PASSED            [  7%]before glb_lam_fun = <function lambda_acm_fun at 0x1292acb80>
 Using the constant lambda basis.
@@ -36,6 +39,7 @@ FAILED            [ 10%]before glb_lam_fun = <function lambda_acm_fun at 0x1292a
 Using the constant lambda basis.
 after glb_lam_fun = <function lambda_acm_fun at 0x1292acb80>
 ```
+
 * Calling `ACM_set_basis_type()` DOES NOT change the value of `glb_lam_fun` that I import into another module!!!
 * Fix: Define a wrapper function `ACM_eval_lambda_fun()` in the same module as `glb_lam_fun`. - DONE
 * All tests now pass.
@@ -102,7 +106,6 @@ break 12:15 pm
 * run mypy to detect type errors
 * whenever the return type is changed, inspect all callers and remove redundant type conversions
 * eliminate unnecessary SymPy operations such as simplify - assume all matrix elements are float
-
 * RepXspace_Prod() - DONE
 * RepXspace_Twin() - DONE
 * RepXspace_PiqPi() - DONE
@@ -136,7 +139,7 @@ break 6:10 pm
 * RepRadial() - DONE
 * RepRadial_LC_rem() - DONE
 * RepRadial_LC_common() - DONE
-* RepRadial_bS_DS() - ... 
+* RepRadial_bS_DS() - ...
   * tests break!!!
 * RepRadial_b2_sqrt() - convert
 * RepRadial_param() - convert
@@ -152,6 +155,7 @@ break 6:10 pm
 * RepSO5_sqLdiv() - convert
 
 Status: I converted RepRadial_bS_DS() but broke the tests.
+
 ```text
 ====================================================================== short test summary info ======================================================================
 FAILED acmpy/tests/test_full_operators.py::TestRepXspace::test_example_4_5_basis_type[0] - assert False
@@ -167,22 +171,27 @@ break 10:10 pm
 ## 2022-06-03
 
 Resolve pytest failures -
+
 * Inspect the test cases and determine the code involved
   * test_example_4_5_basis_type calls RepXspace() with the Hamiltonian from Example.4.1
+
 ```text
-    B: ClassVar[int] = 50
+B: ClassVar[int] = 50
     c2: ClassVar[float] = 2.0
     c1: ClassVar[float] = 1 - 2 * c2
     chi: ClassVar[float] = 1.5
     kappa: ClassVar[float] = 1.0
 ```
-  * test_RWC_ham_fig5a calls DigXspace() with the Hamiltonian: 
+
+* test_RWC_ham_fig5a calls DigXspace() with the Hamiltonian:
+
 ```text
-    B: int = 20
+B: int = 20
     c2: Expr = Rational(3, 2)
     c1: Expr = 1 - 2 * c2
     chi: Expr = S(2)
 ```
+
 * debug the testcases, put breakpoint in `RepRadial_bS_DS()`
   * do they follow the same paths?
   * /test_full_operators.py::TestRepXspace::test_example_4_5_basis_type - calls `RepRadial_bS_DS()`
@@ -226,10 +235,12 @@ Resolve pytest failures -
   * where do they differ from the SymPy implementation?
 
 This is a subtle bug. I was using the mutating assignment operators, e.g.
+
 ```text
-                Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
+Mat = RepRadial(ME_Radial_b2, lambda_run, nu_min, nu_max)
                 Mat *= (1 / anorm ** 2)
 ```
+
 However, the function `RepRadial()` is cached.
 Therefore, the cached value was modified so the next time the function
 was called, an incorrect value would be returned.
@@ -245,10 +256,12 @@ break 1:30 pm
 ### 2:55 pm
 
 Setup laptop. - IN-PROGRESS
+
 * installing latest Xcode 13.4 - ...
 * installing latest Xcode 13.4 Command Line Tools for brew -
 
 Continue conversion to NumPy
+
 * RepRadial_bS_DS() - DONE
 * RepRadial_b2_sqrt() - DONE
 * RepRadial_param() - DONE
@@ -264,7 +277,8 @@ Continue conversion to NumPy
 * RepSO5_sqLdim() - DONE
 * RepSO5_sqLdiv() - DONE
 
-Measure performance of numpy implementation on Example 4.5 - 
+Measure performance of numpy implementation on Example 4.5 -
+
 ```text
 ============================== Begin: Example_4_5_d_050508 ==============================
 Lowest eigenvalue is -23.29391. Relative eigenvalues follow (each divided by 0.03662):
@@ -293,9 +307,11 @@ Selected transition amplitudes follow (each divided by 0.00410):
 elapsed process time = 7.965
 ============================== End:   Example_4_5_d_050508 ==============================
 ```
+
 Previous time was 8.241s.
 
-Profile code to determine where time is being spent. - 
+Profile code to determine where time is being spent. -
+
 ```text
 /Users/arthurryman/Documents/repositories/agryman/acmpy/venv/bin/python "/Users/arthurryman/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/221.5787.30/IntelliJ IDEA.app.plugins/python/helpers/pydev/pydevconsole.py" --mode=client --port=64773
 import sys; print('Python %s on %s' % (sys.version, sys.platform))
@@ -434,3 +450,350 @@ Fri Jun  3 16:21:23 2022    Example_4_5_d_050508_stats
 The time must is probably being spent in the computation of the
 matrix elements. These functions return floats but do the
 calculation using SymPy.
+
+## 2022-06-08
+
+### 4:15 pm
+
+I presented the code at the David Rowe Memorial Symposium on 2022-06-04.
+
+Resume verifying the Maple Notebook examples and resolving performance problems.
+
+* Compare `Example_4_5_d_050508`
+  * Python: elapsed process time = 7.950
+  * Maple: elapsed := 0.616
+
+Note that Python outperforms Maple prior to Section 4.5.
+
+Here is the Python profile:
+
+```text
+p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(30)
+Fri Jun  3 16:31:31 2022    Example_4_5_d_050508_stats
+         24605294 function calls (23885934 primitive calls) in 13.169 seconds
+   Ordered by: cumulative time
+   List reduced from 1063 to 30 due to restriction <30>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   13.175   13.175 example.py:28(run)
+        1    0.000    0.000   13.175   13.175 section_4.py:185(exec)
+        1    0.000    0.000   13.175   13.175 full_space.py:1398(ACM_Adapt)
+        1    0.000    0.000   13.175   13.175 full_space.py:1264(ACM_ScaleOrAdapt)
+        9    0.001    0.000   13.159    1.462 full_operators.py:229(RepXspace)
+       49    0.001    0.000   13.155    0.268 full_operators.py:268(RepXspace_Term)
+       49    0.001    0.000   12.985    0.265 full_operators.py:401(RepXspace_Prod)
+       49    0.005    0.000   12.973    0.265 full_operators.py:611(RepXspace_Twin)
+        1    0.000    0.000   12.956   12.956 full_space.py:141(DigXspace)
+      139    0.000    0.000   12.708    0.091 radial_space.py:1793(RepRadial_Prod_rem)
+      139    0.001    0.000   12.708    0.091 radial_space.py:1707(RepRadial_Prod_common)
+      139    0.001    0.000   12.686    0.091 radial_space.py:1549(RepRadialshfs_Prod)
+ 6742/542    0.062    0.000   12.031    0.022 simplify.py:411(simplify)
+      297    0.004    0.000   11.966    0.040 matrices.py:924(_handle_creation_inputs)
+      864    0.011    0.000   11.952    0.014 matrices.py:1126(<listcomp>)
+      136    0.000    0.000   11.882    0.087 repmatrix.py:316(__new__)
+      136    0.001    0.000   11.882    0.087 repmatrix.py:319(_new)
+      122    0.000    0.000   11.796    0.097 radial_space.py:1443(representation)
+      122    0.002    0.000   11.795    0.097 radial_space.py:1149(RepRadial_bS_DS)
+       14    0.000    0.000   11.637    0.831 radial_space.py:794(RepRadial_param)
+      504    0.001    0.000   11.531    0.023 radial_space.py:799(<lambda>)
+      372    0.000    0.000   11.486    0.031 radial_space.py:574(MF_Radial_id_poly)
+      372    0.002    0.000   11.485    0.031 radial_space.py:597(MF_Radial_id_pl)
+      252    0.005    0.000    5.792    0.023 radial_space.py:508(ME_Radial_id_pl)
+      252    0.005    0.000    5.738    0.023 radial_space.py:540(ME_Radial_id_ml)
+    15996    0.092    0.000    4.727    0.000 exprtools.py:987(gcd_terms)
+    15996    0.188    0.000    4.075    0.000 exprtools.py:922(_gcd_terms)
+8257/3413    0.034    0.000    3.723    0.001 basic.py:1241(replace)
+91881/3413    0.079    0.000    3.634    0.001 basic.py:1466(walk)
+40788/2657    0.032    0.000    3.572    0.001 basic.py:1472(<listcomp>)
+Out[8]: <pstats.Stats at 0x11387be20>
+```
+
+Why are there still calls to sympy Matrix?
+
+```text
+297    0.004    0.000   11.966    0.040 matrices.py:924(_handle_creation_inputs)
+      864    0.011    0.000   11.952    0.014 matrices.py:1126(<listcomp>)
+```
+
+Note the matrix element functions:
+
+```text
+372    0.000    0.000   11.486    0.031 radial_space.py:574(MF_Radial_id_poly)
+      372    0.002    0.000   11.485    0.031 radial_space.py:597(MF_Radial_id_pl)
+      252    0.005    0.000    5.792    0.023 radial_space.py:508(ME_Radial_id_pl)
+      252    0.005    0.000    5.738    0.023 radial_space.py:540(ME_Radial_id_ml)
+```
+
+Inspect code that still uses SymPy `Matrix`
+
+* `internal_operators.py`
+  * `RepSO5_Y_alg()` - not used
+    `eigenvalues.py`
+    * `Eigenvectors()` - not used
+* `test_radial_space.py` - DONE
+  * `test_KT000()` - DONE
+  * `test_KT001()` - DONE
+* `radial-space.py` - TODO
+  * `RepRadial_LC()`
+  * `RepRadial_param()`
+  * `RepRadial_sq()`
+  * `RepRadialshfs_Prod()`
+
+break 6:05 pm
+
+### 9:00 pm
+
+* `radial-space.py` - IN-PROGRESS
+  * `RepRadial_LC()` - not used
+  * `RepRadial_sq()` - not used - DELETED
+  * `RepRadial_param()` - used - DONE
+    * This function was returning a Matrix instead of NDArrayFloat!!!
+    * with this fix: elapsed process time = 7.868 (formerly 7.950)
+  * `RepRadialshfs_Prod()` - used - DONE
+    * with this fix: elapsed process time = 7.105 (formerly 7.868)
+
+With the changes to `RepRadial_param()` and `RepRadialshfs_Prod()` there shouldn't be any calls to `Matrix` functions.
+
+* profile the execution again
+
+```text
+Wed Jun  8 21:39:38 2022    Example_4_5_d_050508_stats
+         22125825 function calls (21415660 primitive calls) in 12.089 seconds
+   Ordered by: cumulative time
+   List reduced from 961 to 30 due to restriction <30>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   12.096   12.096 example.py:28(run)
+        1    0.000    0.000   12.095   12.095 section_4.py:185(exec)
+        1    0.000    0.000   12.095   12.095 full_space.py:1398(ACM_Adapt)
+        1    0.000    0.000   12.095   12.095 full_space.py:1264(ACM_ScaleOrAdapt)
+        9    0.000    0.000   12.082    1.342 full_operators.py:229(RepXspace)
+       49    0.001    0.000   12.080    0.247 full_operators.py:268(RepXspace_Term)
+        1    0.000    0.000   11.981   11.981 full_space.py:141(DigXspace)
+       49    0.001    0.000   11.903    0.243 full_operators.py:401(RepXspace_Prod)
+       49    0.004    0.000   11.891    0.243 full_operators.py:611(RepXspace_Twin)
+      139    0.000    0.000   11.749    0.085 radial_space.py:1767(RepRadial_Prod_rem)
+      139    0.001    0.000   11.749    0.085 radial_space.py:1681(RepRadial_Prod_common)
+      139    0.000    0.000   11.726    0.084 radial_space.py:1525(RepRadialshfs_Prod)
+      122    0.000    0.000   11.726    0.096 radial_space.py:1419(representation)
+      122    0.001    0.000   11.726    0.096 radial_space.py:1125(RepRadial_bS_DS)
+       14    0.000    0.000   11.711    0.837 radial_space.py:793(RepRadial_param)
+       14    0.000    0.000   11.711    0.836 radial_space.py:798(<listcomp>)
+      372    0.000    0.000   11.664    0.031 radial_space.py:573(MF_Radial_id_poly)
+      372    0.002    0.000   11.663    0.031 radial_space.py:596(MF_Radial_id_pl)
+ 1081/389    0.042    0.000   11.566    0.030 simplify.py:411(simplify)
+      252    0.005    0.000    5.878    0.023 radial_space.py:507(ME_Radial_id_pl)
+      252    0.005    0.000    5.832    0.023 radial_space.py:539(ME_Radial_id_ml)
+    15996    0.093    0.000    4.784    0.000 exprtools.py:987(gcd_terms)
+    15996    0.190    0.000    4.128    0.000 exprtools.py:922(_gcd_terms)
+8257/3413    0.036    0.000    3.767    0.001 basic.py:1241(replace)
+91881/3413    0.078    0.000    3.677    0.001 basic.py:1466(walk)
+40788/2657    0.032    0.000    3.614    0.001 basic.py:1472(<listcomp>)
+91881/77349    0.039    0.000    3.379    0.000 basic.py:1488(rec_replace)
+     1468    0.001    0.000    3.250    0.002 basic.py:1456(<lambda>)
+     3015    0.036    0.000    3.248    0.001 polytools.py:6644(cancel)
+      692    0.002    0.000    3.240    0.005 simplify.py:614(<lambda>)
+```
+
+* no more calls to `Matrix` functions
+* the most time-consuming SymPy call is `simplify()`
+
+```text
+1081/389    0.042    0.000   11.566    0.030 simplify.py:411(simplify)
+```
+
+This is probably caused by the calls to the `ME` and `MF` functions:
+
+```text
+372    0.000    0.000   11.664    0.031 radial_space.py:573(MF_Radial_id_poly)
+      372    0.002    0.000   11.663    0.031 radial_space.py:596(MF_Radial_id_pl)
+ 1081/389    0.042    0.000   11.566    0.030 simplify.py:411(simplify)
+      252    0.005    0.000    5.878    0.023 radial_space.py:507(ME_Radial_id_pl)
+      252    0.005    0.000    5.832    0.023 radial_space.py:539(ME_Radial_id_ml)
+```
+
+* MF_Radial_id_poly
+* MF_Radial_id_pl
+* ME_Radial_id_pl
+* ME_Radial_id_ml
+
+Idea - Use OO design.
+
+* Create an abstract base class that can compute the entire representation matrix.
+* Define the default behaviour in the base class to:
+  * iterate over the matrix entries and call the scalar function to return a float
+  * the default scalar function calls the SymPy expression function and converts it to float
+  * incrementally override the scalar functions with a native float version
+  * incrementally override the matrix functions using vectorization (aka ufunc)
+
+Pragmatic approach:
+
+* use SciPy functions for gamma and binomial
+* create separate SciPy version and compare results with SymPy version
+* trace execution to see what values of arguments should be used
+  * `MF_Radial_id_pl()` was called 260 times with lambdaa = lamvar
+  * `MF_Radial_id_pl()` was called  60 times with lambdaa = 5.5
+* understand why `lamvar` is used
+  * perhaps we should use Pochhammer function instead of ratios of gamma functions
+  * `ME_Radial_id_pl()` calls `MF_Radial_id_poly()` and then substitutes `lambdaa` for `lamvar`
+  * `MF_Radial_id_poly()` calls `MF_Radial_id_pl()` with `lamvar`
+* Compare the direct numeric evaluation with the symbolic simplification
+  * created testcase `test_lamvar()` - no loss of accuracy using direct numeric evaluation
+  * create version that uses SciPy `poch()` - TODO
+    * create testcases - TODO
+
+break 11:40 pm
+
+## 2022-06-09
+
+### 9:10 am
+
+Rather than immediately going to SciPy `poch()` I may get a speedup by
+using SymPy `RisingFactorial()` to replace the quotients of gamma functions.
+
+- The testcases have sped up by 3 seconds
+
+break 9:20 am
+
+### 11:25 am
+
+Measure performance.
+
+* elapsed process time = 1.747 (formerly 7.105)!
+  * Maple: elapsed := 0.616
+  * Maple is now just 3x faster than Python
+* very significant speedup using SymPy `RisingFactorial()` instead of `gamma()`
+
+Profile execution.
+
+```text
+Thu Jun  9 11:30:47 2022    Example_4_5_d_050508_stats
+         2561175 function calls (2474371 primitive calls) in 1.453 seconds
+   Ordered by: cumulative time
+   List reduced from 744 to 30 due to restriction <30>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.456    1.456 example.py:28(run)
+        1    0.000    0.000    1.455    1.455 section_4.py:185(exec)
+        1    0.000    0.000    1.455    1.455 full_space.py:1398(ACM_Adapt)
+        1    0.000    0.000    1.455    1.455 full_space.py:1264(ACM_ScaleOrAdapt)
+        9    0.000    0.000    1.442    0.160 full_operators.py:229(RepXspace)
+       49    0.000    0.000    1.441    0.029 full_operators.py:268(RepXspace_Term)
+        1    0.000    0.000    1.341    1.341 full_space.py:141(DigXspace)
+       49    0.001    0.000    1.268    0.026 full_operators.py:401(RepXspace_Prod)
+       49    0.003    0.000    1.256    0.026 full_operators.py:611(RepXspace_Twin)
+      139    0.000    0.000    1.116    0.008 radial_space.py:1768(RepRadial_Prod_rem)
+      139    0.001    0.000    1.115    0.008 radial_space.py:1682(RepRadial_Prod_common)
+      139    0.000    0.000    1.093    0.008 radial_space.py:1526(RepRadialshfs_Prod)
+      122    0.000    0.000    1.093    0.009 radial_space.py:1420(representation)
+      122    0.001    0.000    1.092    0.009 radial_space.py:1126(RepRadial_bS_DS)
+      389    0.005    0.000    1.091    0.003 simplify.py:411(simplify)
+       14    0.000    0.000    1.078    0.077 radial_space.py:794(RepRadial_param)
+       14    0.000    0.000    1.078    0.077 radial_space.py:799(<listcomp>)
+      372    0.000    0.000    1.038    0.003 radial_space.py:573(MF_Radial_id_poly)
+      372    0.002    0.000    1.037    0.003 radial_space.py:596(MF_Radial_id_pl)
+      252    0.003    0.000    0.566    0.002 radial_space.py:507(ME_Radial_id_pl)
+      252    0.003    0.000    0.511    0.002 radial_space.py:539(ME_Radial_id_ml)
+104037/98643    0.068    0.000    0.375    0.000 cache.py:69(wrapper)
+      183    0.003    0.000    0.245    0.001 polytools.py:6644(cancel)
+12490/12440    0.013    0.000    0.237    0.000 decorators.py:254(_func)
+      628    0.004    0.000    0.220    0.000 exprtools.py:987(gcd_terms)
+      313    0.000    0.000    0.218    0.001 exprtools.py:1163(factor_terms)
+ 2153/313    0.009    0.000    0.218    0.001 exprtools.py:1224(do)
+12490/12440    0.009    0.000    0.205    0.000 decorators.py:129(binary_op_wrapper)
+   107/91    0.001    0.000    0.200    0.002 simplify.py:346(signsimp)
+2272/2198    0.017    0.000    0.199    0.000 operations.py:46(__new__)
+```
+
+* significant time is spend in SymPy `simplify()` which is probably avoidable with loss of accuracy
+* The `RepRadial` functions repeated calls to the `MF_Radial` and `ME_Radial` functions
+  * these can be eliminated by using NumPy vectorized functions
+
+Proceed with incremental OO redesign.
+
+* create framework and wrap the SymPy matrix element functions
+* create a new concrete class for each `ME` function passed into `RepRadial()` or `RepRadial_param()`
+* inspect all usages of:
+
+```text
+RadialMatrixElementFunction = Callable[[float, Nu, Nu], float]
+RadialMatrixElementParamFunction = Callable[[float, Nu, Nu, int], float]
+```
+
+break 12:15 pm
+
+### 2:05 pm
+
+Create `RadialOperator` class.
+
+break 2:25 pm
+
+### 6:05 pm
+
+* ME_Radial_b_ml
+* ME_Radial_b_pl
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_bm_ml
+* ME_Radial_bm_pl
+* ME_Radial_bm2
+* ME_Radial_D2b
+* ME_Radial_Db_ml
+* ME_Radial_Db_pl
+* ME_Radial_id_pl
+* ME_Radial_S0
+* ME_Radial_Sm
+* ME_Radial_Sp
+
+break 6:30 pm
+
+## 2022-06-10
+
+### 3:00 pm
+
+break 6:15 pm
+
+## 2022-06-11
+
+### 2:15 pm
+
+Continue refactoring radial operators using OO design.
+
+* ME_Radial_b_ml
+* ME_Radial_b_pl
+* ME_Radial_b2
+* ME_Radial_bDb
+* ME_Radial_bm_ml
+* ME_Radial_bm_pl
+* ME_Radial_bm2
+* ME_Radial_D2b
+* ME_Radial_Db_ml
+* ME_Radial_Db_pl
+* ME_Radial_id_pl
+* ME_Radial_S0
+* ME_Radial_Sm
+* ME_Radial_Sp
+
+The above abstraction is wrong.
+The `ME` objects are not simply radial operators.
+Rather, they are matrix elements of radial operators between
+basis vectors belonging to bases that have different values of
+the parameter $\lambda$.
+The change in the value of $\lambda$ is an integer.
+
+The generality allowed by the code is that for a given
+calculation, all the bases share a pair of real, positive
+parameters $(a, \lambda_0)$.
+
+Investigate GitHub pages to simplify linking to references.
+* review https://pages.github.com
+* how is content from projects published on the account website? - TODO
+* publish the symposium presentation - TODO
+* publish the PDF references - TODO
+
+break 5:55 pm
+
+### 7:55 pm
+
+Investigate GitHub pages to simplify linking to references.
+* review https://pages.github.com - DONE
+* how is content from projects published on the account website? - DONE
+* publish the symposium presentation - TODO
+* publish the PDF references - TODO

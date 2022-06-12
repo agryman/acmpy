@@ -7,13 +7,13 @@ from typing import Callable
 from functools import cache
 from abc import ABC, abstractmethod
 
-from sympy import Expr, S, sqrt, gamma, Rational, Matrix, simplify, Symbol, symbols, binomial, eye, zeros
+from sympy import Expr, S, sqrt, simplify, Symbol, symbols, binomial, RisingFactorial
 
-from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, is_even, iquo, is_odd, require_int, \
-    irem, Matrix_to_ndarray, ndarray_to_Matrix, NDArrayFloat
+from acmpy.compat import nonnegint, require_nonnegint, is_even, iquo, is_odd, require_int, irem, NDArrayFloat
 from acmpy.eigenvalues import Eigenfiddle
+from acmpy.radial_bases import Nu, RadialBasis, TruncatedRadialSpace
+from acmpy.radial_operators import RadialOperator, RadialOperator_b2, ME_Radial_b2
 
-Nu = nonnegint
 RadialMatrixElementFunction = Callable[[float, Nu, Nu], float]
 RadialMatrixElementParamFunction = Callable[[float, Nu, Nu, int], float]
 
@@ -101,39 +101,6 @@ Radial_id: Symbol = Symbol('Radial_id', commutative=True)
 
 
 # ###########################################################################
-# ####--------------- Representations on the radial space ---------------####
-# ###########################################################################
-#
-# # The next set of routines deal with representing operators in the
-# # radial (beta) space. The bases for the radial Hilbert space are
-# # dependent on two parameters (a,lambda). For each such pair,
-# # the basis states are labelled by a single index nu=0,1,2,....
-#
-# # A truncated Hilbert space is indexed by states labelled
-# #     nu_min, nu_min+1, nu_min+2, ... nu_max
-# # (usually we would use nu_min=0).
-# # The following two functions each take arguments nu_min and nu_max;
-# # the first returns the dimension of the truncated space,
-# # the second returns a list of all the labels.
-#
-# dimRadial:=(nu_min::nonnegint,nu_max::nonnegint)
-#   -> `if`(nu_max>=nu_min,nu_max-nu_min+1,0):
-def dimRadial(nu_min: Nu, nu_max: Nu) -> nonnegint:
-    return nu_max - nu_min + 1 if nu_max >= nu_min else 0
-
-
-# lbsRadial:=proc(nu_min::nonnegint,nu_max::nonnegint)
-#   if nu_min>nu_max then
-#     error("Radial range invalid");
-#   else
-#     [seq(i,i=nu_min..nu_max)];
-#   fi:
-# end:
-def lbsRadial(nu_min: Nu, nu_max: Nu) -> list[Nu]:
-    return list(range(nu_min, nu_max + 1))
-
-
-# ###########################################################################
 #
 # # The functions that follow calculate single matrix elements
 # #     F^{(a)}_{lambda',mu_f}{lambda,mu_i}(Op),
@@ -181,31 +148,6 @@ def ME_Radial_Sp(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 # end:
 def ME_Radial_Sm(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
     return math.sqrt((lambdaa + mu_i - 1) * mu_i) if mu_f == mu_i - 1 else 0.0
-
-
-# # The following give matrix elements of beta^2 for lambda'=lambda
-# # using (21).
-#
-# ME_Radial_b2:=proc(lambda::algebraic,mu_f::nonnegint,mu_i::nonnegint)
-#   if mu_f=mu_i-1 then
-#     sqrt( (lambda + mu_i - 1)*mu_i );
-#   elif mu_f=mu_i then
-#     lambda + 2*mu_i;
-#   elif mu_f=mu_i+1 then
-#     sqrt( (lambda + mu_i)*(mu_i+1) );
-#   else
-#     0;
-#   fi;
-# end:
-def ME_Radial_b2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
-    if mu_f == mu_i - 1:
-        return math.sqrt((lambdaa + mu_i - 1) * mu_i)
-    if mu_f == mu_i:
-        return lambdaa + 2 * mu_i
-    if mu_f == mu_i + 1:
-        return math.sqrt((lambdaa + mu_i) * (mu_i + 1))
-
-    return 0.0
 
 
 # # The following gives matrix elements of 1/beta^2 for lambda'=lambda
@@ -601,6 +543,7 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
     # Maple: binomial(-1, -1) = 1
     # SymPy: binomial(-1, -1) = 0
     # The following statement works around this edge case.
+    # print(f'MF_Radial_id_pl: lambdaa={lambdaa}, mu={mu}, nu={nu}, r={r}')
     if r == 0:
         return S.One if mu == nu else S.Zero
 
@@ -608,8 +551,8 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
         return S.Zero
 
     res: Expr = sum((-1) ** j * binomial(r, j) * binomial(r + mu - nu + j - 1, r - 1)
-                    * gamma(lambdaa + mu + 2 * r) / gamma(lambdaa + mu + r + j)
-                    * gamma(mu + j + 1) / gamma(mu + 1)
+                    * RisingFactorial(lambdaa + mu + r + j, r - j)
+                    * RisingFactorial(mu + 1, j)
                     for j in range(max(0, nu - mu), r + 1))
 
     return simplify(res) * (-1) ** (mu + nu)
@@ -684,8 +627,12 @@ def ME_Radial(radial_op: Symbol, anorm: float,
               lambdaa: float, lambda_var: int,
               mu_f: Nu, mu_i: Nu
               ) -> float:
+    basis: RadialBasis = RadialBasis(lambdaa)
+    op: RadialOperator
     if radial_op == Radial_b2 and lambda_var == 0:
-        return ME_Radial_b2(lambdaa, mu_f, mu_i) / anorm ** 2
+        op = RadialOperator_b2(basis)
+        # return ME_Radial_b2(lambdaa, mu_f, mu_i) / anorm ** 2
+        return op.matrix_element(mu_f, mu_i) / anorm ** 2
     elif radial_op == Radial_bm2 and lambda_var == 0:
         return ME_Radial_bm2(lambdaa, mu_f, mu_i) * anorm ** 2
     elif radial_op == Radial_D2b and lambda_var == 0:
@@ -796,41 +743,22 @@ def RepRadial_param(ME: RadialMatrixElementParamFunction, lambdaa: float,
                     nu_min: Nu, nu_max: Nu, param: int
                     ) -> NDArrayFloat:
     n: int = nu_max - nu_min + 1
-    M: Matrix = Matrix(n, n, lambda i, j: ME(lambdaa, nu_min + int(i), nu_min + int(j), param))
+    M: NDArrayFloat = np.array([[ME(lambdaa, nu_min + i, nu_min + j, param)
+                                 for j in range(n)]
+                                for i in range(n)])
 
-    return simplify(M)
-
-
-# # The following returns the square root of the matrix obtained above.
-# # The arguments are as above, and the return matrix contain float entries.
-# # (This has severe problems dealing with Matrices larger than about 20x20 -
-# #  the problem is in Maple's MatrixPower).
-# # This has now been replaced by Matrix_sqrt below
-#
-# #RepRadial_sq:=proc(ME::procedure,lambda::algebraic,
-# #                                 nu_min::nonnegint,nu_max::nonnegint)
-# #    option remember;
-# #
-# #  MatrixPower(evalf(RepRadial(ME,lambda,nu_min,nu_max)),1/2):
-# #end:
-@cache
-def RepRadial_sq(ME: RadialMatrixElementFunction, lambdaa: float,
-                 nu_min: Nu, nu_max: Nu
-                 ) -> Matrix:
-    require_nonnegint_range('nu', nu_min, nu_max)
-
-    M: Matrix = ndarray_to_Matrix(
-        RepRadial(ME, lambdaa, nu_min, nu_max)
-    )
-
-    return M ** Rational(1, 2)
+    return M
 
 
 @cache
 def RepRadial_b2_sqrt(lambdaa: float,
                       nu_min: Nu, nu_max: Nu
                       ) -> NDArrayFloat:
-    Mat_np: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    basis: RadialBasis = RadialBasis(lambdaa)
+    op: RadialOperator_b2 = RadialOperator_b2(basis)
+    subspace: TruncatedRadialSpace = TruncatedRadialSpace(nu_min, nu_max)
+    # Mat_np: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, nu_min, nu_max)
+    Mat_np: NDArrayFloat = op.matrix(subspace)
     Mat_sqrt_np: NDArrayFloat = Matrix_sqrt(Mat_np)
     return Mat_sqrt_np
 
@@ -1553,10 +1481,10 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
                        ) -> NDArrayFloat:
     n: int = len(rps_op)
 
-    Mat_product: Matrix
-    Mat: Matrix
+    Mat_product: NDArrayFloat
+    Mat: NDArrayFloat
     if n == 0:
-        Mat_product = eye(nu_max - nu_min + 1)
+        Mat_product = np.eye(nu_max - nu_min + 1, dtype=np.float64)
 
     else:
         lambda_run: float = lambdaa
@@ -1565,17 +1493,15 @@ def RepRadialshfs_Prod(rps_op: KTSOps, anorm: float,
 
             r_op: KTSOp = rps_op[i - 1]
             R: int = lambda_shfs[i - 1]
-            Mat = ndarray_to_Matrix(
-                r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
-            )
+            Mat = r_op.representation(anorm, lambda_run, R, nu_min, nu_max)
             lambda_run += R
 
             if i == n:
                 Mat_product = Mat
             else:
-                Mat_product = Mat * Mat_product
+                Mat_product = Mat @ Mat_product
 
-    return simplify(Mat_product)
+    return Mat_product
 
 
 # # The following represents a product Op of radial operators, specified by a
@@ -2164,10 +2090,8 @@ def RepRadial_LC(rlc_op: list[tuple[Expr, KTSOps]], anorm: float,
                  lambdaa: float, lambda_var: int,
                  nu_min: Nu, nu_max: Nu,
                  nu_lap: nonnegint = 0
-                 ) -> Matrix:
-    M: Matrix = ndarray_to_Matrix(
-        RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
-    )
+                 ) -> NDArrayFloat:
+    M: NDArrayFloat = RepRadial_LC_common(rlc_op, anorm, lambdaa, lambda_var, nu_min, nu_max, nu_lap)
 
     RepRadial_Prod_rem.cache_clear()
     RepRadialshfs_Prod.cache_clear()

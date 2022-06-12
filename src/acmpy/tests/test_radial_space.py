@@ -3,12 +3,25 @@ import math
 
 import pytest
 import numpy as np
-from sympy import Expr, Rational, Matrix, shape, sqrt
-from acmpy.compat import nonnegint, NDArrayFloat, list_to_ndarray, Matrix_to_ndarray, \
-    is_nd_square, is_nd_zeros, ndarray_to_Matrix
+from acmpy.compat import NDArrayFloat, list_to_ndarray, is_nd_square
 from acmpy.radial_space import Radial_Operators, Radial_Sm, Parse_RadialOp_List, Radial_D2b, KTSOps, KTSOp, KTOp, \
-    RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, ME_Radial_D2b, Matrix_sqrt, Matrix_sqrtInv, \
+    RepRadial_bS_DS, Radial_b, Radial_b2, Radial_bm, Radial_bm2, Matrix_sqrt, Matrix_sqrtInv, \
     RepRadial, ME_Radial_b2, RepRadial_b2_sqrt, RepRadial_b2_sqrtInv
+
+
+def is_same_shape_and_square(A: NDArrayFloat, B: NDArrayFloat) -> bool:
+    """Return True if and only if B is the same shape as A and is square."""
+    return A.shape == B.shape and is_nd_square(B)
+
+
+def is_sqrt(A: NDArrayFloat, B: NDArrayFloat, atol: float = 1e-8) -> bool:
+    """Return True if and only if B is the square root of A."""
+    return is_same_shape_and_square(A, B) and np.allclose(A, B @ B, atol=atol)
+
+
+def is_sqrtInv(A: NDArrayFloat, B: NDArrayFloat, atol: float = 1e-8) -> bool:
+    """Return True if and only if B is inverse of the square root of A."""
+    return is_same_shape_and_square(A, B) and np.allclose(A @ B @ B, np.eye(A.shape[0]), atol=atol)
 
 
 class TestRadial:
@@ -89,31 +102,20 @@ class TestRepRadial_bS_DS:
          (4, 1, -1.976423538)]
     )
     def test_KT000(self, K, T, expected):
-        rep: Matrix = ndarray_to_Matrix(RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 0))
-        assert shape(rep) == (1, 1)
+        rep: NDArrayFloat = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 0)
+        assert np.shape(rep) == (1, 1)
 
-        result: float = float(rep[0, 0])
-        assert math.isclose(result, expected)
+        assert math.isclose(rep[0, 0], expected)
 
-    def test_KT001(self):
+    def test_KT001(self, allclose):
         K: int = 0
         T: int = 2
-        rep: Matrix = ndarray_to_Matrix(RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 1))
-        assert shape(rep) == (2, 2)
+        rep: NDArrayFloat = RepRadial_bS_DS(K, T, 1.0, 2.5, 0, 0, 1)
+        assert np.shape(rep) == (2, 2)
 
-        expected: Matrix = Matrix([[-Rational(7, 6), 7 * sqrt(10) / 30],
-                                   [7 * sqrt(10) / 30, -Rational(19, 6)]])
-        for i in range(2):
-            for j in range(2):
-                a: float = float(rep[i, j])
-                b: float = float(expected[i, j])
-                assert math.isclose(a, b)
-
-
-def is_sqrt(A: NDArrayFloat, B: NDArrayFloat) -> bool:
-    """Return True if and only if B is the square root of A."""
-    return A.shape == B.shape and is_nd_square(A) and is_nd_square(B) and \
-        is_nd_zeros(A - B @ B)
+        expected: NDArrayFloat = np.array([[-7 / 6, 7 * math.sqrt(10) / 30],
+                                           [7 * math.sqrt(10) / 30, -19 / 6]])
+        assert allclose(rep, expected)
 
 
 @pytest.fixture
@@ -140,12 +142,6 @@ class TestMatrix_sqrt:
     def test_error(self, negative_eigenvalue):
         with pytest.raises(ValueError):
             Matrix_sqrt(list_to_ndarray(negative_eigenvalue))
-
-
-def is_sqrtInv(A: NDArrayFloat, B: NDArrayFloat) -> bool:
-    """Return True if and only if B is inverse of the square root of A."""
-    return A.shape == B.shape and is_nd_square(A) and is_nd_square(B) and \
-        is_nd_zeros(A @ B @ B - np.eye(A.shape[0]))
 
 
 class TestMatrix_sqrtInv:
@@ -184,10 +180,11 @@ class TestRepRadial_b2:
                 [1.870828693, 5.5, 3.000000000],
                 [0, 3.000000000, 7.5]])]
     )
-    def test_ok_lambdaa_0_2(self, lambdaa, expected):
+    def test_ok_lambdaa_0_2(self, lambdaa, expected, allclose):
         M: NDArrayFloat = RepRadial(ME_Radial_b2, lambdaa, 0, 2)
         E: NDArrayFloat = list_to_ndarray(expected)
-        assert is_nd_zeros(M - E, abs_tol=1e-8)
+        # assert is_nd_zeros(M - E, abs_tol=1e-8)
+        assert allclose(M, E, atol=1e-8)
 
 
 class TestRepRadial_b2_sqrt:
@@ -205,10 +202,10 @@ class TestRepRadial_b2_sqrt:
                 [0.47573443865408516, 2.2107294944926004, 0.6215720763185668],
                 [-0.06608711020447351, 0.6215720763185667, 2.666323432707639]])]
     )
-    def test_ok_lambdaa_0_2(self, lambdaa, expected):
+    def test_ok_lambdaa_0_2(self, lambdaa, expected, allclose):
         M: NDArrayFloat = RepRadial_b2_sqrt(lambdaa, 0, 2)
         E: NDArrayFloat = list_to_ndarray(expected)
-        assert is_nd_zeros(M - E, abs_tol=1e-8)
+        assert allclose(M, E, atol=1e-8)
 
 
 class TestRepRadial_b2_sqrtInv:
@@ -226,7 +223,7 @@ class TestRepRadial_b2_sqrtInv:
                 [-0.14070096400728213, 0.5175181545494785, -0.12413098497731585],
                 [0.047468770908983014, -0.1241309849773159, 0.40516218501861145]])]
     )
-    def test_ok_lambdaa_0_2(self, lambdaa, expected):
+    def test_ok_lambdaa_0_2(self, lambdaa, expected, allclose):
         M: NDArrayFloat = RepRadial_b2_sqrtInv(lambdaa, 0, 2)
         E: NDArrayFloat = list_to_ndarray(expected)
-        assert is_nd_zeros(M - E, abs_tol=1e-8)
+        assert allclose(M, E, atol=1e-8)

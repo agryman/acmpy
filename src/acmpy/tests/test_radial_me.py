@@ -533,3 +533,15 @@ class TestMF_Radial_id_pl:
     def test_ok(self, mu, nu, r, expected):
         pl: Expr = MF_Radial_id_pl(S(5.5), mu, nu, r)
         assert math.isclose(float(pl), expected, rel_tol=1e-07)
+
+    @pytest.mark.parametrize(
+        "mu,nu,r", [
+            (mu, nu, r) for mu in range(5) for r in range(3) for nu in range(mu + r + 1)
+        ]
+    )
+    def test_lamvar(self, mu, nu, r):
+        lambdaa: Expr = S(5.5)
+        pl_expr: Expr = MF_Radial_id_pl(lamvar, mu, nu, r)
+        pl_val: float = float(pl_expr.subs(lamvar, lambdaa))
+        pl_num: float = float(MF_Radial_id_pl(lambdaa, mu, nu, r))
+        assert math.isclose(pl_val, pl_num)
