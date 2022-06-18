@@ -1,0 +1,29 @@
+"""
+This module demonstrates a mypy 0.950 limitation when handling chained type assignments.
+I found this limitation in SymPy 1.10.1 which contains the following type assignments:
+
+Matrix = MutableMatrix = MutableDenseMatrix
+
+$mypy bug_mypy_chained.py
+bug_mypy_chained.py:16: error: Variable "bug_mypy_chained.C" is not valid as a type
+bug_mypy_chained.py:16: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+bug_mypy_chained.py:17: error: Variable "bug_mypy_chained.D" is not valid as a type
+bug_mypy_chained.py:17: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Found 2 errors in 1 file (checked 1 source file)
+"""
+
+
+class A:
+    pass
+
+
+a: A = A()
+
+B = A
+
+b: B = B()
+
+D = C = A
+
+c: C = C()
+d: D = D()

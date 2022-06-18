@@ -813,3 +813,30 @@ Use BibTeX.
 Generate a web page of references for each reference - a DAG.
 
 break 10:05 pm
+
+## 2022-06-12
+
+### 2:20 pm
+
+Jekyll looks good so try it out. - TODO
+
+Look into using my arthurryman.com domain for GitHub Pages. - TODO
+
+Read some parts of the book on mechanics generated using SymPy. - TODO
+* https://moorepants.github.io/learn-multibody-dynamics/
+
+break 2:50 pm
+
+## 2022-06-18
+
+### 2:50 pm
+
+Report mypy bug to both:
+* mypy - https://github.com/python/mypy/issues/12995
+* sympy - https://github.com/sympy/sympy/issues/23647
+
+Contribute fix to sympy - TODO
+* read https://github.com/sympy/sympy/wiki/Development-workflow - TODO
+
+Define Matrix type alias locally - TODO
+* Matrix = MutableDenseMatrix

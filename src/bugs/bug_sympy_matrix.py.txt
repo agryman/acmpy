@@ -1,0 +1,30 @@
+"""
+This module illustrates a mypy problem that occurs with the class Matrix.
+Using: mypy 0.950
+
+mypy.ini contains:
+-----------------------------------
+[mypy]
+ignore_missing_imports = True
+plugins = numpy.typing.mypy_plugin
+-----------------------------------
+
+mypy does not raise an error with sympy 1.9.
+-----------------------------------
+mypy acmpy/debug/debug_mypy_matrix.py
+Success: no issues found in 1 source file
+-----------------------------------
+
+mypy does raise an error with sympy 1.10.1.
+-----------------------------------
+$ mypy bug_sympy_matrix.py
+bug_sympy_matrix.py:29: error: Variable "sympy.matrices.Matrix" is not valid as a type
+bug_sympy_matrix.py:29: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Found 1 error in 1 file (checked 1 source file)
+
+-----------------------------------
+"""
+
+from sympy import Matrix
+
+M: Matrix = Matrix(2)

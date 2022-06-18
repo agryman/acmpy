@@ -5,6 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/bugs/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bugs/bug_mypy_chained.py.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bugs/bug_sympy_matrix.py.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" beforeDir="false" afterPath="$PROJECT_DIR$/journals/2022-06-01 Arthur's Journal.md" afterDir="false" />
     </list>
@@ -19,8 +22,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -76,11 +79,11 @@
       <recent name="$PROJECT_DIR$/data/stats/v1-1-0" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/bugs" />
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/www" />
       <recent name="$PROJECT_DIR$/generated/example-4-5" />
       <recent name="$PROJECT_DIR$/generated" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/acmpy/tests/data/example-4-5" />
     </key>
   </component>
   <component name="RunManager" selected="Python.radial_operators">
@@ -489,6 +492,11 @@
       <workItem from="1654884861489" duration="131000" />
       <workItem from="1654887603730" duration="11080000" />
       <workItem from="1654983453929" duration="2195000" />
+      <workItem from="1655058105419" duration="407000" />
+      <workItem from="1655158267871" duration="6000" />
+      <workItem from="1655338479555" duration="1684000" />
+      <workItem from="1655479425907" duration="881000" />
+      <workItem from="1655577977517" duration="6417000" />
     </task>
     <servers />
   </component>
