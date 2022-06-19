@@ -840,3 +840,10 @@ Contribute fix to sympy - TODO
 
 Define Matrix type alias locally - TODO
 * Matrix = MutableDenseMatrix
+
+Defer sympy fix and revert to sympy==1.9.
+
+Resume work on current branch to optimize matrix element computation.
+Review current OO design - IN-PROGRESS
+
+break 6:25 pm

@@ -169,6 +169,7 @@ def ME_Radial_Sm(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
 #   fi:
 # end:
 def ME_Radial_bm2(lambdaa: float, mu_f: Nu, mu_i: Nu) -> float:
+    # TODO: Is this test correct? Refer to: https://github.com/agryman/acm16/issues/7
     if lambdaa == -1.0:
         raise ValueError('Singular 1/beta^2 for lambda=1')
     if lambdaa.is_integer() and (lambdaa <= -mu_i or lambdaa <= -mu_f):

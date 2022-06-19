@@ -28,11 +28,11 @@ class TestTruncatedRadialSpace:
         assert space.nu_min == nu_min
         assert space.nu_max == nu_max
 
-    def test_fail(self):
+    def test_trivial(self):
         nu_min: Nu = 10
         nu_max: Nu = 0
-        with pytest.raises(ValueError):
-            TruncatedRadialSpace(nu_min, nu_max)
+        space: TruncatedRadialSpace = TruncatedRadialSpace(nu_min, nu_max)
+        assert space.dim() == 0
 
     def test_dim(self):
         space: TruncatedRadialSpace = TruncatedRadialSpace(0, 10)

@@ -8,8 +8,8 @@ from acmpy.compat import nonnegint, require_nonnegint_range, posint
 #
 # # The next set of routines deal with representing operators in the
 # # radial (beta) space. The bases for the radial Hilbert space are
-# # dependent on two parameters (a,lambda). For each such pair,
-# # the basis states are labelled by a single index nu=0,1,2,....
+# # dependent on two parameters (a, lambda). For each such pair,
+# # the basis states are labelled by a single index nu=0, 1, 2, ....
 
 
 class RadialBasis:
@@ -32,7 +32,7 @@ class RadialBasis:
 # dimRadial:=(nu_min::nonnegint,nu_max::nonnegint)
 #   -> `if`(nu_max>=nu_min,nu_max-nu_min+1,0):
 Nu = nonnegint
-"""The basis vectors are labelled by nonnegative integers, typically denoted by the symbols $nu$ or $mu$."""
+"""The radial basis vectors are labelled by nonnegative integers, typically denoted by the symbols $nu$ or $mu$."""
 
 
 def dimRadial(nu_min: Nu, nu_max: Nu) -> nonnegint:
@@ -56,7 +56,7 @@ class TruncatedRadialSpace:
     nu_max: nonnegint
 
     def __init__(self, nu_min: nonnegint, nu_max: nonnegint) -> None:
-        require_nonnegint_range('nu', nu_min, nu_max)
+        """If nu_max < nu_min then the space is the trivial vector space."""
         self.nu_min = nu_min
         self.nu_max = nu_max
 
