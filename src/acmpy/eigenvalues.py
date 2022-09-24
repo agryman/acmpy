@@ -1,8 +1,7 @@
 """This module computes eigenvalues and eigenbases."""
 
 import numpy as np
-from sympy import Matrix, shape
-from acmpy.compat import NDArrayFloat
+from acmpy.compat import NDArrayFloat, Matrix
 
 
 # # The following procedure Eigenfiddle diagonalises the Matrix which is

@@ -4,10 +4,10 @@ import numpy as np
 from typing import Optional
 from functools import cache
 
-from sympy import S, Symbol, Expr, Matrix, zeros, eye, Rational, sqrt
+from sympy import S, Symbol, Expr, Rational, sqrt
 
 from acmpy.compat import nonnegint, require_nonnegint, require_nonnegint_range, posint, require_posint, \
-    NDArrayFloat, Matrix_to_ndarray
+    NDArrayFloat
 from acmpy.spherical_space import dimSO5r3_rngVvarL, lbsSO5r3_rngVvarL, lbsSO5r3_rngL, \
     Alpha, AngularMomentum, Seniority, SO5SO3Label, dimSO3, Spherical_Operators
 from acmpy.radial_bases import Nu, dimRadial, lbsRadial

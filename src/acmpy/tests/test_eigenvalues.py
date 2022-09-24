@@ -1,9 +1,9 @@
 """This module tests the eignevalues.py module."""
 import pytest
 import numpy as np
-from sympy import Matrix, shape
+from sympy import shape
 from acmpy.compat import is_zeros, is_close, is_sorted, ABS_TOL, \
-    Matrix_to_ndarray, ndarray_to_Matrix, list_to_ndarray, lists_to_ndarrays, NDArrayFloat
+    Matrix_to_ndarray, ndarray_to_Matrix, list_to_ndarray, lists_to_ndarrays, NDArrayFloat, Matrix
 from acmpy.eigenvalues import Eigenvectors, Eigenfiddle
 
 

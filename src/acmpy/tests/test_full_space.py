@@ -5,11 +5,11 @@ from math import isclose
 import numpy as np
 import pytest
 
-from sympy import Matrix, Expr, S, Rational, shape, sqrt
+from sympy import Expr, S, Rational, shape
 
-from acmpy.compat import nonnegint, is_close, NDArrayFloat, ndarray_to_list
+from acmpy.compat import nonnegint, is_close, NDArrayFloat, ndarray_to_list, Matrix
 from acmpy.full_space import Eigenfiddle, DigXspace, EigenValues, EigenBases, XParams, LValues, \
-    LBlockFullSpace, LBlockNDFloatArray, LBlocks, validate_Lvals
+    LBlockFullSpace, LBlocks, validate_Lvals
 from acmpy.internal_operators import OperatorSum, ACM_Hamiltonian
 from acmpy.globals import ACM_set_defaults
 
@@ -97,8 +97,8 @@ class TestDigXspace:
 
         eigen_bases: EigenBases = eigen_spaces[1]
         assert n == len(eigen_bases)
-        eigen_base: Matrix = eigen_bases[0]
-        assert shape(eigen_base) == (m, m)
+        eigen_base: NDArrayFloat = eigen_bases[0]
+        assert eigen_base.shape == (m, m)
 
         Xparams: XParams = eigen_spaces[2]
         assert Xparams == (1.0, 2.5, 0, 0, 0, 0)

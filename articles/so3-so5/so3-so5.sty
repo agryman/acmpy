@@ -2,4 +2,26 @@
 
 % use \mathbin, \mathrel, \DeclareMathOperator when declaring new operators
 
+% Ethree denotes three-dimensional Euclidean position space
+% Efive denotes five-dimensional Euclidean quadrupole moment space
 
+\newcommand{\Ethree}{E^3}
+\newcommand{\Efive}{E^5}
+
+% the infix vector addition operation v + w in Ethree
+%%inop \addEthree 3
+\newcommand{\addEthree}{\mathbin{+}}
+
+% the scalar multiplication infix operator a * v in Ethree
+%%inop \mulEthree 4
+\newcommand{\mulEthree}{\mathbin{*}}
+
+% the dot product infix operator v . w in Ethree
+%%inop \dotEthree 4
+\newcommand{\dotEthree}{\mathbin{\cdot}}
+
+% the identity function on Ethree
+\newcommand{\idEthree}{I_3}
+
+% the dual space of Ethree
+\newcommand{\dualEthree}{E^{3*}}

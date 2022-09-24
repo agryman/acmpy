@@ -1,11 +1,14 @@
 """This module defines functions to achieve compatibility with Maple."""
 
+from typing import TypeAlias
 import re
 import numpy as np
 import numpy.typing as npt
 from pathlib import Path
 from math import isclose
-from sympy import Expr, Matrix, shape
+from sympy import Expr, shape, MutableDenseMatrix
+
+Matrix: TypeAlias = MutableDenseMatrix
 
 IntFloatExpr = int | float | Expr
 """IntFloatExpr is a convenience type for function arguments that 
@@ -18,14 +21,6 @@ nonnegint = int
 posint = int
 
 NDArrayFloat = npt.NDArray[np.float64]
-
-
-def require_algebraic(name: str, value: Expr) -> None:
-    """Raise an exception if value is not algebraic."""
-    if not isinstance(value, Expr):
-        raise TypeError(f'type of {name} is not Expr: {value}')
-    if not value.is_algebraic:
-        raise ValueError(f'value of {name} is not algebraic: {value}')
 
 
 def require_int(name: str, value: int) -> None:
@@ -170,7 +165,8 @@ def ndarray_to_list(vals: NDArrayFloat) -> list[float]:
 
 def Matrix_to_ndarray(M: Matrix) -> NDArrayFloat:
     """Creates an NumPy 2-dimensional ndarray of floats from a SymPy Matrix."""
-    return np.array([float(m) for m in M]).reshape(*shape(M))
+    r, c = shape(M)
+    return np.array([[float(M[i, j]) for j in range(c)] for i in range(r)])
 
 
 def ndarray_to_Matrix(M: NDArrayFloat) -> Matrix:

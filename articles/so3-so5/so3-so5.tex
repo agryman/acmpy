@@ -1,53 +1,291 @@
-%! Author = arthurryman
-%! Date = 2020-04-25
+\documentclass{amsart}
 
-% Preamble
-\documentclass[12pt]{article}
+\usepackage{parskip}
 
-% Packages
-\usepackage{../../../mathz/shared/preamble}
-\usepackage{../../../mathz/articles/sets/sets}
-\usepackage{../../../mathz/articles/groups/groups}
-\usepackage{../../../mathz/articles/lie-groups-and-algebras/lie-groups-and-algebras}
+\usepackage{sets}
+\usepackage{groups}
+\usepackage{real-numbers}
+\usepackage{lie-groups-and-algebras}
 \usepackage{so3-so5}
 
-\usepackage{fancyhdr}
-\usepackage{graphicx}
-\graphicspath{ {./images/} }
-\usepackage{listings}
+\usepackage{preamble}
 
-\title{Notes on the Subgroup Inclusion $\SOR{3} \subset \SOR{5}$}
-\author{
-    Arthur Ryman\\
-    \texttt{arthur.ryman@gmail.com}
-}
+\begin{document}
+
+\title{Quadrupole Moments and the Subgroup Inclusion $\SOR{3} \subset \SOR{5}$}
+\author{Arthur Ryman}
+\email[Arthur Ryman]{arthur.ryman@gmail.com}
 \date{\today}
 
+\begin{abstract}
+This article describes quadrupole moments and the associated subgroup inclusion $\SOR{3} \subset \SOR{5}$
+that is used in the \textit{Algebraic Collective Model} of the atomic nucleus.
+All key concepts are formally specified here using \ZN\ in the hopes of improving the quality of software that
+implement the model.
+\end{abstract}
 
-% Document
-\begin{document}
-    \maketitle
+\maketitle
 
-    \begin{abstract}
-        This document describes the subgroup inclusion $\SOR{3} \subset \SOR{5}$
-        that is used in the Algebraic Collective Model (ACM) of the atomic nucleus.
-        All relevant concepts from group theory are formally defined here using Z notation.
-    \end{abstract}
+\tableofcontents
 
 \section{Introduction}
 
-The microscopic configuration space of an atomic nucleus contains the positions of each of its nucleons.
-The collective motion configuration space consists of just the quadrupole moments of the mass distribution
-of the nucleons.
-ACM describes the atomic nucleus in terms of the quantized motions of the quadrupole moments. 
+This article describes part of the theory of the quantum mechanics of atomic nuclei.
+The microscopic configuration space of an atomic nucleus consists of the positions of each of its nucleons.
+Consider an atomic nucleus composed of $Z$ protons and $N$ neutrons.
+The total number of nucleons $A$ is $Z + N$.
+The dimension of the configuration space is $3A$.
+The wave function of the nucleus is given by a complex-valued function of $3A$ coordinates.
 
-The rotation group of space $\SOR{3}$ acts on the microscopic configuration space.
-These rotations induce corresponding $\SOR{5}$ rotations of quadrupole moment space.
-This document describes the embedding of $\SOR{3}$ in $\SOR{5}$ that arises in ACM.
+In theory, we could model the wave function in a computer by storing its values on a grid of points in the configuration space.
+If the grid contained $n$ distinct values for each coordinate then the entire grid would contain $n^{3A}$ points.
+Clearly, as $A$ increases, the number of grid points quickly becomes larger than could be stored in any physical computer,
 
-This document is motivated by the \texttt{acmpy} project which is developing a Python version
-of a previously implemented Maple version of ACM.
-The formal specification language, Z notation, is used here to help ensure the correctness of the Python version.
-This document has been verified using the \fuzz\ type-checker for Z.
+The Algebraic Collective Model (ACM) dramatically reduces the dimension of the configuration space to
+just five by considering only the \textit{quadrupole moments} of the nucleon mass distribution.
+The quadrupole moments are, in effect, summary statistics that can reveal the presence of \textit{collective motion}.
+
+Furthermore, the ACM deals with Hamiltonians that are built up from operators in a certain Lie algebra.
+This allows energy levels and transition amplitudes to be calculated algebraically.
+
+Specifically, the quadrupole moments form a five-dimensional vector space that carries a natural representation
+of the rotation group $\SOR{3}$ of three-dimensional Euclidean nucleon position space.
+The usual inner product on nucleon position space induces a natural inner product on quadrupole moment space which is
+preserved by the nucleon position space rotation group. This establishes a natural inclusion $\SOR{3} \subset \SOR{5}$.
+
+This article is part of the \texttt{acmpy} project which is translating a previously developed Maple implementation of the ACM
+into Python.
+The formal specification language, \ZN, is used here to help ensure the correctness of the Python version.
+This article has been checked using the \fuzz\ type checker for \ZN.
+
+\section{Position Space}
+
+For the purposes of this article, the configuration space of a single nucleon is the set of all positions in three-dimensional space.
+Here we are ignoring spin and other quantum numbers.
+Position space has a natural notion of distance defined by the usual dot product.
+We refer to position space with this metric as \textit{Euclidean space}.
+
+\subsection{Euclidean Space}
+
+Let $EuclideanSpace$ denote the usual three-dimensional Euclidean position space.
+A position is given by a triple of real numbers.
+
+\begin{zed}
+	EuclideanSpace == \R \cross \R \cross \R
+\end{zed}
+
+Let the notation $\Ethree$ denote $EuclideanSpace$.
+
+\begin{zed}
+	\Ethree == EuclideanSpace
+\end{zed}
+
+\subsection{Components}
+
+Let $v \in \Ethree$ be a position in Euclidean space. 
+Let the real numbers $x, y, z$ denote the components of $v = (x, y, z)$.
+
+\begin{schema}{E3\_Components}
+	v: \Ethree \\
+	x, y, z: \R
+\where
+	v = (x, y, z)
+\end{schema}
+
+The space $\Ethree$ is a real three-dimensional vector space with addition and scalar multiplication
+defined by componentwise addition and multiplication.
+The points in $\Ethree$ will be referred to as \textit{position vectors} or, simply, as \textit{vectors} when the context is clear.
+
+\subsection{Vector Addition}
+
+Let $v_1$ and $v_2$ be vectors. Their sum $v$ is defined by componentwise addition.
+
+\begin{schema}{E3\_VectorAddition}
+	E3\_Components_1 \\
+	E3\_Components_2 \\
+	E3\_Components
+\where
+	v = (x_1 \addR x_2, y_1 \addR y_2, z_1 \addR z_2)
+\end{schema}
+
+Let the function $v = E3\_add(v_1, v_2)$ denote vector addition.
+
+\begin{zed}
+	E3\_add == \{~ E3\_VectorAddition @ (v_1, v_2) \mapsto v ~\}
+\end{zed}
+
+\begin{remark} 
+Vector addition is a binary operation on Euclidean space.
+\begin{zed}
+	E3\_add \in \Ethree \cross \Ethree \fun \Ethree
+\end{zed}
+\end{remark}
+
+Let the notation $v = v_1 \addEthree v_2$ denote vector addition in $\Ethree$.
+
+\begin{zed}
+	(\_ \addEthree \_) == E3\_add
+\end{zed}
+
+\subsubsection{Scalar Multiplication}
+
+Let $s$ be a real scale factor and let $v_1$ be a vector. Their product $v$ is defined by componentwise multiplication.
+
+\begin{schema}{E3\_ScalarMultiplication}
+	s: \R \\
+	E3\_Components_1 \\
+	E3\_Components
+\where
+	v = (s \mulR x_1, s \mulR y_1, s \mulR z_1)
+\end{schema}
+
+Let the function $v = E3\_mul(s, v_1)$ denote scalar multiplication.
+
+\begin{zed}
+	E3\_mul == \{~ E3\_ScalarMultiplication @ (s, v_1) \mapsto v ~\}
+\end{zed}
+
+\begin{remark} 
+Scalar multiplication is a total function.
+\begin{zed}
+	E3\_mul \in \R \cross \Ethree \fun \Ethree
+\end{zed}
+\end{remark}
+
+Let the notation $v = s \mulEthree v_1$ denote scalar multiplication in $\Ethree$.
+
+\begin{zed}
+	(\_ \mulEthree \_) == E3\_mul
+\end{zed}
+
+\subsection{Linear Functions}
+
+A real-valued function $f$ on $\Ethree$ is said to be a \textit{linear function} if it preserves vector addition and scalar product
+in the following sense.
+
+\begin{schema}{E3\_LinearFunction}
+	f: \Ethree \fun \R
+\where
+	\forall v, w: \Ethree @ \\
+	\t1	f(v \addEthree w) = (f~v) \addR (f~w)
+\also
+	\forall s: \R; v: \Ethree @ \\
+	\t1	f(s \mulEthree v) = s \mulR (f~v)	
+\end{schema}
+
+The set of all linear functions on $\Ethree$ is called the \textit{dual space} of $\Ethree$.
+Let $E3\_dual$ be the dual space.
+
+\begin{zed}
+	E3\_dual == \{~ E3\_LinearFunction @ f ~\}
+\end{zed}
+
+Let the notation $\dualEthree$ denote the dual space.
+
+\begin{zed}
+	\dualEthree == E3\_dual
+\end{zed}
+
+\subsection{Linear Transformations}
+
+A function $T$ from $\Ethree$ to $\Ethree$ is a \textit{linear transformation} if it preserves vector addition and scalar product
+in the following sense.
+
+\begin{schema}{E3\_LinearTransformation}
+	T: \Ethree \fun \Ethree
+\where
+	\forall v, w: \Ethree @ \\
+	\t1	T(v \addEthree w) = (T~v) \addEthree (T~w)
+\also
+	\forall s: \R; v: \Ethree @ \\
+	\t1	T(s \mulEthree v) = s \mulEthree (T~v)
+\end{schema}
+
+\subsection{The Identity Function}
+
+Let $E3\_id$ denote the identity function from $\Ethree$ to $\Ethree$.
+
+\begin{zed}
+	E3\_id == \id \Ethree
+\end{zed}
+
+\begin{remark}
+The identity function is a bijection.
+\begin{zed}
+	E3\_id \in \Ethree \bij \Ethree
+\end{zed}
+\end{remark}
+
+Let the notation $\idEthree = E3\_id$ denote the identity function.
+
+\begin{zed}
+	\idEthree == E3\_id
+\end{zed}
+
+\subsection{Trace}
+
+\subsection{Determinant}
+
+
+\subsection{General Linear Transformations}
+
+A linear transformation is said to be a \textit{general linear transformation} if it is a bijection.
+
+\begin{schema}{E3\_GeneralLinearTransformation}
+	E3\_LinearTransformation
+\where
+	T \in \Ethree \bij \Ethree
+\end{schema}
+
+\subsection{Special Linear Transformations}
+
+A general linear transformation is said to be a \textit{special linear transformation} if its determinant is 1.
+
+\subsection{The Dot Product}
+
+Let $v_1$ and $v_2$ be vectors. Their dot product $g$ is the sum of their componentwise products.
+
+\begin{schema}{E3\_DotProduct}
+	E3\_Components_1 \\
+	E3\_Components_2 \\
+	g: \R
+\where
+	g = x_1 \mulR x_2 \addR y_1 \mulR y_2 \addR z_1 \mulR z_2
+\end{schema}
+
+Let the function $g = E3\_dot(v_1, v_2)$ denote the dot product.
+
+\begin{zed}
+	E3\_dot == \{~ E3\_DotProduct @ (v_1, v_2) \mapsto g ~\}
+\end{zed}
+
+\begin{remark}
+\begin{zed}
+	E3\_dot \in \Ethree \cross \Ethree \fun \R
+\end{zed}
+\end{remark}
+
+Let the notation $g = v_1 \dotEthree v_2$ denote the dot product.
+
+\begin{zed}
+	(\_ \dotEthree \_) == E3\_dot
+\end{zed}
+
+\subsection{Orthogonal Transformations}
+
+A linear transformation $T$ is \textit{orthogonal} if it preserves dot products.
+
+\begin{schema}{E3\_OrthogonalTransformation}
+	E3\_LinearTransformation
+\where
+	\forall v, w: \Ethree @ \\
+	\t1	(T~v) \dotEthree (T~w) = v \dotEthree w
+\end{schema}
+
+\subsection{Special Orthogonal Transformations}
+
+An orthogonal transformation is said to be \textit{special} if its determinant is $1$.
+
+
 
 \end{document}

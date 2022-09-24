@@ -551,10 +551,10 @@ def MF_Radial_id_pl(lambdaa: Expr, mu: Nu, nu: Nu, r: nonnegint
     if nu > mu + r:
         return S.Zero
 
-    res: Expr = sum((-1) ** j * binomial(r, j) * binomial(r + mu - nu + j - 1, r - 1)
-                    * RisingFactorial(lambdaa + mu + r + j, r - j)
-                    * RisingFactorial(mu + 1, j)
-                    for j in range(max(0, nu - mu), r + 1))
+    res: Expr = S(sum((-1) ** j * binomial(r, j) * binomial(r + mu - nu + j - 1, r - 1)
+                      * RisingFactorial(lambdaa + mu + r + j, r - j)
+                      * RisingFactorial(mu + 1, j)
+                      for j in range(max(0, nu - mu), r + 1)))
 
     return simplify(res) * (-1) ** (mu + nu)
 

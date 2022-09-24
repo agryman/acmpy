@@ -847,3 +847,23 @@ Resume work on current branch to optimize matrix element computation.
 Review current OO design - IN-PROGRESS
 
 break 6:25 pm
+
+## 2022-06-20
+
+### 3:30 pm
+
+Follow-up reply to mypy bug.
+Looks like only simple assignments are allowed for type alias assignments.
+* read https://github.com/sympy/sympy/wiki/Development-workflow - DONE
+* fix the problem in SymPy on a branch for issue #23647 - DONE
+
+break 7:40 pm
+
+## 2022-06-21
+
+### 8:45 pm
+
+* Define type alias for `Matrix` in `compat.py` - DONE
+* Update `sympy` to 1.10.1 and resolve `mypy` issues - DONE
+
+break 9:50 pm

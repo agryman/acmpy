@@ -1,6 +1,6 @@
 """This module debugs the RWC_alam() function."""
 
-from sympy import S, Symbol, Expr, solveset, sqrt, Set, EmptySet, simplify, nsolve
+from sympy import S, Symbol, Expr, solveset, sqrt, Set, EmptySet, simplify, nsolve, N
 
 
 def RWC_alam_simplified(B: float) -> None:
@@ -28,7 +28,7 @@ def RWC_alam_simplified(B: float) -> None:
     if solutions == EmptySet:
         print(f'Error: solveset returns EmptySet')
     else:
-        A0: float = float(solutions.args[0])
+        A0: float = float(N(solutions.args[0]))
         print(f'Success: first solveset solution = {A0}')
 
     E_simp: Expr = simplify(E)
@@ -36,7 +36,7 @@ def RWC_alam_simplified(B: float) -> None:
     if solutions_simp == EmptySet:
         print(f'Error: solveset returns EmptySet after simplification')
     else:
-        A0_simp: float = float(solutions_simp.args[0])
+        A0_simp: float = float(N(solutions_simp.args[0]))
         print(f'Success: first solveset solution after simplification = {A0_simp}')
 
 

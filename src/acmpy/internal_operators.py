@@ -5,10 +5,9 @@ import numpy as np
 from functools import cache
 from typing import Optional
 
-from sympy import Symbol, pi, sqrt, Integer, Rational, Expr, \
-    S, factorial, Matrix, diag, eye
+from sympy import Symbol, pi, sqrt, Integer, Rational, Expr, S, factorial, diag
 
-from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr, NDArrayFloat, ndarray_to_Matrix, Matrix_to_ndarray
+from acmpy.compat import nonnegint, require_nonnegint, is_odd, IntFloatExpr, NDArrayFloat, Matrix
 from acmpy.so5_so3_cg import CG_SO5r3
 from acmpy.spherical_space import lbsSO5r3_rngVvarL, dimSO3, dimSO5r3_rngVvarL, SO5SO3Label, \
     SpHarm_Table, SpHarm_Operators, \
@@ -656,50 +655,50 @@ def ACM_Hamiltonian(c11: IntFloatExpr = 0,
                     c42: IntFloatExpr = 0,
                     c43: IntFloatExpr = 0,
                     c50: IntFloatExpr = 0) -> OperatorSum:
-    c11 = S(c11)
-    c20 = S(c20)
-    c21 = S(c21)
-    c22 = S(c22)
-    c23 = S(c23)
-    c30 = S(c30)
-    c31 = S(c31)
-    c32 = S(c32)
-    c33 = S(c33)
-    c40 = S(c40)
-    c41 = S(c41)
-    c42 = S(c42)
-    c43 = S(c43)
-    c50 = S(c50)
+    c11_expr: Expr = S(c11)
+    c20_expr: Expr = S(c20)
+    c21_expr: Expr = S(c21)
+    c22_expr: Expr = S(c22)
+    c23_expr: Expr = S(c23)
+    c30_expr: Expr = S(c30)
+    c31_expr: Expr = S(c31)
+    c32_expr: Expr = S(c32)
+    c33_expr: Expr = S(c33)
+    c40_expr: Expr = S(c40)
+    c41_expr: Expr = S(c41)
+    c42_expr: Expr = S(c42)
+    c43_expr: Expr = S(c43)
+    c50_expr: Expr = S(c50)
 
-    our_op: OperatorSum = () if c11 == 0 \
-        else ((c11, (Radial_D2b,)),
-              (-c11 * (2 + SENIORITY * (SENIORITY + 3)), (Radial_bm2,)))
-    if c20 != 0:
-        our_op += ((c20, ()),)
-    if c21 != 0:
-        our_op += ((c21, (Radial_b2,)),)
-    if c22 != 0:
-        our_op += ((c22, (Radial_b2, Radial_b2)),)
-    if c23 != 0:
-        our_op += ((c23, (Radial_bm2,)),)
-    if c30 != 0:
-        our_op += ((c30 * Convert_310, (Radial_b, SpHarm_310)),)
-    if c31 != 0:
-        our_op += ((c31 * Convert_310, (Radial_b2, Radial_b, SpHarm_310)),)
-    if c32 != 0:
-        our_op += ((c32 * Convert_310, (Radial_b2, Radial_b2, Radial_b, SpHarm_310)),)
-    if c33 != 0:
-        our_op += ((c33 * Convert_310, (Radial_bm, SpHarm_310)),)
-    if c40 != 0:
-        our_op += ((c40 * Convert_310 ** 2, (SpHarm_310, SpHarm_310)),)
-    if c41 != 0:
-        our_op += ((c41 * Convert_310 ** 2, (Radial_b2, SpHarm_310, SpHarm_310)),)
-    if c42 != 0:
-        our_op += ((c42 * Convert_310 ** 2, (Radial_b2, Radial_b2, SpHarm_310, SpHarm_310)),)
-    if c43 != 0:
-        our_op += ((c43 * Convert_310 ** 2, (Radial_bm2, SpHarm_310, SpHarm_310)),)
-    if c50 != 0:
-        our_op += ((c50, (Xspace_PiqPi,)),)
+    our_op: OperatorSum = () if c11_expr == 0 \
+        else ((c11_expr, (Radial_D2b,)),
+              (-c11_expr * (2 + SENIORITY * (SENIORITY + 3)), (Radial_bm2,)))
+    if c20_expr != 0:
+        our_op += ((c20_expr, ()),)
+    if c21_expr != 0:
+        our_op += ((c21_expr, (Radial_b2,)),)
+    if c22_expr != 0:
+        our_op += ((c22_expr, (Radial_b2, Radial_b2)),)
+    if c23_expr != 0:
+        our_op += ((c23_expr, (Radial_bm2,)),)
+    if c30_expr != 0:
+        our_op += ((c30_expr * Convert_310, (Radial_b, SpHarm_310)),)
+    if c31_expr != 0:
+        our_op += ((c31_expr * Convert_310, (Radial_b2, Radial_b, SpHarm_310)),)
+    if c32_expr != 0:
+        our_op += ((c32_expr * Convert_310, (Radial_b2, Radial_b2, Radial_b, SpHarm_310)),)
+    if c33_expr != 0:
+        our_op += ((c33_expr * Convert_310, (Radial_bm, SpHarm_310)),)
+    if c40_expr != 0:
+        our_op += ((c40_expr * Convert_310 ** 2, (SpHarm_310, SpHarm_310)),)
+    if c41_expr != 0:
+        our_op += ((c41_expr * Convert_310 ** 2, (Radial_b2, SpHarm_310, SpHarm_310)),)
+    if c42_expr != 0:
+        our_op += ((c42_expr * Convert_310 ** 2, (Radial_b2, Radial_b2, SpHarm_310, SpHarm_310)),)
+    if c43_expr != 0:
+        our_op += ((c43_expr * Convert_310 ** 2, (Radial_bm2, SpHarm_310, SpHarm_310)),)
+    if c50_expr != 0:
+        our_op += ((c50_expr, (Xspace_PiqPi,)),)
 
     return our_op
 

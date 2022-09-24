@@ -394,10 +394,15 @@ def CG_SO5r3(v1: nonnegint, a1: posint, L1: nonnegint,
 #   (-1)^(j1-j2+m3)*
 #       simplify(Wigner_3j(j1,j2,j3,m1,m2,-m3)*sqrt(2*j3+1),sqrt);
 # end:
-def CG_SO3(j1: nonnegint | Rational, m1: int | Rational,
-           j2: nonnegint | Rational, m2: int | Rational,
-           j3: nonnegint | Rational, m3: int | Rational) -> Expr:
-    j1, m1, j2, m2, j3, m3 = S((j1, m1, j2, m2, j3, m3))
+def CG_SO3(j1_in: nonnegint | Rational, m1_in: int | Rational,
+           j2_in: nonnegint | Rational, m2_in: int | Rational,
+           j3_in: nonnegint | Rational, m3_in: int | Rational) -> Expr:
+    j1: Expr = S(j1_in)
+    m1: Expr = S(m1_in)
+    j2: Expr = S(j2_in)
+    m2: Expr = S(m2_in)
+    j3: Expr = S(j3_in)
+    m3: Expr = S(m3_in)
 
     if not((2 * j1).is_integer and (2 * m1).is_integer and
            (2 * j2).is_integer and (2 * m2).is_integer and
@@ -419,7 +424,7 @@ def CG_SO3(j1: nonnegint | Rational, m1: int | Rational,
         return S.Zero
 
     return S.NegativeOne ** (j1 - j2 + m3) * \
-        simplify(Wigner_3j(j1, j2, j3, m1, m2, -m3) * sqrt(2 * j3 + 1))
+        simplify(Wigner_3j(j1_in, j2_in, j3_in, m1_in, m2_in, -m3_in) * sqrt(2 * j3 + 1))
 
 
 # Wigner_3j:=proc(j1,j2,j3,m1,m2,m3)
