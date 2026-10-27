@@ -1,585 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="">
+    <list default="true" id="6e3a5fd2-d39b-4100-b8e3-d4008924ebca" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/arthurryman.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/rGraphicsSettings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/rSettings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acmpy.iml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DefaultGradleProjectSettings">
-    <option name="isMigrated" value="true" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-        <option value="HTML File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitSEFilterConfiguration">
-    <file-type-list>
-      <filtered-out-file-type name="LOCAL_BRANCH" />
-      <filtered-out-file-type name="REMOTE_BRANCH" />
-      <filtered-out-file-type name="TAG" />
-      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
-    </file-type-list>
-  </component>
-  <component name="JupyterTrust" id="df189184-43be-4c97-b8b5-9f42ded0f901" />
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
-  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "agryman"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/agryman/acmpy.git",
+    "accountId": "6ccef387-3bdc-4fea-9832-082d3dd5d288"
+  }
+}]]></component>
   <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
   "associatedIndex": 0
 }]]></component>
-  <component name="ProjectId" id="1YXcA61b4STxpEUQB4E1i0sKXpn" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="3LIPP2lPzFWyCCttoJKzZ5tFRDg" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "TODO_SCOPE": "Project Files",
-    "WebServerToolWindowFactoryState": "false",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/arthurryman/Documents/repositories/agryman/acmpy/www",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/www" />
-      <recent name="$PROJECT_DIR$/src/acmpy/tests" />
-      <recent name="$PROJECT_DIR$/src/acmpy/tests/data/example-4-5" />
-      <recent name="$PROJECT_DIR$/data/stats/v1-1-1" />
-      <recent name="$PROJECT_DIR$/data/stats/v1-1-0" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/www" />
-      <recent name="$PROJECT_DIR$/generated/example-4-5" />
-      <recent name="$PROJECT_DIR$/generated" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/acmpy/tests/data/example-4-5" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Python.radial_operators">
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+  <component name="RunManager">
+    <configuration default="true" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <steps>
+        <latexmkCompile id="c014673c-6753-401a-ac97-ce123a3e0631" />
+        <pdfViewer id="536add4c-0244-4f99-b42b-8f22472da652" />
+      </steps>
       <method v="2" />
     </configuration>
-    <configuration name="console" type="PythonConfigurationType" factoryName="Python">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/.virtualenvs/acmpy/bin/python" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="hello_world" type="PythonConfigurationType" factoryName="Python">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/acmpy/hello_world.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="profile_example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/performance" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/performance/profile_example.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="radial_operators" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/radial_operators.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="read_stats" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/performance" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/performance/read_stats.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="so5cg" type="PythonConfigurationType" factoryName="Python">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/acmpy/so5cg.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for acmpy.tests.test_radial_bases.TestRadialBasis" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;acmpy.tests.test_radial_bases.TestRadialBasis&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests in test_radial_bases.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="acmpy" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/acmpy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/acmpy/tests/test_radial_bases.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <list>
-      <item itemvalue="Python.console" />
-      <item itemvalue="Python.hello_world" />
-      <item itemvalue="Python.so5cg" />
-      <item itemvalue="Python.radial_operators" />
-      <item itemvalue="Python.read_stats" />
-      <item itemvalue="Python.profile_example" />
-      <item itemvalue="Python tests.Python tests for acmpy.tests.test_radial_bases.TestRadialBasis" />
-      <item itemvalue="Python tests.Python tests in test_radial_bases.py" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.radial_operators" />
-        <item itemvalue="Python tests.Python tests in test_radial_bases.py" />
-        <item itemvalue="Python tests.Python tests for acmpy.tests.test_radial_bases.TestRadialBasis" />
-        <item itemvalue="Python.read_stats" />
-        <item itemvalue="Python.profile_example" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
-        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
+        <option value="bundled-python-sdk-73a66231627c-5bd6d13a2a75-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-262.10968.92" />
       </set>
     </attachedChunks>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
-  <component name="StructureViewFactory">
-    <option name="AUTOSCROLL_FROM_SOURCE" value="true" />
-    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
-  </component>
-  <component name="SvnConfiguration">
-    <configuration />
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ea18bb41-422e-44f4-9ab9-6f90a8570513" name="Default Changelist" comment="" />
-      <created>1570757773052</created>
+      <changelist id="6e3a5fd2-d39b-4100-b8e3-d4008924ebca" name="Changes" comment="" />
+      <created>1793138581740</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1570757773052</updated>
-      <workItem from="1570757774242" duration="488000" />
-      <workItem from="1570758449393" duration="994000" />
-      <workItem from="1570759877051" duration="1326000" />
-      <workItem from="1571103299853" duration="2322000" />
-      <workItem from="1572318125673" duration="20000" />
-      <workItem from="1573978567793" duration="36000" />
-      <workItem from="1573978619574" duration="105000" />
-      <workItem from="1573978742570" duration="661000" />
-      <workItem from="1573980386020" duration="2560000" />
-      <workItem from="1575743908097" duration="2267000" />
-      <workItem from="1575811212680" duration="1669000" />
-      <workItem from="1575929267482" duration="357000" />
-      <workItem from="1576338832931" duration="14425000" />
-      <workItem from="1576444329527" duration="6843000" />
-      <workItem from="1577560022601" duration="643000" />
-      <workItem from="1578536558738" duration="3244000" />
-      <workItem from="1579385516645" duration="10743000" />
-      <workItem from="1579878962054" duration="838000" />
-      <workItem from="1579879873170" duration="4655000" />
-      <workItem from="1579964268081" duration="1140000" />
-      <workItem from="1579966137755" duration="601000" />
-      <workItem from="1579966775171" duration="7235000" />
-      <workItem from="1580056988461" duration="8303000" />
-      <workItem from="1580076745511" duration="974000" />
-      <workItem from="1580594617363" duration="15337000" />
-      <workItem from="1580677635963" duration="6728000" />
-      <workItem from="1580930997172" duration="29000" />
-      <workItem from="1580931059828" duration="35000" />
-      <workItem from="1580931267077" duration="968000" />
-      <workItem from="1581084749473" duration="13000" />
-      <workItem from="1583092236789" duration="1627000" />
-      <workItem from="1583093885849" duration="8511000" />
-      <workItem from="1583154145734" duration="154000" />
-      <workItem from="1583166218056" duration="801000" />
-      <workItem from="1583173751185" duration="76000" />
-      <workItem from="1583246929474" duration="8970000" />
-      <workItem from="1583334733982" duration="8532000" />
-      <workItem from="1583424590223" duration="3931000" />
-      <workItem from="1584220842593" duration="263000" />
-      <workItem from="1584221118227" duration="2941000" />
-      <workItem from="1584477333326" duration="602000" />
-      <workItem from="1584815547325" duration="16000" />
-      <workItem from="1584889833045" duration="14139000" />
-      <workItem from="1585706898269" duration="94000" />
-      <workItem from="1585707023163" duration="119000" />
-      <workItem from="1585839484419" duration="3616000" />
-      <workItem from="1586029192289" duration="21000" />
-      <workItem from="1586466998984" duration="144000" />
-      <workItem from="1586467187933" duration="201000" />
-      <workItem from="1586467404992" duration="31000" />
-      <workItem from="1586467447546" duration="1921000" />
-      <workItem from="1586469417432" duration="29000" />
-      <workItem from="1586469457536" duration="2843000" />
-      <workItem from="1586472392695" duration="19000" />
-      <workItem from="1586531728744" duration="5072000" />
-      <workItem from="1586558665957" duration="35000" />
-      <workItem from="1586624425368" duration="5000" />
-      <workItem from="1586788508121" duration="2588000" />
-      <workItem from="1586801101812" duration="3267000" />
-      <workItem from="1587069802122" duration="49000" />
-      <workItem from="1587069862978" duration="1008000" />
-      <workItem from="1587230918645" duration="10000" />
-      <workItem from="1587230939861" duration="554000" />
-      <workItem from="1587237397466" duration="3508000" />
-      <workItem from="1587753152984" duration="5339000" />
-      <workItem from="1587825431309" duration="15870000" />
-      <workItem from="1587935717373" duration="4173000" />
-      <workItem from="1588170776717" duration="198000" />
-      <workItem from="1588175117407" duration="591000" />
-      <workItem from="1588181720145" duration="3857000" />
-      <workItem from="1588204359476" duration="720000" />
-      <workItem from="1588347700365" duration="562000" />
-      <workItem from="1588355544124" duration="208000" />
-      <workItem from="1588365754358" duration="229000" />
-      <workItem from="1588439522596" duration="1641000" />
-      <workItem from="1588530818418" duration="349000" />
-      <workItem from="1589044713055" duration="22000" />
-      <workItem from="1589044750589" duration="601000" />
-      <workItem from="1589048675298" duration="11000" />
-      <workItem from="1589293174717" duration="1218000" />
-      <workItem from="1589295489789" duration="8000" />
-      <workItem from="1590261921766" duration="305000" />
-      <workItem from="1590340787648" duration="628000" />
-      <workItem from="1590418188881" duration="602000" />
-      <workItem from="1590435090463" duration="497000" />
-      <workItem from="1590764361164" duration="7000" />
-      <workItem from="1590764891939" duration="5000" />
-      <workItem from="1591219249091" duration="220000" />
-      <workItem from="1591219502538" duration="1193000" />
-      <workItem from="1595451399210" duration="600000" />
-      <workItem from="1595699662235" duration="8000" />
-      <workItem from="1637876490474" duration="750000" />
-      <workItem from="1637954187845" duration="601000" />
-      <workItem from="1642803122839" duration="258000" />
-      <workItem from="1646425342752" duration="8304000" />
-      <workItem from="1646433903070" duration="121000" />
-      <workItem from="1646512710038" duration="1528000" />
-      <workItem from="1646515240069" duration="3580000" />
-      <workItem from="1646597834055" duration="5518000" />
-      <workItem from="1646667813441" duration="7669000" />
-      <workItem from="1646676029930" duration="7351000" />
-      <workItem from="1646774190265" duration="4962000" />
-      <workItem from="1646781967284" duration="561000" />
-      <workItem from="1646844587086" duration="10317000" />
-      <workItem from="1646876999459" duration="1153000" />
-      <workItem from="1646938731591" duration="12507000" />
-      <workItem from="1647029230910" duration="8730000" />
-      <workItem from="1647118838630" duration="3061000" />
-      <workItem from="1647205644912" duration="6101000" />
-      <workItem from="1647301914231" duration="6181000" />
-      <workItem from="1647356177956" duration="1973000" />
-      <workItem from="1647464197001" duration="3719000" />
-      <workItem from="1647479562739" duration="5072000" />
-      <workItem from="1647549752459" duration="2556000" />
-      <workItem from="1647629944285" duration="7522000" />
-      <workItem from="1647804730785" duration="15006000" />
-      <workItem from="1647881736264" duration="13256000" />
-      <workItem from="1647975262546" duration="12758000" />
-      <workItem from="1648069848462" duration="10781000" />
-      <workItem from="1648152886855" duration="7310000" />
-      <workItem from="1648232523037" duration="11343000" />
-      <workItem from="1648321916511" duration="15609000" />
-      <workItem from="1648344028725" duration="58000" />
-      <workItem from="1648410322063" duration="7466000" />
-      <workItem from="1648501857821" duration="1704000" />
-      <workItem from="1648584588474" duration="6059000" />
-      <workItem from="1648672399391" duration="3611000" />
-      <workItem from="1648691062723" duration="3154000" />
-      <workItem from="1648748308681" duration="12978000" />
-      <workItem from="1648821602051" duration="14000" />
-      <workItem from="1648923192079" duration="14970000" />
-      <workItem from="1649174113279" duration="19424000" />
-      <workItem from="1649249290593" duration="11341000" />
-      <workItem from="1649357754324" duration="3241000" />
-      <workItem from="1649361051982" duration="5214000" />
-      <workItem from="1649449345163" duration="3696000" />
-      <workItem from="1649532660608" duration="15105000" />
-      <workItem from="1649619048274" duration="10108000" />
-      <workItem from="1649691710169" duration="1194000" />
-      <workItem from="1649709612167" duration="6508000" />
-      <workItem from="1649785596654" duration="260000" />
-      <workItem from="1649785874732" duration="8500000" />
-      <workItem from="1649797957034" duration="884000" />
-      <workItem from="1649808133697" duration="1917000" />
-      <workItem from="1649872229347" duration="1677000" />
-      <workItem from="1649888037473" duration="14101000" />
-      <workItem from="1650316230405" duration="7846000" />
-      <workItem from="1650332046373" duration="2929000" />
-      <workItem from="1650396474191" duration="13596000" />
-      <workItem from="1650492149589" duration="839000" />
-      <workItem from="1650555850008" duration="29581000" />
-      <workItem from="1650730446483" duration="21848000" />
-      <workItem from="1650899322602" duration="18570000" />
-      <workItem from="1650999809138" duration="32475000" />
-      <workItem from="1651154168787" duration="68156000" />
-      <workItem from="1651494767816" duration="9538000" />
-      <workItem from="1651691029365" duration="5702000" />
-      <workItem from="1651779764392" duration="59805000" />
-      <workItem from="1652021575352" duration="28645000" />
-      <workItem from="1652110125349" duration="94278000" />
-      <workItem from="1652801059536" duration="13996000" />
-      <workItem from="1652835661273" duration="595000" />
-      <workItem from="1652888671523" duration="6169000" />
-      <workItem from="1652969402917" duration="7273000" />
-      <workItem from="1653010743046" duration="14047000" />
-      <workItem from="1653154122876" duration="2963000" />
-      <workItem from="1653332057396" duration="4204000" />
-      <workItem from="1653590826361" duration="2534000" />
-      <workItem from="1653622737356" duration="51000" />
-      <workItem from="1653672523999" duration="4290000" />
-      <workItem from="1653686936234" duration="130000" />
-      <workItem from="1653763256340" duration="19607000" />
-      <workItem from="1653932913991" duration="13932000" />
-      <workItem from="1654019629114" duration="17815000" />
-      <workItem from="1654109517644" duration="14594000" />
-      <workItem from="1654184404041" duration="19360000" />
-      <workItem from="1654269882864" duration="12913000" />
-      <workItem from="1654294043828" duration="1424000" />
-      <workItem from="1654303461888" duration="273000" />
-      <workItem from="1654347272308" duration="596000" />
-      <workItem from="1654453830848" duration="598000" />
-      <workItem from="1654720175670" duration="14587000" />
-      <workItem from="1654780212059" duration="8251000" />
-      <workItem from="1654884861489" duration="131000" />
-      <workItem from="1654887603730" duration="11080000" />
-      <workItem from="1654983453929" duration="2195000" />
-      <workItem from="1741021078445" duration="481000" />
+      <updated>1793138581740</updated>
+      <workItem from="1793138582995" duration="556000" />
     </task>
     <servers />
   </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="UnknownFeatures">
-    <option featureType="com.intellij.fileTypeFactory" implementationName="Makefile" />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <ignored-roots>
-      <path value="$PROJECT_DIR$/notebooks/presentations/towardsDS" />
-    </ignored-roots>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
-    </breakpoint-manager>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/acmpy$ex_1_2_setting_the_default_output_format.coverage" NAME="ex-1-2-setting-the-default-output-format Coverage Results" MODIFIED="1650398235188" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$acm_scale.coverage" NAME="debug_acm_scale Coverage Results" MODIFIED="1650730111761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_acm_scale.coverage" NAME="debug_acm_scale Coverage Results" MODIFIED="1650904577942" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$acm1_4.coverage" NAME="acm1_4 Coverage Results" MODIFIED="1650398353257" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_repxspace.coverage" NAME="debug_repxspace Coverage Results" MODIFIED="1651613319176" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$run_acm_scale.coverage" NAME="run_acm_scale Coverage Results" MODIFIED="1651977788353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/performance" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_rwc_alam.coverage" NAME="debug_rwc_alam Coverage Results" MODIFIED="1652751221607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$radial_operators.coverage" NAME="radial_operators Coverage Results" MODIFIED="1654975058643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_mf_radial_id.coverage" NAME="debug_mf_radial_id Coverage Results" MODIFIED="1652046022627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$profile_acm_scale.coverage" NAME="profile_acm_scale Coverage Results" MODIFIED="1651699554919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/performance" />
-    <SUITE FILE_PATH="coverage/acmpy$run_example.coverage" NAME="run_example Coverage Results" MODIFIED="1654198141523" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$ex_1_preliminaries.coverage" NAME="ex_1_preliminaries Coverage Results" MODIFIED="1650574183992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$deug_full_space.coverage" NAME="deug_full_space Coverage Results" MODIFIED="1650652991919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$ex_1_1_essentials.coverage" NAME="ex-1-1-essentials Coverage Results" MODIFIED="1650397306882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_full_space.coverage" NAME="debug_full_space Coverage Results" MODIFIED="1650405787356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$ex_2_2_diagonalization_of_hamiltonian.coverage" NAME="ex_2_2_diagonalization_of_hamiltonian Coverage Results" MODIFIED="1650934082725" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$read_acm_scale_5_18_6_stats.coverage" NAME="read_acm_scale_5_18_6_stats Coverage Results" MODIFIED="1651019807309" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/performance" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_eigenfiddle.coverage" NAME="debug_eigenfiddle Coverage Results" MODIFIED="1650918836804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$.coverage" NAME=" Coverage Results" MODIFIED="1654895044283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/tests" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_show_eigs.coverage" NAME="debug_show_eigs Coverage Results" MODIFIED="1650652746171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_digxspace.coverage" NAME="debug_digxspace Coverage Results" MODIFIED="1650920295587" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-    <SUITE FILE_PATH="coverage/acmpy$ex_2_1_specification_of_hamiltonian.coverage" NAME="ex_2_1_specification_of_hamiltonian Coverage Results" MODIFIED="1651001136027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/examples" />
-    <SUITE FILE_PATH="coverage/acmpy$debug_parse_radialop_list.coverage" NAME="debug_parse_radialop_list Coverage Results" MODIFIED="1650904602896" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/acmpy/debug" />
-  </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="evaluateExpression">
-      <expression>
-        <expression-string>test1_file_2</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
   </component>
 </project>
