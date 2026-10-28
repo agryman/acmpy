@@ -164,5 +164,37 @@ To run the docstring tests, run the following command.
 
 ## Data Files
 
-This project assumes that the precomputed SO5 > SO3 Clebsch-Gordan coefficients
-have been installed in a directory outside this project, e.g. `~/so5cg-data`.
+This project requires precomputed SO(5) > SO(3) Clebsch-Gordan coefficients.
+They were computed by T.A. Welsh and distributed with the Maple ACM code
+described in [WR2015](https://doi.org/10.1016/j.cpc.2015.10.017)
+(CPC Program Library catalogue identifier AEYO_v1_0).
+
+The coefficients are supplied in three zip files, which are stored in the
+`data/so5cg` directory:
+
+| File | Contents |
+|------|----------|
+| `so5cg-data13.zip` | coefficients for v2 = 1 and v2 = 3 |
+| `so5cg-data24.zip` | coefficients for v2 = 2 and v2 = 4 |
+| `so5cg-data56.zip` | coefficients for v2 = 5 and v2 = 6 |
+
+Each zip file extracts into a top-level `so5cg-data/` directory.
+To install the data in the default location `~/so5cg-data/`,
+run the following commands in the project root directory:
+
+```shell script
+for z in data/so5cg/*.zip; do unzip -n "$z" -d ~; done
+```
+
+This creates the subdirectories `v2=1` through `v2=6`
+(about 2,400 files, 244 MB).
+
+To use a different location, extract the files there and configure
+the base directory before computing any coefficients:
+
+```python
+from acmpy.so5_so3_cg import SO5CGConfig
+SO5CGConfig.set_base_directory('/path/to/so5cg-data/')
+```
+
+Note that the tests in `src/acmpy/tests/test_so5cg.py` always read from `~/so5cg-data/`.
