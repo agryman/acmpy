@@ -1,14 +1,15 @@
 # acmpy: Algebraic Collective Model in Python
+*Arthur Ryman, last updated 2026-10-27*
 
 ## Project Structure
 
 The code for this project is stored in a GitHub repository named
 [`agryman/acmpy`](https://github.com/agryman/acmpy).
 
-The code is developed using IntelliJ. 
-The `.idea` directory contains IntelliJ files.
+The code is developed using PyCharm. 
+The `.idea` directory contains PyCharm files.
 
-The Python code is contained in the `acmpy` directory.
+The Python code is contained in the `src/acmpy` directory.
 
 ## Virtual Environment
 
@@ -53,8 +54,7 @@ Next install the Python packages required to run, test, type check, and document
 ```shell script
 pip install numpy pandas matplotlib jupyter mypy pytest pytest-mypy
 pip install Sphinx sphinx-math-dollar numpydoc
-pip install sympy==1.9
-pip install scipy==1.8
+pip install sympy scipy
 ```
 
 Install the source code as an editable package.
