@@ -1,5 +1,5 @@
 # acmpy: Algebraic Collective Model in Python
-*Arthur Ryman, last updated 2026-10-27*
+*Arthur Ryman, last updated 2026-10-28*
 
 ## Project Structure
 
@@ -19,8 +19,8 @@ See <https://docs.python.org/3/tutorial/venv.html> for information
 about using virtual environments.
 
 Create the virtual environment as follows.
-Open a terminal window and change the current directory to the root directory ot the `acmpy` project.
-The run the following command.
+Open a terminal window and change the current directory to the root directory of the `acmpy` project.
+Then run the following command.
 
 ```shell script
 python3 -m venv venv
@@ -55,7 +55,11 @@ Next install the Python packages required to run, test, type check, and document
 pip install numpy pandas matplotlib jupyter mypy pytest pytest-mypy
 pip install Sphinx sphinx-math-dollar numpydoc
 pip install sympy scipy
+pip install setuptools build twine
 ```
+
+Note that since Python 3.12, `venv` no longer installs `setuptools` by default.
+It is required by `src/setup.py`.
 
 Install the source code as an editable package.
 
@@ -105,6 +109,26 @@ To deactivate the virtual environment:
 deactivate
 ```
 
+## Building and Publishing
+
+The package metadata is defined in `src/setup.py`.
+To build the source distribution and wheel:
+
+```shell script
+cd src
+python -m build
+```
+
+The distribution files are written to the `src/dist` directory.
+To upload them to PyPI:
+
+```shell script
+twine upload dist/*
+```
+
+Remember to increment `version` in `src/setup.py` before each upload,
+because PyPI won't accept a version that has already been uploaded.
+
 ## Documentation
 
 This project uses `Sphinx` for documentation.
@@ -127,7 +151,7 @@ This project uses `pytest` for testing.
 
 Tests are placed in the `tests` directory within each module directory
 and are named using the prefix `test_`. For example, the tests for `so5cg.py`
-and defined in the file `tests/test_so5cg.py`.
+are defined in the file `tests/test_so5cg.py`.
 
 To run all the tests, run the following command in the project root directory:
 
